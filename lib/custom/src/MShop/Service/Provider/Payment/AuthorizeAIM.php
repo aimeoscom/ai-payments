@@ -14,7 +14,7 @@
  * @package MShop
  * @subpackage Service
  */
-class MShop_Service_Provider_Payment_CardSave
+class MShop_Service_Provider_Payment_AuthorizeAIM
 	extends MShop_Service_Provider_Payment_OmniPay
 	implements MShop_Service_Provider_Payment_Interface
 {
