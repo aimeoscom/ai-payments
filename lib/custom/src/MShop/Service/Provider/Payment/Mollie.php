@@ -9,7 +9,7 @@
 
 
 /**
- * Payment provider for CardSave.
+ * Payment provider for Mollie.
  *
  * @package MShop
  * @subpackage Service

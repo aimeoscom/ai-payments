@@ -12,7 +12,7 @@ use Omnipay\Omnipay;
 
 
 /**
- * Payment provider for payment providers supported by the Omnipay package.
+ * Payment provider for payment gateways supported by the Omnipay library.
  *
  * @package MShop
  * @subpackage Service

@@ -9,7 +9,7 @@
 
 
 /**
- * Payment provider for CardSave.
+ * Payment provider for Authorize.NET AIM.
  *
  * @package MShop
  * @subpackage Service
