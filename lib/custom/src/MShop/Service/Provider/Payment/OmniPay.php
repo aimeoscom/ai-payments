@@ -525,8 +525,8 @@ class MShop_Service_Provider_Payment_OmniPay
 
 		if( !$response->isRedirect() )
 		{
-			$msg = 'Redirect was expected for off-site credit card input: %1$s';
-			throw new MShop_Service_Exception( sprintf( $msg, $response->getRedirectUrl() ) );
+			$msg = sprintf( 'Redirect was expected for off-site payment: %1$s', $response->getMessage() );
+			throw new MShop_Service_Exception( $msg );
 		}
 
 		foreach( (array) $response->getRedirectData() as $key => $value )

@@ -57,6 +57,19 @@ class MShop_Service_Provider_Payment_AuthorizeAIM
 	 */
 	protected function _getProviderType()
 	{
-		return 'Authorize_AIM';
+		return 'AuthorizeNet_AIM';
+	}
+
+
+	/**
+	 * Returns the value for the given configuration key
+	 *
+	 * @param string $key Configuration key name
+	 * @param mixed $default Default value if no configuration is found
+	 * @return string Configuration value
+	 */
+	protected function _getValue( $key, $default = null )
+	{
+		return $this->_getConfigValue( array( 'authorizenet.' . $key ), $default );
 	}
 }
