@@ -19,6 +19,22 @@ class MShop_Service_Provider_Payment_Mollie
 	implements MShop_Service_Provider_Payment_Interface
 {
 	/**
+	 * Updates the orders for which status updates were received via direct requests (like HTTP).
+	 *
+	 * @param array $params Associative list of request parameters
+	 * @param string|null $body Information sent within the body of the request
+	 * @param string|null &$response Response body for notification requests
+	 * @return MShop_Order_Item_Interface|null Order item if update was successful, null if the given parameters are not valid for this provider
+	 */
+	public function updateSync( array $params = array(), $body = null, &$response = null )
+	{
+		if( isset( $params['id'] ) ) {
+			return parent::updateSync( $params, $body, $response );
+		}
+	}
+
+
+	/**
 	 * Returns the Omnipay gateway provider name.
 	 *
 	 * @return string Gateway provider name
