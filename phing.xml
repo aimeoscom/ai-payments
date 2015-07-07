@@ -23,10 +23,12 @@
 
 	<target name="i18n" description="Creates all translation files">
 		<phing target="i18n" haltonfailure="true" dir="lib/custom" />
+		<phing target="i18n" haltonfailure="true" dir="client/html" />
 	</target>
 
 	<target name="build" description="Builds package for deployment">
 		<phing target="build" haltonfailure="true" dir="lib/custom" />
+		<phing target="build" haltonfailure="true" dir="client/html" />
     </target>
 
 	<target name="release" description="Creates new release" depends="build">
