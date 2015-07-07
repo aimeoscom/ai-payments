@@ -148,6 +148,7 @@ class MShop_Service_Provider_Payment_AuthorizeDPM
 	public function process( MShop_Order_Item_Interface $order )
 	{
 		$form = $this->_processOffsite( $order );
+		$baseItem = $this->_getOrderBase( $order->getBaseId(), MShop_Order_Manager_Base_Abstract::PARTS_ADDRESS );
 
 		try
 		{
