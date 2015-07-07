@@ -19,34 +19,34 @@ class MShop_Service_Provider_Payment_AuthorizeSIM
 	implements MShop_Service_Provider_Payment_Interface
 {
 	/**
-	 * Tries to get an authorization or captures the money immediately for the given order if capturing the money
-	 * separately isn't supported or not configured by the shop owner.
-	 *
-	 * @param MShop_Order_Item_Interface $order Order invoice object
-	 * @return MShop_Common_Item_Helper_Form_Default Form object with URL, action and parameters to redirect to
-	 * 	(e.g. to an external server of the payment provider or to a local success page)
-	 */
-	public function process( MShop_Order_Item_Interface $order )
-	{
-		return $this->_processOffsite( $order );
-	}
-
-
-	/**
 	 * Updates the orders for which status updates were received via direct requests (like HTTP).
 	 *
 	 * @param array $params Associative list of request parameters
 	 * @param string|null $body Information sent within the body of the request
-	 * @param string|null &$response Response body for notification requests
+	 * @param string|null &$output Response body for notification requests
+	 * @param array &$header Response headers for notification requests
 	 * @return MShop_Order_Item_Interface|null Order item if update was successful, null if the given parameters are not valid for this provider
 	 */
-	public function updateSync( array $params = array(), $body = null, &$response = null )
+	public function updateSync( array $params = array(), $body = null, &$output = null, array &$header = array() )
 	{
-		if( !isset( $params['orderid'] ) ) {
-			return null;
+		if( isset( $params['x_MD5_Hash'] ) )
+		{
+			$result = parent::updateSync( $params, $body, $output, $header );
+
+			if( $result !== null )
+			{
+				$url = $this->_getConfigValue( array( 'payment.url-success' ) );
+
+				$header[] = $this->_getValue( 'header', 'Location: ' . $url );
+				$output = sprintf( $this->_getValue( 'body', 'success' ), $url );
+			}
+
+			return $result;
 		}
 
-		return $this->_updateSyncOffsite( $params, $body, $response );
+		if( isset( $params['orderid'] ) ) {
+			return $this->_getOrder( $params['orderid'] );
+		}
 	}
 
 

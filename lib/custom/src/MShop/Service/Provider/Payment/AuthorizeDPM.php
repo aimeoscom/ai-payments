@@ -15,12 +15,12 @@
  * @subpackage Service
  */
 class MShop_Service_Provider_Payment_AuthorizeDPM
-	extends MShop_Service_Provider_Payment_OmniPay
+	extends MShop_Service_Provider_Payment_AuthorizeSIM
 	implements MShop_Service_Provider_Payment_Interface
 {
 	private $_feConfig = array(
-		'omnipay.firstname' => array(
-			'code' => 'omnipay.firstname',
+		'payment.firstname' => array(
+			'code' => 'payment.firstname',
 			'internalcode'=> 'x_first_name',
 			'label'=> 'First name',
 			'type'=> 'string',
@@ -28,8 +28,8 @@ class MShop_Service_Provider_Payment_AuthorizeDPM
 			'default'=> '',
 			'required'=> false
 		),
-		'omnipay.lastname' => array(
-			'code' => 'omnipay.lastname',
+		'payment.lastname' => array(
+			'code' => 'payment.lastname',
 			'internalcode'=> 'x_last_name',
 			'label'=> 'Last name',
 			'type'=> 'string',
@@ -37,8 +37,8 @@ class MShop_Service_Provider_Payment_AuthorizeDPM
 			'default'=> '',
 			'required'=> true
 		),
-		'omnipay.cardno' => array(
-			'code' => 'omnipay.cardno',
+		'payment.cardno' => array(
+			'code' => 'payment.cardno',
 			'internalcode'=> 'x_card_num',
 			'label'=> 'Credit card number',
 			'type'=> 'number',
@@ -46,8 +46,8 @@ class MShop_Service_Provider_Payment_AuthorizeDPM
 			'default'=> '',
 			'required'=> true
 		),
-		'omnipay.cvv' => array(
-			'code' => 'omnipay.cvv',
+		'payment.cvv' => array(
+			'code' => 'payment.cvv',
 			'internalcode'=> 'x_card_code',
 			'label'=> 'Verification number',
 			'type'=> 'number',
@@ -55,8 +55,8 @@ class MShop_Service_Provider_Payment_AuthorizeDPM
 			'default'=> '',
 			'required'=> true
 		),
-		'omnipay.expirymonthyear' => array(
-			'code' => 'omnipay.expirymonthyear',
+		'payment.expirymonthyear' => array(
+			'code' => 'payment.expirymonthyear',
 			'internalcode'=> 'x_exp_date',
 			'label'=> 'Expiry date',
 			'type'=> 'number',
@@ -64,8 +64,8 @@ class MShop_Service_Provider_Payment_AuthorizeDPM
 			'default'=> '',
 			'required'=> true
 		),
-		'billing.company' => array(
-			'code' => 'billing.company',
+		'payment.company' => array(
+			'code' => 'payment.company',
 			'internalcode'=> 'x_company',
 			'label'=> 'Company',
 			'type'=> 'string',
@@ -74,8 +74,8 @@ class MShop_Service_Provider_Payment_AuthorizeDPM
 			'required'=> false,
 			'public' => false,
 		),
-		'billing.address' => array(
-			'code' => 'billing.address',
+		'payment.address1' => array(
+			'code' => 'payment.address1',
 			'internalcode'=> 'x_address',
 			'label'=> 'Street',
 			'type'=> 'string',
@@ -84,8 +84,8 @@ class MShop_Service_Provider_Payment_AuthorizeDPM
 			'required'=> false,
 			'public' => false,
 		),
-		'billing.city' => array(
-			'code' => 'billing.city',
+		'payment.city' => array(
+			'code' => 'payment.city',
 			'internalcode'=> 'x_city',
 			'label'=> 'City',
 			'type'=> 'string',
@@ -94,8 +94,8 @@ class MShop_Service_Provider_Payment_AuthorizeDPM
 			'required'=> false,
 			'public' => false,
 		),
-		'billing.postal' => array(
-			'code' => 'billing.postal',
+		'payment.postal' => array(
+			'code' => 'payment.postal',
 			'internalcode'=> 'x_zip',
 			'label'=> 'Zip code',
 			'type'=> 'string',
@@ -104,8 +104,8 @@ class MShop_Service_Provider_Payment_AuthorizeDPM
 			'required'=> false,
 			'public' => false,
 		),
-		'billing.countryid' => array(
-			'code' => 'billing.countryid',
+		'payment.countryid' => array(
+			'code' => 'payment.countryid',
 			'internalcode'=> 'x_country',
 			'label'=> 'Country',
 			'type'=> 'string',
@@ -114,8 +114,8 @@ class MShop_Service_Provider_Payment_AuthorizeDPM
 			'required'=> false,
 			'public' => false,
 		),
-		'billing.telephone' => array(
-			'code' => 'billing.telephone',
+		'payment.telephone' => array(
+			'code' => 'payment.telephone',
 			'internalcode'=> 'x_phone',
 			'label'=> 'Telephone',
 			'type'=> 'string',
@@ -124,8 +124,8 @@ class MShop_Service_Provider_Payment_AuthorizeDPM
 			'required'=> false,
 			'public' => false,
 		),
-		'billing.email' => array(
-			'code' => 'billing.email',
+		'payment.email' => array(
+			'code' => 'payment.email',
 			'internalcode'=> 'x_email',
 			'label'=> 'E-Mail',
 			'type'=> 'string',
@@ -138,62 +138,53 @@ class MShop_Service_Provider_Payment_AuthorizeDPM
 
 
 	/**
-	 * Tries to get an authorization or captures the money immediately for the given order if capturing the money
-	 * separately isn't supported or not configured by the shop owner.
+	 * Returns the payment form for entering payment details at the shop site.
 	 *
-	 * @param MShop_Order_Item_Interface $order Order invoice object
-	 * @return MShop_Common_Item_Helper_Form_Default Form object with URL, action and parameters to redirect to
-	 * 	(e.g. to an external server of the payment provider or to a local success page)
+	 * @param MShop_Order_Item_Interface $order Order object
+	 * @param array $params Request parameter if available
+	 * @return MShop_Common_Item_Helper_Form_Interface Form helper object
 	 */
-	public function process( MShop_Order_Item_Interface $order )
+	protected function _getPaymentForm( MShop_Order_Item_Interface $order, array $params )
 	{
-		$form = $this->_processOffsite( $order );
+		$list = array();
+		$feConfig = $this->_feConfig;
+		$form = $this->_process( $order, $params );
 		$baseItem = $this->_getOrderBase( $order->getBaseId(), MShop_Order_Manager_Base_Abstract::PARTS_ADDRESS );
 
 		try
 		{
 			$address = $baseItem->getAddress();
 
-			$this->_feConfig['omnipay.firstname']['default'] = $address->getFirstname();
-			$this->_feConfig['omnipay.lastname']['default'] = $address->getLastname();
+			if( !isset( $params[ $feConfig['payment.firstname']['internalcode'] ] )
+				|| $params[ $feConfig['payment.firstname']['internalcode'] ] == ''
+			) {
+				$feConfig['payment.firstname']['default'] = $address->getFirstname();
+			}
+
+			if( !isset( $params[ $feConfig['payment.lastname']['internalcode'] ] )
+				|| $params[ $feConfig['payment.lastname']['internalcode'] ] == ''
+			) {
+				$feConfig['payment.lastname']['default'] = $address->getLastname();
+			}
 
 			if( $this->_getValue( 'address' ) )
 			{
-				$this->_feConfig['billing.address']['default'] = $address->getAddress1() . ' ' . $address->getAddress2();
-				$this->_feConfig['billing.city']['default'] = $address->getCity();
-				$this->_feConfig['billing.postal']['default'] = $address->getPostal();
-				$this->_feConfig['billing.state']['default'] = $address->getState();
-				$this->_feConfig['billing.country']['default'] = $address->getCountryId();
-				$this->_feConfig['billing.telephone']['default'] = $address->getTelephone();
-				$this->_feConfig['billing.company']['default'] = $address->getCompany();
-				$this->_feConfig['billing.email']['default'] = $address->getEmail();
+				$feConfig['payment.address1']['default'] = $address->getAddress1() . ' ' . $address->getAddress2();
+				$feConfig['payment.city']['default'] = $address->getCity();
+				$feConfig['payment.postal']['default'] = $address->getPostal();
+				$feConfig['payment.countryid']['default'] = $address->getCountryId();
+				$feConfig['payment.telephone']['default'] = $address->getTelephone();
+				$feConfig['payment.company']['default'] = $address->getCompany();
+				$feConfig['payment.email']['default'] = $address->getEmail();
 			}
 		}
 		catch( MShop_Order_Exception $e ) { ; } // If address isn't available
 
-		foreach( $this->_feConfig as $key => $values ) {
-			$form->setValue( $key, new MW_Common_Criteria_Attribute_Default( $values ) );
+		foreach( $feConfig as $key => $config ) {
+			$form->setValue( $key, new MW_Common_Criteria_Attribute_Default( $config ) );
 		}
 
 		return $form;
-	}
-
-
-	/**
-	 * Updates the orders for which status updates were received via direct requests (like HTTP).
-	 *
-	 * @param array $params Associative list of request parameters
-	 * @param string|null $body Information sent within the body of the request
-	 * @param string|null &$response Response body for notification requests
-	 * @return MShop_Order_Item_Interface|null Order item if update was successful, null if the given parameters are not valid for this provider
-	 */
-	public function updateSync( array $params = array(), $body = null, &$response = null )
-	{
-		if( !isset( $params['orderid'] ) ) {
-			return null;
-		}
-
-		return $this->_updateSyncOffsite( $params, $body, $response );
 	}
 
 
@@ -217,6 +208,10 @@ class MShop_Service_Provider_Payment_AuthorizeDPM
 	 */
 	protected function _getValue( $key, $default = null )
 	{
+		if( $key === 'onsite' ) {
+			return true;
+		}
+
 		return $this->_getConfigValue( array( 'authorizenet.' . $key ), $default );
 	}
 }

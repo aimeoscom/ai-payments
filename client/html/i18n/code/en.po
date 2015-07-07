@@ -14,5 +14,5 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 #. Omnipay service provider
-msgid "omnipay.expirymonthyear"
+msgid "payment.expirymonthyear"
 msgstr "Expiry date (MMYY)"

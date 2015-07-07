@@ -52,8 +52,8 @@ class MShop_Service_Provider_Payment_OmniPay
 	);
 
 	private $_feConfig = array(
-		'omnipay.firstname' => array(
-			'code' => 'omnipay.firstname',
+		'payment.firstname' => array(
+			'code' => 'payment.firstname',
 			'internalcode'=> 'firstName',
 			'label'=> 'First name',
 			'type'=> 'string',
@@ -61,8 +61,8 @@ class MShop_Service_Provider_Payment_OmniPay
 			'default'=> '',
 			'required'=> false
 		),
-		'omnipay.lastname' => array(
-			'code' => 'omnipay.lastname',
+		'payment.lastname' => array(
+			'code' => 'payment.lastname',
 			'internalcode'=> 'lastName',
 			'label'=> 'Last name',
 			'type'=> 'string',
@@ -70,8 +70,8 @@ class MShop_Service_Provider_Payment_OmniPay
 			'default'=> '',
 			'required'=> true
 		),
-		'omnipay.cardno' => array(
-			'code' => 'omnipay.cardno',
+		'payment.cardno' => array(
+			'code' => 'payment.cardno',
 			'internalcode'=> 'number',
 			'label'=> 'Credit card number',
 			'type'=> 'number',
@@ -79,8 +79,8 @@ class MShop_Service_Provider_Payment_OmniPay
 			'default'=> '',
 			'required'=> true
 		),
-		'omnipay.cvv' => array(
-			'code' => 'omnipay.cvv',
+		'payment.cvv' => array(
+			'code' => 'payment.cvv',
 			'internalcode'=> 'cvv',
 			'label'=> 'Verification number',
 			'type'=> 'number',
@@ -88,8 +88,8 @@ class MShop_Service_Provider_Payment_OmniPay
 			'default'=> '',
 			'required'=> true
 		),
-		'omnipay.expirymonth' => array(
-			'code' => 'omnipay.expirymonth',
+		'payment.expirymonth' => array(
+			'code' => 'payment.expirymonth',
 			'internalcode'=> 'expiryMonth',
 			'label'=> 'Expiry month',
 			'type'=> 'select',
@@ -97,8 +97,8 @@ class MShop_Service_Provider_Payment_OmniPay
 			'default'=> '',
 			'required'=> true
 		),
-		'omnipay.expiryyear' => array(
-			'code' => 'omnipay.expiryyear',
+		'payment.expiryyear' => array(
+			'code' => 'payment.expiryyear',
 			'internalcode'=> 'expiryYear',
 			'label'=> 'Expiry year',
 			'type'=> 'select',
@@ -106,8 +106,8 @@ class MShop_Service_Provider_Payment_OmniPay
 			'default'=> '',
 			'required'=> true
 		),
-		'billing.company' => array(
-			'code' => 'billing.company',
+		'payment.company' => array(
+			'code' => 'payment.company',
 			'internalcode'=> 'company',
 			'label'=> 'Company',
 			'type'=> 'string',
@@ -116,8 +116,8 @@ class MShop_Service_Provider_Payment_OmniPay
 			'required'=> false,
 			'public' => false,
 		),
-		'billing.address1' => array(
-			'code' => 'billing.address1',
+		'payment.address1' => array(
+			'code' => 'payment.address1',
 			'internalcode'=> 'billingAddress1',
 			'label'=> 'Street',
 			'type'=> 'string',
@@ -126,8 +126,8 @@ class MShop_Service_Provider_Payment_OmniPay
 			'required'=> false,
 			'public' => false,
 		),
-		'billing.address2' => array(
-			'code' => 'billing.address2',
+		'payment.address2' => array(
+			'code' => 'payment.address2',
 			'internalcode'=> 'billingAddress2',
 			'label'=> 'Additional',
 			'type'=> 'string',
@@ -136,8 +136,8 @@ class MShop_Service_Provider_Payment_OmniPay
 			'required'=> false,
 			'public' => false,
 		),
-		'billing.city' => array(
-			'code' => 'billing.city',
+		'payment.city' => array(
+			'code' => 'payment.city',
 			'internalcode'=> 'billingCity',
 			'label'=> 'City',
 			'type'=> 'string',
@@ -146,8 +146,8 @@ class MShop_Service_Provider_Payment_OmniPay
 			'required'=> false,
 			'public' => false,
 		),
-		'billing.postal' => array(
-			'code' => 'billing.postal',
+		'payment.postal' => array(
+			'code' => 'payment.postal',
 			'internalcode'=> 'billingPostcode',
 			'label'=> 'Zip code',
 			'type'=> 'string',
@@ -156,8 +156,8 @@ class MShop_Service_Provider_Payment_OmniPay
 			'required'=> false,
 			'public' => false,
 		),
-		'billing.state' => array(
-			'code' => 'billing.state',
+		'payment.state' => array(
+			'code' => 'payment.state',
 			'internalcode'=> 'billingState',
 			'label'=> 'State',
 			'type'=> 'string',
@@ -166,8 +166,8 @@ class MShop_Service_Provider_Payment_OmniPay
 			'required'=> false,
 			'public' => false,
 		),
-		'billing.countryid' => array(
-			'code' => 'billing.countryid',
+		'payment.countryid' => array(
+			'code' => 'payment.countryid',
 			'internalcode'=> 'billingCountry',
 			'label'=> 'Country',
 			'type'=> 'string',
@@ -176,8 +176,8 @@ class MShop_Service_Provider_Payment_OmniPay
 			'required'=> false,
 			'public' => false,
 		),
-		'billing.telephone' => array(
-			'code' => 'billing.telephone',
+		'payment.telephone' => array(
+			'code' => 'payment.telephone',
 			'internalcode'=> 'billingPhone',
 			'label'=> 'Telephone',
 			'type'=> 'string',
@@ -186,8 +186,8 @@ class MShop_Service_Provider_Payment_OmniPay
 			'required'=> false,
 			'public' => false,
 		),
-		'billing.email' => array(
-			'code' => 'billing.email',
+		'payment.email' => array(
+			'code' => 'payment.email',
 			'internalcode'=> 'email',
 			'label'=> 'E-Mail',
 			'type'=> 'string',
@@ -330,17 +330,17 @@ class MShop_Service_Provider_Payment_OmniPay
 	 * separately isn't supported or not configured by the shop owner.
 	 *
 	 * @param MShop_Order_Item_Interface $order Order invoice object
+	 * @param array $params Request parameter if available
 	 * @return MShop_Common_Item_Helper_Form_Default Form object with URL, action and parameters to redirect to
 	 * 	(e.g. to an external server of the payment provider or to a local success page)
 	 */
-	public function process( MShop_Order_Item_Interface $order )
+	public function process( MShop_Order_Item_Interface $order, array $params = array() )
 	{
-		// off-site payment
-		if( $this->_getProvider()->supportsCompletePurchase() ) {
-			return $this->_processOffsite( $order );
+		if( $this->_getValue( 'onsite' ) == true && ( !isset( $params['number'] ) || !isset( $params['cvv'] ) ) ) {
+			return $this->_getPaymentForm( $order, $params );
 		}
 
-		return $this->_processOnsite( $order );
+		return $this->_process( $order, $params );
 	}
 
 
@@ -387,21 +387,69 @@ class MShop_Service_Provider_Payment_OmniPay
 	 *
 	 * @param array $params Associative list of request parameters
 	 * @param string|null $body Information sent within the body of the request
-	 * @param string|null &$response Response body for notification requests
+	 * @param string|null &$output Response body for notification requests
+	 * @param array &$header Response headers for notification requests
 	 * @return MShop_Order_Item_Interface|null Order item if update was successful, null if the given parameters are not valid for this provider
 	 */
-	public function updateSync( array $params = array(), $body = null, &$response = null )
+	public function updateSync( array $params = array(), $body = null, &$output = null, array &$header = array() )
 	{
 		if( !isset( $params['orderid'] ) ) {
 			return null;
 		}
 
-		// off-site payment
-		if( $this->_getProvider()->supportsCompletePurchase() ) {
-			return $this->_updateSyncOffsite( $params, $body, $response );
+		$order = $this->_getOrder( $params['orderid'] );
+		$baseItem = $this->_getOrderBase( $order->getBaseId() );
+
+		$params['transactionId'] = $order->getId();
+		$params['amount'] = $baseItem->getPrice()->getValue();
+		$params['currency'] = $baseItem->getLocale()->getCurrencyId();
+
+		try
+		{
+			$provider = $this->_getProvider();
+
+			if( $provider->supportsCompleteAuthorize() && $this->_getValue( 'authorize', false ) )
+			{
+				$response = $provider->completeAuthorize( $params )->send();
+				$status = MShop_Order_Item_Abstract::PAY_AUTHORIZED;
+			}
+			elseif( $provider->supportsCompletePurchase() )
+			{
+				$response = $provider->completePurchase( $params )->send();
+				$status = MShop_Order_Item_Abstract::PAY_RECEIVED;
+			}
+			else
+			{
+				return $order;
+			}
+
+			if( $response->isSuccessful() )
+			{
+				$this->_saveTransationRef( $baseItem, $response->getTransactionReference() );
+
+				$order->setPaymentStatus( $status );
+				$this->_saveOrder( $order );
+			}
+			elseif( $response->isRedirect() )
+			{
+				$url = $response->getRedirectUrl();
+				$header[] = array( 'HTTP/1.1 500 Unexpected redirect' );
+				throw new MShop_Service_Exception( sprintf( 'Unexpected redirect: %1$s', $url ) );
+			}
+			else
+			{
+				$order->setPaymentStatus( MShop_Order_Item_Abstract::PAY_REFUSED );
+				$this->_saveOrder( $order );
+
+				throw new MShop_Service_Exception( $response->getMessage() );
+			}
+		}
+		catch( Exception $e )
+		{
+			throw new MShop_Service_Exception( $e->getMessage() );
 		}
 
-		return $this->_updateSyncOnsite( $params, $body, $response );
+		return $order;
 	}
 
 
@@ -463,71 +511,71 @@ class MShop_Service_Provider_Payment_OmniPay
 
 
 	/**
-	 * Process off-site payments where credit card data is entered and processed at the payment gateway.
+	 * Returns the payment form for entering payment details at the shop site.
 	 *
 	 * @param MShop_Order_Item_Interface $order Order object
-	 * @throws MShop_Service_Exception If URL for redirect to gateway site isn't available
+	 * @param array $params Request parameter if available
 	 * @return MShop_Common_Item_Helper_Form_Interface Form helper object
 	 */
-	protected function _processOffsite( MShop_Order_Item_Interface $order )
+	protected function _getPaymentForm( MShop_Order_Item_Interface $order, array $params )
 	{
-		$list = $carddata = array();
+		$list = array();
+		$feConfig = $this->_feConfig;
 		$baseItem = $this->_getOrderBase( $order->getBaseId(), MShop_Order_Manager_Base_Abstract::PARTS_ADDRESS );
 
 		try
 		{
 			$address = $baseItem->getAddress();
 
-			$carddata['firstName'] = $address->getFirstname();
-			$carddata['lastName'] = $address->getLastname();
+			if( !isset( $params[ $feConfig['payment.firstname']['internalcode'] ] )
+				|| $params[ $feConfig['payment.firstname']['internalcode'] ] == ''
+			) {
+				$feConfig['payment.firstname']['default'] = $address->getFirstname();
+			}
+
+			if( !isset( $params[ $feConfig['payment.lastname']['internalcode'] ] )
+				|| $params[ $feConfig['payment.lastname']['internalcode'] ] == ''
+			) {
+				$feConfig['payment.lastname']['default'] = $address->getLastname();
+			}
 
 			if( $this->_getValue( 'address' ) )
 			{
-				$carddata['billingAddress1'] = $address->getAddress1();
-				$carddata['billingAddress2'] = $address->getAddress2();
-				$carddata['billingCity'] = $address->getCity();
-				$carddata['billingPostcode'] = $address->getPostal();
-				$carddata['billingState'] = $address->getState();
-				$carddata['billingCountry'] = $address->getCountryId();
-				$carddata['billingPhone'] = $address->getTelephone();
-				$carddata['company'] = $address->getCompany();
-				$carddata['email'] = $address->getEmail();
+				$feConfig['payment.address1']['default'] = $address->getAddress1();
+				$feConfig['payment.address2']['default'] = $address->getAddress2();
+				$feConfig['payment.city']['default'] = $address->getCity();
+				$feConfig['payment.postal']['default'] = $address->getPostal();
+				$feConfig['payment.state']['default'] = $address->getState();
+				$feConfig['payment.country']['default'] = $address->getCountryId();
+				$feConfig['payment.telephone']['default'] = $address->getTelephone();
+				$feConfig['payment.company']['default'] = $address->getCompany();
+				$feConfig['payment.email']['default'] = $address->getEmail();
 			}
 		}
 		catch( MShop_Order_Exception $e ) { ; } // If address isn't available
 
-		$desc = $this->_getContext()->getI18n()->dt( 'mshop', 'Order %1$s' );
+		$year = date( 'Y' );
+		$feConfig['payment.expirymonth']['default'] = array( 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 );
+		$feConfig['payment.expiryyear']['default'] = array( $year, $year+1, $year+2, $year+3, $year+4, $year+5, $year+6, $year+7 );
 
-		$data = array(
-			'token' => '',
-			'card' => $carddata,
-			'transactionId' => $order->getId(),
-			'amount' => $baseItem->getPrice()->getValue(),
-			'currency' => $baseItem->getLocale()->getCurrencyId(),
-			'description' => sprintf( $desc, $order->getId() ),
-			'clientIp' => $this->_getConfigValue( array( 'client.ipaddress' ) ),
-		) + $this->_getPaymentUrls();
-
-		try
-		{
-			$provider = $this->_getProvider();
-
-			if( $provider->supportsAuthorize() && $this->_getValue( 'authorize', false ) ) {
-				$response = $provider->authorize( $data )->send();
-			} else {
-				$response = $provider->purchase( $data )->send();
-			}
-		}
-		catch( Exception $e )
-		{
-			throw new MShop_Service_Exception( $e->getMessage() );
+		foreach( $feConfig as $key => $config ) {
+			$list[$key] = new MW_Common_Criteria_Attribute_Default( $config );
 		}
 
-		if( !$response->isRedirect() )
-		{
-			$msg = sprintf( 'Redirect was expected for off-site payment: %1$s', $response->getMessage() );
-			throw new MShop_Service_Exception( $msg );
-		}
+		$url = $this->_getConfigValue( array( 'payment.url-self' ) );
+		return new MShop_Common_Item_Helper_Form_Default( $url, 'POST', $list, false );
+	}
+
+
+	/**
+	 * Returns the form for redirecting customers to the payment gateway.
+	 *
+	 * @param \Omnipay\Common\Message\RedirectResponseInterface $response Omnipay response object
+	 * @return MShop_Common_Item_Helper_Form_Interface Form helper object
+	 */
+	protected function _getRedirectForm( \Omnipay\Common\Message\RedirectResponseInterface $response )
+	{
+		$list = array();
 
 		foreach( (array) $response->getRedirectData() as $key => $value )
 		{
@@ -550,143 +598,31 @@ class MShop_Service_Provider_Payment_OmniPay
 
 
 	/**
-	 * Process on-site payments where credit card data is entered and processed at the shop site.
+	 * Tries to get an authorization or captures the money immediately for the given order if capturing the money
+	 * separately isn't supported or not configured by the shop owner.
 	 *
-	 * @param MShop_Order_Item_Interface $order Order object
-	 * @return MShop_Common_Item_Helper_Form_Interface Form helper object
+	 * @param MShop_Order_Item_Interface $order Order invoice object
+	 * @param array $params Request parameter if available
+	 * @return MShop_Common_Item_Helper_Form_Default Form object with URL, action and parameters to redirect to
+	 * 	(e.g. to an external server of the payment provider or to a local success page)
 	 */
-	protected function _processOnsite( MShop_Order_Item_Interface $order )
+	protected function _process( MShop_Order_Item_Interface $order, array $params = array() )
 	{
-		$list = array();
 		$urls = $this->_getPaymentUrls();
-		$baseItem = $this->_getOrderBase( $order->getBaseId(), MShop_Order_Manager_Base_Abstract::PARTS_ADDRESS );
-
-		try
-		{
-			$address = $baseItem->getAddress();
-
-			$this->_feConfig['omnipay.firstname']['default'] = $address->getFirstname();
-			$this->_feConfig['omnipay.lastname']['default'] = $address->getLastname();
-
-			if( $this->_getValue( 'address' ) )
-			{
-				$this->_feConfig['billing.address1']['default'] = $address->getAddress1();
-				$this->_feConfig['billing.address2']['default'] = $address->getAddress2();
-				$this->_feConfig['billing.city']['default'] = $address->getCity();
-				$this->_feConfig['billing.postal']['default'] = $address->getPostal();
-				$this->_feConfig['billing.state']['default'] = $address->getState();
-				$this->_feConfig['billing.country']['default'] = $address->getCountryId();
-				$this->_feConfig['billing.telephone']['default'] = $address->getTelephone();
-				$this->_feConfig['billing.company']['default'] = $address->getCompany();
-				$this->_feConfig['billing.email']['default'] = $address->getEmail();
-			}
-		}
-		catch( MShop_Order_Exception $e ) { ; } // If address isn't available
-
-		$year = date( 'Y' );
-		$this->_feConfig['omnipay.expirymonth']['default'] = array( 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 );
-		$this->_feConfig['omnipay.expiryyear']['default'] = array( $year, $year+1, $year+2, $year+3, $year+4, $year+5, $year+6, $year+7 );
-
-		foreach( $this->_feConfig as $key => $config ) {
-			$list[$key] = new MW_Common_Criteria_Attribute_Default( $config );
-		}
-
-		return new MShop_Common_Item_Helper_Form_Default( $urls['returnUrl'], 'POST', $list );
-	}
-
-
-	/**
-	 * Updates the orders for which status updates were received via direct requests (like HTTP).
-	 *
-	 * @param array $params Associative list of request parameters
-	 * @param string|null $body Information sent within the body of the request
-	 * @param string|null &$response Response body for notification requests
-	 * @return MShop_Order_Item_Interface Order item if update was successful
-	 */
-	protected function _updateSyncOffsite( array $params, $body, &$response )
-	{
-		if( !isset( $params['orderid'] ) ) {
-			return null;
-		}
-
-		$order = $this->_getOrder( $params['orderid'] );
 		$baseItem = $this->_getOrderBase( $order->getBaseId() );
-		$serviceItem = $baseItem->getService( MShop_Order_Item_Base_Service_Abstract::TYPE_PAYMENT );
-
-		$params['transactionId'] = $order->getId();
-		$params['amount'] = $baseItem->getPrice()->getValue();
-		$params['currency'] = $baseItem->getLocale()->getCurrencyId();
-
-		try
-		{
-			$provider = $this->_getProvider();
-
-			if( $provider->supportsCompleteAuthorize() && $this->_getValue( 'authorize', false ) )
-			{
-				$response = $provider->completeAuthorize( $params )->send();
-				$status = MShop_Order_Item_Abstract::PAY_AUTHORIZED;
-			}
-			else
-			{
-				$response = $provider->completePurchase( $params )->send();
-				$status = MShop_Order_Item_Abstract::PAY_RECEIVED;
-			}
-		}
-		catch( Exception $e )
-		{
-			throw new MShop_Service_Exception( $e->getMessage() );
-		}
-
-		if( $response->isSuccessful() )
-		{
-			$attr = array( 'TRANSACTIONID' => $response->getTransactionReference() );
-			$this->_setAttributes( $serviceItem, $attr, 'payment/omnipay' );
-			$this->_saveOrderBase( $baseItem );
-
-			$order->setPaymentStatus( $status );
-			$this->_saveOrder( $order );
-		}
-		else
-		{
-			$order->setPaymentStatus( MShop_Order_Item_Abstract::PAY_REFUSED );
-			$this->_saveOrder( $order );
-
-			throw new MShop_Service_Exception( $e->getMessage() );
-		}
-
-		return $order;
-	}
-
-
-	/**
-	 * Updates the orders for which status updates were received via direct requests (like HTTP).
-	 *
-	 * @param array $params Associative list of request parameters
-	 * @param string|null $body Information sent within the body of the request
-	 * @param string|null &$response Response body for notification requests
-	 * @return MShop_Order_Item_Interface Order item if update was successful
-	 */
-	protected function _updateSyncOnsite( array $params, $body, &$response )
-	{
-		if( !isset( $params['orderid'] ) ) {
-			return null;
-		}
-
-		$order = $this->_getOrder( $params['orderid'] );
-		$baseItem = $this->_getOrderBase( $order->getBaseId() );
-		$serviceItem = $baseItem->getService( MShop_Order_Item_Base_Service_Abstract::TYPE_PAYMENT );
 
 		$desc = $this->_getContext()->getI18n()->dt( 'mshop', 'Order %1$s' );
+		$orderid = $order->getId();
 
 		$data = array(
 			'token' => '',
 			'card' => $params,
-			'transactionId' => $params['orderid'],
+			'transactionId' => $orderid,
+			'description' => sprintf( $desc, $orderid ),
 			'amount' => $baseItem->getPrice()->getValue(),
 			'currency' => $baseItem->getLocale()->getCurrencyId(),
-			'description' => sprintf( $desc, $order->getId() ),
 			'clientIp' => $this->_getConfigValue( array( 'client.ipaddress' ) ),
-		) + $this->_getPaymentUrls( $params['orderid'] );
+		) + $urls;
 
 		try
 		{
@@ -702,29 +638,47 @@ class MShop_Service_Provider_Payment_OmniPay
 				$response = $provider->purchase( $data )->send();
 				$status = MShop_Order_Item_Abstract::PAY_RECEIVED;
 			}
+
+			if( $response->isSuccessful() )
+			{
+				$this->_saveTransationRef( $baseItem, $response->getTransactionReference() );
+
+				$order->setPaymentStatus( $status );
+				$this->_saveOrder( $order );
+			}
+			elseif( $response->isRedirect() )
+			{
+				return $this->_getRedirectForm( $response );
+			}
+			else
+			{
+				$order->setPaymentStatus( MShop_Order_Item_Abstract::PAY_REFUSED );
+				$this->_saveOrder( $order );
+
+				throw new MShop_Service_Exception( $response->getMessage() );
+			}
 		}
 		catch( Exception $e )
 		{
 			throw new MShop_Service_Exception( $e->getMessage() );
 		}
 
-		if( $response->isSuccessful() )
-		{
-			$attr = array( 'TRANSACTIONID' => $response->getTransactionReference() );
-			$this->_setAttributes( $serviceItem, $attr, 'payment/omnipay' );
-			$this->_saveOrderBase( $baseItem );
+		return new MShop_Common_Item_Helper_Form_Default( $urls['returnUrl'], 'POST', array() );
+	}
 
-			$order->setPaymentStatus( $status );
-			$this->_saveOrder( $order );
-		}
-		else
-		{
-			$order->setPaymentStatus( MShop_Order_Item_Abstract::PAY_REFUSED );
-			$this->_saveOrder( $order );
 
-			throw new MShop_Service_Exception( $response->getMessage() );
-		}
+	/**
+	 * Addes the transation reference to the order service attributes.
+	 *
+	 * @param MShop_Order_Item_Base_Interface $baseItem Order base object with service items attached
+	 * @param string $ref Transaction reference from the payment gateway
+	 */
+	protected function _saveTransationRef( MShop_Order_Item_Base_Interface $baseItem, $ref )
+	{
+		$serviceItem = $baseItem->getService( MShop_Order_Item_Base_Service_Abstract::TYPE_PAYMENT );
 
-		return $order;
+		$attr = array( 'TRANSACTIONID' => $ref );
+		$this->_setAttributes( $serviceItem, $attr, 'payment/omnipay' );
+		$this->_saveOrderBase( $baseItem );
 	}
 }
