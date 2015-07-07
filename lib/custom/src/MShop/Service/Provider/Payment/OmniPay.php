@@ -617,17 +617,24 @@ class MShop_Service_Provider_Payment_OmniPay
 		$params['amount'] = $baseItem->getPrice()->getValue();
 		$params['currency'] = $baseItem->getLocale()->getCurrencyId();
 
-		$provider = $this->_getProvider();
+		try
+		{
+			$provider = $this->_getProvider();
 
-		if( $provider->supportsCompleteAuthorize() && $this->_getValue( 'authorize', false ) )
-		{
-			$response = $provider->completeAuthorize( $params )->send();
-			$status = MShop_Order_Item_Abstract::PAY_AUTHORIZED;
+			if( $provider->supportsCompleteAuthorize() && $this->_getValue( 'authorize', false ) )
+			{
+				$response = $provider->completeAuthorize( $params )->send();
+				$status = MShop_Order_Item_Abstract::PAY_AUTHORIZED;
+			}
+			else
+			{
+				$response = $provider->completePurchase( $params )->send();
+				$status = MShop_Order_Item_Abstract::PAY_RECEIVED;
+			}
 		}
-		else
+		catch( Exception $e )
 		{
-			$response = $provider->completePurchase( $params )->send();
-			$status = MShop_Order_Item_Abstract::PAY_RECEIVED;
+			throw new MShop_Service_Exception( $e->getMessage() );
 		}
 
 		if( $response->isSuccessful() )
@@ -681,17 +688,24 @@ class MShop_Service_Provider_Payment_OmniPay
 			'clientIp' => $this->_getConfigValue( array( 'client.ipaddress' ) ),
 		) + $this->_getPaymentUrls( $params['orderid'] );
 
-		$provider = $this->_getProvider();
+		try
+		{
+			$provider = $this->_getProvider();
 
-		if( $provider->supportsAuthorize() && $this->_getValue( 'authorize', false ) )
-		{
-			$response = $provider->authorize( $data )->send();
-			$status = MShop_Order_Item_Abstract::PAY_AUTHORIZED;
+			if( $provider->supportsAuthorize() && $this->_getValue( 'authorize', false ) )
+			{
+				$response = $provider->authorize( $data )->send();
+				$status = MShop_Order_Item_Abstract::PAY_AUTHORIZED;
+			}
+			else
+			{
+				$response = $provider->purchase( $data )->send();
+				$status = MShop_Order_Item_Abstract::PAY_RECEIVED;
+			}
 		}
-		else
+		catch( Exception $e )
 		{
-			$response = $provider->purchase( $data )->send();
-			$status = MShop_Order_Item_Abstract::PAY_RECEIVED;
+			throw new MShop_Service_Exception( $e->getMessage() );
 		}
 
 		if( $response->isSuccessful() )
