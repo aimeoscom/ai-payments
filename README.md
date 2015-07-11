@@ -1,5 +1,5 @@
-<a href="http://aimeos.org/">
-    <img src="http://aimeos.org/fileadmin/template/icons/logo.png" alt="Aimeos logo" title="Aimeos" align="right" height="60" />
+<a href="https://aimeos.org/">
+    <img src="https://aimeos.org/fileadmin/template/icons/logo.png" alt="Aimeos logo" title="Aimeos" align="right" height="60" />
 </a>
 
 Aimeos payment extension
@@ -59,8 +59,8 @@ The Aimeos payments extension is licensed under the terms of the LGPLv3 Open Sou
 
 ## Links
 
-* [Web site](http://aimeos.org/)
-* [Documentation](http://docs.aimeos.org/)
-* [Help](http://help.aimeos.org/)
+* [Web site](https://aimeos.org/)
+* [Documentation](https://aimeos.org/docs)
+* [Help](https://aimeos.org/help)
 * [Issue tracker](https://github.com/aimeos/ai-payments/issues)
 * [Source code](https://github.com/aimeos/ai-payments)

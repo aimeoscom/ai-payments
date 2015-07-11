@@ -3,7 +3,7 @@
 return array(
 	'name' => 'ai-payments',
 	'depends' => array(
-		'arcavias-core',
+		'aimeos-core',
 	),
 	'include' => array(
 		'lib/custom/src',
