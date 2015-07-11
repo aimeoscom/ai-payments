@@ -45,13 +45,13 @@ These commands will install the Aimeos extension into the extension directory an
 
 ## Configuration
 
-Payment options are configured via the shop administration interface in the ["Service" tab](http://docs.aimeos.org/User_Manual/Administration_Interface/Service_list) and you can add as many payment options as you need to the list for each site. They will be shown on the payment page in the checkout process. In the detail view of a new payment option, you have to enter some values:
+Payment options are configured via the shop administration interface in the ["Service" tab](https://aimeos.org/docs/User_Manual/Administration_Interface/Service_list) and you can add as many payment options as you need to the list for each site. They will be shown on the payment page in the checkout process. In the detail view of a new payment option, you have to enter some values:
 
-![Aimeos payment detail view](http://docs.aimeos.org/images/Admin-backend-service-detail-payment.png)
+![Aimeos payment detail view](https://aimeos.org/docs/images/Admin-backend-service-detail-payment.png)
 
 Make sure you set the status to "enabled" and the type to "Payment". Use an unique code for the payment option, idealy it should be readable and consist only of characters a-z, 0-9 and a few special characters like "-", "_" or ".". The value for the field "Provider" must be the last part of the class name of the payment service provider. Each of the following sections will tell you how it must be named. The last input field influences the position of the payment option within the list of payment options and you should use zero for the top position and greater values for the next payment options.
 
-In the right side of the panel you can add the configuration settings that are specifically required for each payment provider. The list of available settings for each payment provider is part of the next sections.
+In the right side of the panel you can add the configuration settings that are specifically required for each payment provider. The list of available settings for each payment provider can be found in the [service documentation](https://aimeos.org/docs/User_Manual/Administration_Interface/Service_list#Supported_by_ai-payments).
 
 ## License
 
