@@ -1,2 +1,4 @@
-unittest.log
+coveralls.json
+coverage.xml
 *.junit.xml
+*.log

@@ -1,0 +1,3 @@
+src_dir: ext/ai-payments
+json_path: ext/ai-payments/coveralls.json
+coverage_clover: ext/ai-payments/lib/custom/tests/coverage.xml
