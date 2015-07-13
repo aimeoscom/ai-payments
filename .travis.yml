@@ -12,10 +12,12 @@ before_script:
   - git clone --depth=50 --branch=master git://github.com/aimeos/aimeos-core.git ../aimeos-core
   - cd ../aimeos-core
   - mv ../ai-payments ext/
-  - composer update
+  - composer require "omnipay/omnipay:~2.0"
+  - mysql -e 'create database aimeos;'
+  - echo "<?php return array( 'db' => array( 'adapter' => 'mysql', 'host' => '127.0.0.1', 'database' => 'aimeos', 'username' => 'root', 'password' => '', 'limit' => 2, 'opt-persistent' => false, 'stmt' => array( \"SET NAMES 'utf8'\", \"SET SESSION sql_mode='ANSI'\" ) ) );" > config/resource.php
 
 script:
-  - vendor/bin/phing -Ddir=ext/ai-payments coverageext checkext
+  - vendor/bin/phing -Ddir=ext/ai-payments setup coverageext checkext
 
 after_success:
   - php vendor/bin/coveralls -c ext/ai-payments/.coveralls.yml
