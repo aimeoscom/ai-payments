@@ -31,13 +31,31 @@ class MShop_Service_Provider_Payment_OmniPay
 			'default'=> '',
 			'required'=> true,
 		),
-		'omnipay.capture' => array(
-			'code' => 'omnipay.capture',
-			'internalcode'=> 'omnipay.capture',
-			'label'=> 'Capture payments immediately',
+		'omnipay.address' => array(
+			'code' => 'omnipay.address',
+			'internalcode'=> 'omnipay.address',
+			'label'=> 'Send address to payment gateway too',
 			'type'=> 'boolean',
 			'internaltype'=> 'boolean',
-			'default'=> '1',
+			'default'=> '0',
+			'required'=> false,
+		),
+		'omnipay.authorize' => array(
+			'code' => 'omnipay.authorize',
+			'internalcode'=> 'omnipay.authorize',
+			'label'=> 'Authorize payments and capture later',
+			'type'=> 'boolean',
+			'internaltype'=> 'boolean',
+			'default'=> '0',
+			'required'=> false,
+		),
+		'omnipay.onsite' => array(
+			'code' => 'omnipay.onsite',
+			'internalcode'=> 'omnipay.onsite',
+			'label'=> 'Collect data locally',
+			'type'=> 'boolean',
+			'internaltype'=> 'boolean',
+			'default'=> '0',
 			'required'=> false,
 		),
 		'omnipay.testmode' => array(
@@ -372,8 +390,8 @@ class MShop_Service_Provider_Payment_OmniPay
 		if( $response->isSuccessful() )
 		{
 			$attr = array( 'REFUNDID' => $response->getTransactionReference() );
-			$this->_setAttributes( $serviceItem, $attr, 'payment/omnipay' );
-			$this->_saveOrderBase( $baseItem );
+			$this->_setAttributes( $service, $attr, 'payment/omnipay' );
+			$this->_saveOrderBase( $base );
 
 			$status = MShop_Order_Item_Abstract::PAY_REFUND;
 			$order->setPaymentStatus( $status );
@@ -408,7 +426,7 @@ class MShop_Service_Provider_Payment_OmniPay
 		{
 			$provider = $this->_getProvider();
 
-			if( $provider->supportsCompleteAuthorize() && $this->_getValue( 'authorize', false ) )
+			if( $this->_getValue( 'authorize', false ) && $provider->supportsCompleteAuthorize() )
 			{
 				$response = $provider->completeAuthorize( $params )->send();
 				$status = MShop_Order_Item_Abstract::PAY_AUTHORIZED;
@@ -546,7 +564,7 @@ class MShop_Service_Provider_Payment_OmniPay
 				$feConfig['payment.city']['default'] = $address->getCity();
 				$feConfig['payment.postal']['default'] = $address->getPostal();
 				$feConfig['payment.state']['default'] = $address->getState();
-				$feConfig['payment.country']['default'] = $address->getCountryId();
+				$feConfig['payment.countryid']['default'] = $address->getCountryId();
 				$feConfig['payment.telephone']['default'] = $address->getTelephone();
 				$feConfig['payment.company']['default'] = $address->getCompany();
 				$feConfig['payment.email']['default'] = $address->getEmail();
@@ -628,7 +646,7 @@ class MShop_Service_Provider_Payment_OmniPay
 		{
 			$provider = $this->_getProvider();
 
-			if( $provider->supportsAuthorize() && $this->_getValue( 'authorize', false ) )
+			if( $this->_getValue( 'authorize', false ) && $provider->supportsAuthorize() )
 			{
 				$response = $provider->authorize( $data )->send();
 				$status = MShop_Order_Item_Abstract::PAY_AUTHORIZED;

@@ -148,7 +148,7 @@ class MShop_Service_Provider_Payment_AuthorizeDPM
 	{
 		$list = array();
 		$feConfig = $this->_feConfig;
-		$form = $this->_process( $order, $params );
+		$form = parent::_getPaymentForm( $order, $params );
 		$baseItem = $this->_getOrderBase( $order->getBaseId(), MShop_Order_Manager_Base_Abstract::PARTS_ADDRESS );
 
 		try
