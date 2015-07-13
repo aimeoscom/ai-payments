@@ -24,8 +24,8 @@
 		"omnipay/authorizenet": "~2.0",
 		"omnipay/cardsave": "~2.0",
 		"omnipay/mollie": "~3.0",
-		"omnipay/sagepay": "~2.0"
-		"omnipay/stripe": "~2.0",
+		"omnipay/sagepay": "~2.0",
+		"omnipay/stripe": "~2.0"
 	},
 	"require-dev": {
 		"satooshi/php-coveralls": "dev-master",
