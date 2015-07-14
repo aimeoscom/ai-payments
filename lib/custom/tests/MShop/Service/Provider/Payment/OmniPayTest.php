@@ -187,7 +187,7 @@ class MShop_Service_Provider_Payment_OmniPayTest extends PHPUnit_Framework_TestC
 		);
 
 		$this->setExpectedException( 'MShop_Service_Exception' );
-		$result = $this->_object->process( $this->_getOrder(), $params );
+		$this->_object->process( $this->_getOrder(), $params );
 	}
 
 
@@ -232,7 +232,7 @@ class MShop_Service_Provider_Payment_OmniPayTest extends PHPUnit_Framework_TestC
 			->will( $this->returnValue( $baseItem ) );
 
 		$this->setExpectedException( 'MShop_Service_Exception' );
-		$result = $this->_object->process( $this->_getOrder(), array() );
+		$this->_object->process( $this->_getOrder(), array() );
 	}
 
 
@@ -410,7 +410,7 @@ class MShop_Service_Provider_Payment_OmniPayTest extends PHPUnit_Framework_TestC
 
 
 		$this->setExpectedException( 'MShop_Service_Exception' );
-		$result = $this->_object->updateSync( array( 'orderid' => '1' ) );
+		$this->_object->updateSync( array( 'orderid' => '1' ) );
 	}
 
 
@@ -458,7 +458,7 @@ class MShop_Service_Provider_Payment_OmniPayTest extends PHPUnit_Framework_TestC
 
 
 		$this->setExpectedException( 'MShop_Service_Exception' );
-		$result = $this->_object->updateSync( array( 'orderid' => '1' ) );
+		$this->_object->updateSync( array( 'orderid' => '1' ) );
 	}
 
 
@@ -502,7 +502,7 @@ class MShop_Service_Provider_Payment_OmniPayTest extends PHPUnit_Framework_TestC
 			->will( $this->returnValue( true ) );
 
 
-		$result = $this->_object->cancel( $orderItem );
+		$this->_object->cancel( $orderItem );
 	}
 
 
@@ -523,7 +523,7 @@ class MShop_Service_Provider_Payment_OmniPayTest extends PHPUnit_Framework_TestC
 			->will( $this->returnValue( false ) );
 
 
-		$result = $this->_object->cancel( $orderItem );
+		$this->_object->cancel( $orderItem );
 	}
 
 
@@ -567,7 +567,7 @@ class MShop_Service_Provider_Payment_OmniPayTest extends PHPUnit_Framework_TestC
 			->will( $this->returnValue( true ) );
 
 
-		$result = $this->_object->capture( $orderItem );
+		$this->_object->capture( $orderItem );
 	}
 
 
@@ -587,7 +587,7 @@ class MShop_Service_Provider_Payment_OmniPayTest extends PHPUnit_Framework_TestC
 		->will( $this->returnValue( false ) );
 
 
-		$result = $this->_object->capture( $orderItem );
+		$this->_object->capture( $orderItem );
 	}
 
 
@@ -631,7 +631,7 @@ class MShop_Service_Provider_Payment_OmniPayTest extends PHPUnit_Framework_TestC
 			->will( $this->returnValue( true ) );
 
 
-		$result = $this->_object->refund( $orderItem );
+		$this->_object->refund( $orderItem );
 	}
 
 
@@ -651,7 +651,7 @@ class MShop_Service_Provider_Payment_OmniPayTest extends PHPUnit_Framework_TestC
 			->will( $this->returnValue( false ) );
 
 
-		$result = $this->_object->refund( $orderItem );
+		$this->_object->refund( $orderItem );
 	}
 
 

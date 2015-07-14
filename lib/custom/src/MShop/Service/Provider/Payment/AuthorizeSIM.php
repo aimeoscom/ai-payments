@@ -66,7 +66,7 @@ class MShop_Service_Provider_Payment_AuthorizeSIM
 	 *
 	 * @param string $key Configuration key name
 	 * @param mixed $default Default value if no configuration is found
-	 * @return string Configuration value
+	 * @return mixed Configuration value
 	 */
 	protected function _getValue( $key, $default = null )
 	{

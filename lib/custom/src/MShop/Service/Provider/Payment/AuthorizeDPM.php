@@ -146,7 +146,6 @@ class MShop_Service_Provider_Payment_AuthorizeDPM
 	 */
 	protected function _getPaymentForm( MShop_Order_Item_Interface $order, array $params )
 	{
-		$list = array();
 		$feConfig = $this->_feConfig;
 		$form = parent::_getPaymentForm( $order, $params );
 		$baseItem = $this->_getOrderBase( $order->getBaseId(), MShop_Order_Manager_Base_Abstract::PARTS_ADDRESS );
@@ -204,7 +203,7 @@ class MShop_Service_Provider_Payment_AuthorizeDPM
 	 *
 	 * @param string $key Configuration key name
 	 * @param mixed $default Default value if no configuration is found
-	 * @return string Configuration value
+	 * @return mixed Configuration value
 	 */
 	protected function _getValue( $key, $default = null )
 	{
