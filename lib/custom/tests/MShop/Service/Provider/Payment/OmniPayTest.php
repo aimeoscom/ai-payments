@@ -307,6 +307,14 @@ class MShop_Service_Provider_Payment_OmniPayTest extends PHPUnit_Framework_TestC
 	}
 
 
+	public function testUpdateSyncNone()
+	{
+		$result = $this->_object->updateSync( array() );
+
+		$this->assertEquals( null, $result );
+	}
+
+
 	public function testUpdateSyncPurchaseSucessful()
 	{
 		$orderItem = $this->_getOrder();
@@ -498,6 +506,27 @@ class MShop_Service_Provider_Payment_OmniPayTest extends PHPUnit_Framework_TestC
 	}
 
 
+	public function testCancelNotSupported()
+	{
+		$orderItem = $this->_getOrder();
+
+
+		$provider = $this->getMockBuilder( 'Omnipay\Dummy\Gateway' )
+			->setMethods( array( 'supportsVoid' ) )
+			->getMock();
+
+
+		$this->_object->expects( $this->once() )->method( '_getProvider' )
+			->will( $this->returnValue( $provider ) );
+
+		$provider->expects( $this->once() )->method( 'supportsVoid' )
+			->will( $this->returnValue( false ) );
+
+
+		$result = $this->_object->cancel( $orderItem );
+	}
+
+
 	public function testCapture()
 	{
 		$orderItem = $this->_getOrder();
@@ -542,6 +571,26 @@ class MShop_Service_Provider_Payment_OmniPayTest extends PHPUnit_Framework_TestC
 	}
 
 
+	public function testCaptureNotSupported()
+	{
+		$orderItem = $this->_getOrder();
+
+
+		$provider = $this->getMockBuilder( 'Omnipay\Dummy\Gateway' )
+			->setMethods( array( 'supportsCapture' ) )
+			->getMock();
+
+		$this->_object->expects( $this->once() )->method( '_getProvider' )
+			->will( $this->returnValue( $provider ) );
+
+		$provider->expects( $this->once() )->method( 'supportsCapture' )
+		->will( $this->returnValue( false ) );
+
+
+		$result = $this->_object->capture( $orderItem );
+	}
+
+
 	public function testRefund()
 	{
 		$orderItem = $this->_getOrder();
@@ -580,6 +629,26 @@ class MShop_Service_Provider_Payment_OmniPayTest extends PHPUnit_Framework_TestC
 
 		$response->expects( $this->once() )->method( 'isSuccessful' )
 			->will( $this->returnValue( true ) );
+
+
+		$result = $this->_object->refund( $orderItem );
+	}
+
+
+	public function testRefundNotSupported()
+	{
+		$orderItem = $this->_getOrder();
+
+
+		$provider = $this->getMockBuilder( 'Omnipay\Dummy\Gateway' )
+			->setMethods( array( 'supportsRefund' ) )
+			->getMock();
+
+		$this->_object->expects( $this->once() )->method( '_getProvider' )
+			->will( $this->returnValue( $provider ) );
+
+		$provider->expects( $this->once() )->method( 'supportsRefund' )
+			->will( $this->returnValue( false ) );
 
 
 		$result = $this->_object->refund( $orderItem );
@@ -637,6 +706,6 @@ class ResponseRedirectTest
 
 	public function getRedirectData()
 	{
-		return array();
+		return array( 'key' => 'value' );
 	}
 }

@@ -47,6 +47,12 @@ class MShop_Service_Provider_Payment_StripeTest extends PHPUnit_Framework_TestCa
 	}
 
 
+	public function testGetValueOnsite()
+	{
+		$this->assertTrue( $this->_object->getValue( 'onsite' ) );
+	}
+
+
 	public function testGetValueTestmode()
 	{
 		$this->assertTrue( $this->_object->getValue( 'testmode' ) );

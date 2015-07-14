@@ -51,6 +51,12 @@ class MShop_Service_Provider_Payment_CardSaveTest extends PHPUnit_Framework_Test
 	}
 
 
+	public function testGetValueOnsite()
+	{
+		$this->assertTrue( $this->_object->getValue( 'onsite' ) );
+	}
+
+
 	public function testGetValueTestmode()
 	{
 		$this->assertTrue( $this->_object->getValue( 'testmode' ) );
@@ -116,6 +122,14 @@ class MShop_Service_Provider_Payment_CardSaveTest extends PHPUnit_Framework_Test
 		$result = $this->_object->updateSync( array( 'orderid' => '1', 'PaRes' => 'abc', 'MD' => '123' ) );
 
 		$this->assertInstanceOf( 'MShop_Order_Item_Interface', $result );
+	}
+
+
+	public function testUpdateSyncNone()
+	{
+		$result = $this->_object->updateSync( array() );
+
+		$this->assertEquals( null, $result );
 	}
 
 

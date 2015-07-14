@@ -119,6 +119,14 @@ class MShop_Service_Provider_Payment_AuthorizeSimTest extends PHPUnit_Framework_
 	}
 
 
+	public function testUpdateSyncNone()
+	{
+		$result = $this->_object->updateSync( array() );
+
+		$this->assertEquals( null, $result );
+	}
+
+
 	protected function _getOrder()
 	{
 		$manager = MShop_Order_Manager_Factory::createManager( $this->_context );
