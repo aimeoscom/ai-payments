@@ -21,6 +21,10 @@ class MShop_Service_Provider_Payment_OmniPayTest extends PHPUnit_Framework_TestC
 	 */
 	protected function setUp()
 	{
+		if( !class_exists( 'Omnipay\Omnipay' ) ) {
+			$this->markTestSkipped( 'Omnipay library not available' );
+		}
+
 		$this->_context = TestHelper::getContext();
 
 		$serviceManager = MShop_Service_Manager_Factory::createManager( $this->_context );
@@ -685,27 +689,31 @@ class MShop_Service_Provider_Payment_OmniPayTest extends PHPUnit_Framework_TestC
 }
 
 
-class ResponseRedirectTest
-	extends \Omnipay\Dummy\Message\Response
-	implements \Omnipay\Common\Message\RedirectResponseInterface
+if( class_exists( 'Omnipay\Dummy\Message\Response' )
+	&& interface_exists( 'Omnipay\Common\Message\RedirectResponseInterface' ) )
 {
-	public function isRedirect()
+	class ResponseRedirectTest
+		extends \Omnipay\Dummy\Message\Response
+		implements \Omnipay\Common\Message\RedirectResponseInterface
 	{
-		return true;
-	}
+		public function isRedirect()
+		{
+			return true;
+		}
 
-	public function getRedirectUrl()
-	{
-		return 'url';
-	}
+		public function getRedirectUrl()
+		{
+			return 'url';
+		}
 
-	public function getRedirectMethod()
-	{
-		return 'POST';
-	}
+		public function getRedirectMethod()
+		{
+			return 'POST';
+		}
 
-	public function getRedirectData()
-	{
-		return array( 'key' => 'value' );
+		public function getRedirectData()
+		{
+			return array( 'key' => 'value' );
+		}
 	}
 }

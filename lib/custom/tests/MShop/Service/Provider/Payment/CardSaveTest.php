@@ -20,6 +20,10 @@ class MShop_Service_Provider_Payment_CardSaveTest extends PHPUnit_Framework_Test
 	 */
 	protected function setUp()
 	{
+		if( !class_exists( 'Omnipay\Omnipay' ) ) {
+			$this->markTestSkipped( 'Omnipay library not available' );
+		}
+
 		$this->_context = TestHelper::getContext();
 
 		$serviceManager = MShop_Service_Manager_Factory::createManager( $this->_context );
