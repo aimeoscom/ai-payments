@@ -8,6 +8,7 @@ Aimeos payment extension
 [![Build Status](https://travis-ci.org/aimeos/ai-payments.svg?branch=master)](https://travis-ci.org/aimeos/ai-payments)
 [![Coverage Status](https://coveralls.io/repos/aimeos/ai-payments/badge.svg?branch=master&service=github)](https://coveralls.io/github/aimeos/ai-payments?branch=master)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/aimeos/ai-payments/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/aimeos/ai-payments/?branch=master)
+[![HHVM Status](http://hhvm.h4cc.de/badge/aimeos/ai-payments.svg)](http://hhvm.h4cc.de/package/aimeos/ai-payments)
 
 Aimeos extension for additional payment methods and their service provider.
 Some of them may have beta quality and improvements or contributions are always welcome!
