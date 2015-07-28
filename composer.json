@@ -1,7 +1,7 @@
 {
 	"name": "aimeos/ai-payments",
-	"description": "Aimeos ai-payments extension",
-	"keywords": ["aimeos", "payment", "omnipay", "stripe", "mollie", "authorize", "cardsave", "sagepay"],
+	"description": "Payment extension for Aimeos web shops and e-commerce solutions",
+	"keywords": ["aimeos", "payment", "shop", "e-commerce", "omnipay", "stripe", "mollie", "authorize", "cardsave", "sagepay"],
 	"homepage": "https://aimeos.org",
 	"type": "aimeos-extension",
 	"license": "LGPL-3.0",
