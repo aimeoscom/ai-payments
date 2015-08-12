@@ -45,9 +45,9 @@ class MShop_Service_Provider_Payment_SagePayTest extends PHPUnit_Framework_TestC
 	}
 
 
-	public function testGetProviderType()
+	public function testGetValueType()
 	{
-		$this->assertEquals( 'SagePay', $this->_object->getProviderType() );
+		$this->assertEquals( 'SagePay', $this->_object->getValue( 'type' ) );
 	}
 
 
@@ -66,11 +66,6 @@ class MShop_Service_Provider_Payment_SagePayTest extends PHPUnit_Framework_TestC
 
 class SagePayPublic extends MShop_Service_Provider_Payment_SagePay
 {
-	public function getProviderType()
-	{
-		return $this->_getProviderType();
-	}
-
 	public function getValue( $name, $default = null )
 	{
 		return $this->_getValue( $name, $default );

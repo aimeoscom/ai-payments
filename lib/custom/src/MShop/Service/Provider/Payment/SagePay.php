@@ -19,13 +19,13 @@ class MShop_Service_Provider_Payment_SagePay
 	implements MShop_Service_Provider_Payment_Interface
 {
 	/**
-	 * Returns the Omnipay gateway provider name.
+	 * Returns the prefix for the configuration definitions
 	 *
-	 * @return string Gateway provider name
+	 * @return string Prefix without dot
 	 */
-	protected function _getProviderType()
+	protected function _getConfigPrefix()
 	{
-		return 'SagePay';
+		return 'sagepay';
 	}
 
 
@@ -38,10 +38,12 @@ class MShop_Service_Provider_Payment_SagePay
 	 */
 	protected function _getValue( $key, $default = null )
 	{
-		if( $key === 'onsite' ) {
-			return true;
+		switch( $key )
+		{
+			case 'type': return 'SagePay';
+			case 'onsite': return true;
 		}
 
-		return $this->_getConfigValue( array( 'sagepay.' . $key ), $default );
+		return parent::_getValue( $key, $default );
 	}
 }

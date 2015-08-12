@@ -41,9 +41,41 @@ class MShop_Service_Provider_Payment_StripeTest extends PHPUnit_Framework_TestCa
 	}
 
 
-	public function testGetProviderType()
+	public function testGetConfigBE()
 	{
-		$this->assertEquals( 'Stripe', $this->_object->getProviderType() );
+		$result = $this->_object->getConfigBE();
+
+		$this->assertInternalType( 'array', $result );
+		$this->assertArrayHasKey( 'stripe.address', $result );
+		$this->assertArrayHasKey( 'stripe.authorize', $result );
+		$this->assertArrayHasKey( 'stripe.testmode', $result );
+		$this->assertArrayNotHasKey( 'stripe.type', $result );
+		$this->assertArrayNotHasKey( 'omnipay.type', $result );
+	}
+
+
+	public function testCheckConfigBE()
+	{
+		$attributes = array(
+			'stripe.address' => '0',
+			'stripe.authorize' => '1',
+			'stripe.testmode' => '1',
+		);
+
+		$result = $this->_object->checkConfigBE( $attributes );
+
+		$this->assertEquals( 7, count( $result ) );
+		$this->assertEquals( null, $result['stripe.address'] );
+		$this->assertEquals( null, $result['stripe.authorize'] );
+		$this->assertEquals( null, $result['stripe.testmode'] );
+		$this->assertArrayNotHasKey( 'stripe.type', $result );
+		$this->assertArrayNotHasKey( 'omnipay.type', $result );
+	}
+
+
+	public function testGetValueType()
+	{
+		$this->assertEquals( 'Stripe', $this->_object->getValue( 'type' ) );
 	}
 
 
@@ -62,11 +94,6 @@ class MShop_Service_Provider_Payment_StripeTest extends PHPUnit_Framework_TestCa
 
 class StripePublic extends MShop_Service_Provider_Payment_Stripe
 {
-	public function getProviderType()
-	{
-		return $this->_getProviderType();
-	}
-
 	public function getValue( $name, $default = null )
 	{
 		return $this->_getValue( $name, $default );

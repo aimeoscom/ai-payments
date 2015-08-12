@@ -22,45 +22,45 @@ class MShop_Service_Provider_Payment_OmniPay
 	implements MShop_Service_Provider_Payment_Interface
 {
 	private $_beConfig = array(
-		'omnipay.type' => array(
-			'code' => 'omnipay.type',
-			'internalcode'=> 'omnipay.type',
+		'type' => array(
+			'code' => 'type',
+			'internalcode'=> 'type',
 			'label'=> 'Payment provider type',
 			'type'=> 'string',
 			'internaltype'=> 'string',
 			'default'=> '',
 			'required'=> true,
 		),
-		'omnipay.address' => array(
-			'code' => 'omnipay.address',
-			'internalcode'=> 'omnipay.address',
-			'label'=> 'Send address to payment gateway too',
-			'type'=> 'boolean',
-			'internaltype'=> 'boolean',
-			'default'=> '0',
-			'required'=> false,
-		),
-		'omnipay.authorize' => array(
-			'code' => 'omnipay.authorize',
-			'internalcode'=> 'omnipay.authorize',
-			'label'=> 'Authorize payments and capture later',
-			'type'=> 'boolean',
-			'internaltype'=> 'boolean',
-			'default'=> '0',
-			'required'=> false,
-		),
-		'omnipay.onsite' => array(
-			'code' => 'omnipay.onsite',
-			'internalcode'=> 'omnipay.onsite',
+		'onsite' => array(
+			'code' => 'onsite',
+			'internalcode'=> 'onsite',
 			'label'=> 'Collect data locally',
 			'type'=> 'boolean',
 			'internaltype'=> 'boolean',
 			'default'=> '0',
 			'required'=> false,
 		),
-		'omnipay.testmode' => array(
-			'code' => 'omnipay.testmode',
-			'internalcode'=> 'omnipay.testmode',
+		'address' => array(
+			'code' => 'address',
+			'internalcode'=> 'address',
+			'label'=> 'Send address to payment gateway too',
+			'type'=> 'boolean',
+			'internaltype'=> 'boolean',
+			'default'=> '0',
+			'required'=> false,
+		),
+		'authorize' => array(
+			'code' => 'authorize',
+			'internalcode'=> 'authorize',
+			'label'=> 'Authorize payments and capture later',
+			'type'=> 'boolean',
+			'internaltype'=> 'boolean',
+			'default'=> '0',
+			'required'=> false,
+		),
+		'testmode' => array(
+			'code' => 'testmode',
+			'internalcode'=> 'testmode',
 			'label'=> 'Test mode without payments',
 			'type'=> 'boolean',
 			'internaltype'=> 'boolean',
@@ -229,8 +229,17 @@ class MShop_Service_Provider_Payment_OmniPay
 	{
 		$list = parent::getConfigBE();
 
-		foreach( $this->_beConfig as $key => $config ) {
-			$list[$key] = new MW_Common_Criteria_Attribute_Default( $config );
+		$prefix = $this->_getConfigPrefix();
+		$config = $this->_beConfig;
+
+		if( $prefix !== 'omnipay' ) {
+			unset( $config['type'], $config['onsite'] );
+		}
+
+		foreach( $config as $key => $config )
+		{
+			$config['code'] = $prefix . '.' . $config['code'];
+			$list[$prefix.'.'.$key] = new MW_Common_Criteria_Attribute_Default( $config );
 		}
 
 		return $list;
@@ -248,7 +257,21 @@ class MShop_Service_Provider_Payment_OmniPay
 	{
 		$errors = parent::checkConfigBE( $attributes );
 
-		return array_merge( $errors, $this->_checkConfig( $this->_beConfig, $attributes ) );
+		$prefix = $this->_getConfigPrefix();
+		$config = $this->_beConfig;
+		$list = array();
+
+		if( $prefix !== 'omnipay' ) {
+			unset( $config['type'], $config['onsite'] );
+		}
+
+		foreach( $config as $key => $config )
+		{
+			$config['code'] = $prefix . '.' . $config['code'];
+			$list[$prefix.'.'.$key] = $config;
+		}
+
+		return array_merge( $errors, $this->_checkConfig( $list, $attributes ) );
 	}
 
 
@@ -472,6 +495,17 @@ class MShop_Service_Provider_Payment_OmniPay
 
 
 	/**
+	 * Returns the prefix for the configuration definitions
+	 *
+	 * @return string Prefix without dot
+	 */
+	protected function _getConfigPrefix()
+	{
+		return 'omnipay';
+	}
+
+
+	/**
 	 * Returns the Omnipay gateway provider object.
 	 *
 	 * @return \Omnipay\Common\GatewayInterface Gateway provider object
@@ -480,23 +514,12 @@ class MShop_Service_Provider_Payment_OmniPay
 	{
 		if( !isset( $this->_provider ) )
 		{
-			$this->_provider = Omnipay::create( $this->_getProviderType() );
+			$this->_provider = Omnipay::create( $this->_getValue( 'type' ) );
 			$this->_provider->setTestMode( (bool) $this->_getValue( 'testmode', false ) );
 			$this->_provider->initialize( $this->getServiceItem()->getConfig() );
 		}
 
 		return $this->_provider;
-	}
-
-
-	/**
-	 * Returns the Omnipay gateway provider name.
-	 *
-	 * @return string Gateway provider name
-	 */
-	protected function _getProviderType()
-	{
-		return $this->_getValue( 'type' );
 	}
 
 
@@ -524,7 +547,7 @@ class MShop_Service_Provider_Payment_OmniPay
 	 */
 	protected function _getValue( $key, $default = null )
 	{
-		return $this->_getConfigValue( array( 'omnipay.' . $key ), $default );
+		return $this->_getConfigValue( array( $this->_getConfigPrefix() . '.' . $key ), $default );
 	}
 
 

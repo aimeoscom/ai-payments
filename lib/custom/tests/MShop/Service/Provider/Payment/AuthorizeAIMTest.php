@@ -41,9 +41,9 @@ class MShop_Service_Provider_Payment_AuthorizeAimTest extends PHPUnit_Framework_
 	}
 
 
-	public function testGetProviderType()
+	public function testGetValueType()
 	{
-		$this->assertEquals( 'AuthorizeNet_AIM', $this->_object->getProviderType() );
+		$this->assertEquals( 'AuthorizeNet_AIM', $this->_object->getValue( 'type' ) );
 	}
 
 
@@ -62,11 +62,6 @@ class MShop_Service_Provider_Payment_AuthorizeAimTest extends PHPUnit_Framework_
 
 class AuthorizeAIMPublic extends MShop_Service_Provider_Payment_AuthorizeAIM
 {
-	public function getProviderType()
-	{
-		return $this->_getProviderType();
-	}
-
 	public function getValue( $name, $default = null )
 	{
 		return $this->_getValue( $name, $default );

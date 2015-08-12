@@ -49,9 +49,9 @@ class MShop_Service_Provider_Payment_CardSaveTest extends PHPUnit_Framework_Test
 	}
 
 
-	public function testGetProviderType()
+	public function testGetValueType()
 	{
-		$this->assertEquals( 'CardSave', $this->_object->getProviderType() );
+		$this->assertEquals( 'CardSave', $this->_object->getValue( 'type' ) );
 	}
 
 
@@ -169,11 +169,6 @@ class MShop_Service_Provider_Payment_CardSaveTest extends PHPUnit_Framework_Test
 
 class CardSavePublic extends MShop_Service_Provider_Payment_CardSave
 {
-	public function getProviderType()
-	{
-		return $this->_getProviderType();
-	}
-
 	public function getValue( $name, $default = null )
 	{
 		return $this->_getValue( $name, $default );

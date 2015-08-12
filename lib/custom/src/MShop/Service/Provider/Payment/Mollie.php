@@ -40,13 +40,13 @@ class MShop_Service_Provider_Payment_Mollie
 
 
 	/**
-	 * Returns the Omnipay gateway provider name.
+	 * Returns the prefix for the configuration definitions
 	 *
-	 * @return string Gateway provider name
+	 * @return string Prefix without dot
 	 */
-	protected function _getProviderType()
+	protected function _getConfigPrefix()
 	{
-		return 'Mollie';
+		return 'mollie';
 	}
 
 
@@ -59,6 +59,10 @@ class MShop_Service_Provider_Payment_Mollie
 	 */
 	protected function _getValue( $key, $default = null )
 	{
-		return $this->_getConfigValue( array( 'mollie.' . $key ), $default );
+		switch( $key ) {
+			case 'type': return 'Mollie';
+		}
+
+		return parent::_getValue( $key, $default );
 	}
 }

@@ -51,13 +51,13 @@ class MShop_Service_Provider_Payment_AuthorizeSIM
 
 
 	/**
-	 * Returns the Omnipay gateway provider name.
+	 * Returns the prefix for the configuration definitions
 	 *
-	 * @return string Gateway provider name
+	 * @return string Prefix without dot
 	 */
-	protected function _getProviderType()
+	protected function _getConfigPrefix()
 	{
-		return 'AuthorizeNet_SIM';
+		return 'authorizenet';
 	}
 
 
@@ -70,6 +70,10 @@ class MShop_Service_Provider_Payment_AuthorizeSIM
 	 */
 	protected function _getValue( $key, $default = null )
 	{
-		return $this->_getConfigValue( array( 'authorizenet.' . $key ), $default );
+		switch( $key ) {
+			case 'type': return 'AuthorizeNet_SIM';
+		}
+
+		return parent::_getValue( $key, $default );
 	}
 }

@@ -49,9 +49,9 @@ class MShop_Service_Provider_Payment_MollieTest extends PHPUnit_Framework_TestCa
 	}
 
 
-	public function testGetProviderType()
+	public function testGetValueType()
 	{
-		$this->assertEquals( 'Mollie', $this->_object->getProviderType() );
+		$this->assertEquals( 'Mollie', $this->_object->getValue( 'type' ) );
 	}
 
 
@@ -163,11 +163,6 @@ class MShop_Service_Provider_Payment_MollieTest extends PHPUnit_Framework_TestCa
 
 class MolliePublic extends MShop_Service_Provider_Payment_Mollie
 {
-	public function getProviderType()
-	{
-		return $this->_getProviderType();
-	}
-
 	public function getValue( $name, $default = null )
 	{
 		return $this->_getValue( $name, $default );
