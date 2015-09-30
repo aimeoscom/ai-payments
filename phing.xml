@@ -7,6 +7,7 @@
 	</target>
 
 	<target name="testperf" description="Executes all performance tests">
+		<echo msg="No performance tests available" />
 	</target>
 
 	<target name="coverage" description="Generates the code coverage report">
@@ -23,7 +24,6 @@
 
 	<target name="i18n" description="Creates all translation files">
 		<phing target="i18n" haltonfailure="true" dir="lib/custom" />
-		<phing target="i18n" haltonfailure="true" dir="client/html" />
 	</target>
 
 	<target name="build" description="Builds package for deployment">
