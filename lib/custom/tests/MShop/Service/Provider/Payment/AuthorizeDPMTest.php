@@ -8,8 +8,8 @@
 
 class MShop_Service_Provider_Payment_AuthorizeDpmTest extends PHPUnit_Framework_TestCase
 {
-	private $_object;
-	private $_context;
+	private $object;
+	private $context;
 
 
 	/**
@@ -20,7 +20,7 @@ class MShop_Service_Provider_Payment_AuthorizeDpmTest extends PHPUnit_Framework_
 	 */
 	protected function setUp()
 	{
-		$this->_context = TestHelper::getContext();
+		$this->context = TestHelper::getContext();
 
 		$conf = array(
 			'authorizenet.address' => '1',
@@ -28,13 +28,13 @@ class MShop_Service_Provider_Payment_AuthorizeDpmTest extends PHPUnit_Framework_
 			'authorizenet.testmode' => true,
 		);
 
-		$serviceManager = MShop_Service_Manager_Factory::createManager( $this->_context );
+		$serviceManager = MShop_Service_Manager_Factory::createManager( $this->context );
 		$item = $serviceManager->createItem();
 		$item->setConfig( $conf );
 
-		$this->_object = $this->getMockBuilder( 'AuthorizeDPMPublic' )
+		$this->object = $this->getMockBuilder( 'AuthorizeDPMPublic' )
 			->setMethods( array( '_getOrder', '_getOrderBase', '_saveOrder', '_saveOrderBase', '_getProvider' ) )
-			->setConstructorArgs( array( $this->_context, $item ) )
+			->setConstructorArgs( array( $this->context, $item ) )
 			->getMock();
 	}
 
@@ -47,42 +47,42 @@ class MShop_Service_Provider_Payment_AuthorizeDpmTest extends PHPUnit_Framework_
 	 */
 	protected function tearDown()
 	{
-		unset( $this->_object, $this->_context );
+		unset( $this->object, $this->context );
 	}
 
 
 	public function testGetValueType()
 	{
-		$this->assertEquals( 'AuthorizeNet_DPM', $this->_object->getValue( 'type' ) );
+		$this->assertEquals( 'AuthorizeNet_DPM', $this->object->getValuePublic( 'type' ) );
 	}
 
 
 	public function testGetValueOnsite()
 	{
-		$this->assertTrue( $this->_object->getValue( 'onsite' ) );
+		$this->assertTrue( $this->object->getValuePublic( 'onsite' ) );
 	}
 
 
 	public function testGetValueTestmode()
 	{
-		$this->assertTrue( $this->_object->getValue( 'testmode' ) );
+		$this->assertTrue( $this->object->getValuePublic( 'testmode' ) );
 	}
 
 
 	public function testProcessOnsiteAddress()
 	{
-		$this->_object->expects( $this->any() )->method( '_getOrderBase' )
-			->will( $this->returnValue( $this->_getOrderBase() ) );
+		$this->object->expects( $this->any() )->method( '_getOrderBase' )
+			->will( $this->returnValue( $this->getOrderBase() ) );
 
-		$result = $this->_object->process( $this->_getOrder(), array() );
+		$result = $this->object->process( $this->getOrder(), array() );
 
 		$this->assertInstanceOf( 'MShop_Common_Item_Helper_Form_Interface', $result );
 	}
 
 
-	protected function _getOrder()
+	protected function getOrder()
 	{
-		$manager = MShop_Order_Manager_Factory::createManager( $this->_context );
+		$manager = MShop_Order_Manager_Factory::createManager( $this->context );
 
 		$search = $manager->createSearch();
 		$search->setConditions( $search->compare( '==', 'order.datepayment', '2008-02-15 12:34:56' ) );
@@ -97,23 +97,23 @@ class MShop_Service_Provider_Payment_AuthorizeDpmTest extends PHPUnit_Framework_
 	}
 
 
-	protected function _getOrderBase( $parts = null )
+	protected function getOrderBase( $parts = null )
 	{
 		if( $parts === null ) {
 			$parts = MShop_Order_Manager_Base_Abstract::PARTS_ADDRESS | MShop_Order_Manager_Base_Abstract::PARTS_SERVICE;
 		}
 
-		$manager = MShop_Order_Manager_Factory::createManager( $this->_context )->getSubmanager( 'base' );
+		$manager = MShop_Order_Manager_Factory::createManager( $this->context )->getSubmanager( 'base' );
 
-		return $manager->load( $this->_getOrder()->getBaseId(), $parts );
+		return $manager->load( $this->getOrder()->getBaseId(), $parts );
 	}
 }
 
 
 class AuthorizeDPMPublic extends MShop_Service_Provider_Payment_AuthorizeDPM
 {
-	public function getValue( $name, $default = null )
+	public function getValuePublic( $name, $default = null )
 	{
-		return $this->_getValue( $name, $default );
+		return $this->getValue( $name, $default );
 	}
 }

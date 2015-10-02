@@ -8,8 +8,8 @@
 
 class MShop_Service_Provider_Payment_SagePayTest extends PHPUnit_Framework_TestCase
 {
-	private $_object;
-	private $_context;
+	private $object;
+	private $context;
 
 
 	/**
@@ -20,15 +20,15 @@ class MShop_Service_Provider_Payment_SagePayTest extends PHPUnit_Framework_TestC
 	 */
 	protected function setUp()
 	{
-		$this->_context = TestHelper::getContext();
+		$this->context = TestHelper::getContext();
 
-		$serviceManager = MShop_Service_Manager_Factory::createManager( $this->_context );
+		$serviceManager = MShop_Service_Manager_Factory::createManager( $this->context );
 		$item = $serviceManager->createItem();
 		$item->setConfig( array( 'sagepay.testmode' => true ) );
 
-		$this->_object = $this->getMockBuilder( 'SagePayPublic' )
+		$this->object = $this->getMockBuilder( 'SagePayPublic' )
 			->setMethods( array( '_getOrder', '_getOrderBase', '_saveOrder', '_saveOrderBase', '_getProvider' ) )
-			->setConstructorArgs( array( $this->_context, $item ) )
+			->setConstructorArgs( array( $this->context, $item ) )
 			->getMock();
 	}
 
@@ -41,33 +41,33 @@ class MShop_Service_Provider_Payment_SagePayTest extends PHPUnit_Framework_TestC
 	 */
 	protected function tearDown()
 	{
-		unset( $this->_object, $this->_context );
+		unset( $this->object, $this->context );
 	}
 
 
 	public function testGetValueType()
 	{
-		$this->assertEquals( 'SagePay', $this->_object->getValue( 'type' ) );
+		$this->assertEquals( 'SagePay', $this->object->getValuePublic( 'type' ) );
 	}
 
 
 	public function testGetValueOnsite()
 	{
-		$this->assertTrue( $this->_object->getValue( 'onsite' ) );
+		$this->assertTrue( $this->object->getValuePublic( 'onsite' ) );
 	}
 
 
 	public function testGetValueTestmode()
 	{
-		$this->assertTrue( $this->_object->getValue( 'testmode' ) );
+		$this->assertTrue( $this->object->getValuePublic( 'testmode' ) );
 	}
 }
 
 
 class SagePayPublic extends MShop_Service_Provider_Payment_SagePay
 {
-	public function getValue( $name, $default = null )
+	public function getValuePublic( $name, $default = null )
 	{
-		return $this->_getValue( $name, $default );
+		return $this->getValue( $name, $default );
 	}
 }

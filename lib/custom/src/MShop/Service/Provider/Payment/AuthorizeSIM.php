@@ -35,17 +35,17 @@ class MShop_Service_Provider_Payment_AuthorizeSIM
 
 			if( $result !== null )
 			{
-				$url = $this->_getConfigValue( array( 'payment.url-success' ) );
+				$url = $this->getConfigValue( array( 'payment.url-success' ) );
 
-				$header[] = $this->_getValue( 'header', 'Location: ' . $url );
-				$output = sprintf( $this->_getValue( 'body', 'success' ), $url );
+				$header[] = $this->getValue( 'header', 'Location: ' . $url );
+				$output = sprintf( $this->getValue( 'body', 'success' ), $url );
 			}
 
 			return $result;
 		}
 
 		if( isset( $params['orderid'] ) ) {
-			return $this->_getOrder( $params['orderid'] );
+			return $this->getOrder( $params['orderid'] );
 		}
 	}
 
@@ -55,7 +55,7 @@ class MShop_Service_Provider_Payment_AuthorizeSIM
 	 *
 	 * @return string Prefix without dot
 	 */
-	protected function _getConfigPrefix()
+	protected function getConfigPrefix()
 	{
 		return 'authorizenet';
 	}
@@ -68,12 +68,12 @@ class MShop_Service_Provider_Payment_AuthorizeSIM
 	 * @param mixed $default Default value if no configuration is found
 	 * @return mixed Configuration value
 	 */
-	protected function _getValue( $key, $default = null )
+	protected function getValue( $key, $default = null )
 	{
 		switch( $key ) {
 			case 'type': return 'AuthorizeNet_SIM';
 		}
 
-		return parent::_getValue( $key, $default );
+		return parent::getValue( $key, $default );
 	}
 }

@@ -23,7 +23,7 @@ class MShop_Service_Provider_Payment_Stripe
 	 *
 	 * @return string Prefix without dot
 	 */
-	protected function _getConfigPrefix()
+	protected function getConfigPrefix()
 	{
 		return 'stripe';
 	}
@@ -36,7 +36,7 @@ class MShop_Service_Provider_Payment_Stripe
 	 * @param mixed $default Default value if no configuration is found
 	 * @return mixed Configuration value
 	 */
-	protected function _getValue( $key, $default = null )
+	protected function getValue( $key, $default = null )
 	{
 		switch( $key )
 		{
@@ -44,6 +44,6 @@ class MShop_Service_Provider_Payment_Stripe
 			case 'onsite': return true;
 		}
 
-		return parent::_getValue( $key, $default );
+		return parent::getValue( $key, $default );
 	}
 }

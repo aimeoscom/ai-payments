@@ -22,7 +22,7 @@ class MShop_Service_Provider_Payment_AuthorizeAIM
 	 *
 	 * @return string Prefix without dot
 	 */
-	protected function _getConfigPrefix()
+	protected function getConfigPrefix()
 	{
 		return 'authorizenet';
 	}
@@ -35,7 +35,7 @@ class MShop_Service_Provider_Payment_AuthorizeAIM
 	 * @param mixed $default Default value if no configuration is found
 	 * @return mixed Configuration value
 	 */
-	protected function _getValue( $key, $default = null )
+	protected function getValue( $key, $default = null )
 	{
 		switch( $key )
 		{
@@ -43,6 +43,6 @@ class MShop_Service_Provider_Payment_AuthorizeAIM
 			case 'onsite': return true;
 		}
 
-		return parent::_getValue( $key, $default );
+		return parent::getValue( $key, $default );
 	}
 }

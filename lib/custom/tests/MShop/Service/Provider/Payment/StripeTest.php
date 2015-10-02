@@ -8,7 +8,7 @@
 
 class MShop_Service_Provider_Payment_StripeTest extends PHPUnit_Framework_TestCase
 {
-	private $_object;
+	private $object;
 
 
 	/**
@@ -25,7 +25,7 @@ class MShop_Service_Provider_Payment_StripeTest extends PHPUnit_Framework_TestCa
 		$item = $serviceManager->createItem();
 		$item->setConfig( array( 'stripe.testmode' => true ) );
 
-		$this->_object = new StripePublic( $context, $item );
+		$this->object = new StripePublic( $context, $item );
 	}
 
 
@@ -37,13 +37,13 @@ class MShop_Service_Provider_Payment_StripeTest extends PHPUnit_Framework_TestCa
 	 */
 	protected function tearDown()
 	{
-		unset( $this->_object );
+		unset( $this->object );
 	}
 
 
 	public function testGetConfigBE()
 	{
-		$result = $this->_object->getConfigBE();
+		$result = $this->object->getConfigBE();
 
 		$this->assertInternalType( 'array', $result );
 		$this->assertArrayHasKey( 'stripe.address', $result );
@@ -62,7 +62,7 @@ class MShop_Service_Provider_Payment_StripeTest extends PHPUnit_Framework_TestCa
 			'stripe.testmode' => '1',
 		);
 
-		$result = $this->_object->checkConfigBE( $attributes );
+		$result = $this->object->checkConfigBE( $attributes );
 
 		$this->assertEquals( 7, count( $result ) );
 		$this->assertEquals( null, $result['stripe.address'] );
@@ -75,27 +75,27 @@ class MShop_Service_Provider_Payment_StripeTest extends PHPUnit_Framework_TestCa
 
 	public function testGetValueType()
 	{
-		$this->assertEquals( 'Stripe', $this->_object->getValue( 'type' ) );
+		$this->assertEquals( 'Stripe', $this->object->getValuePublic( 'type' ) );
 	}
 
 
 	public function testGetValueOnsite()
 	{
-		$this->assertTrue( $this->_object->getValue( 'onsite' ) );
+		$this->assertTrue( $this->object->getValuePublic( 'onsite' ) );
 	}
 
 
 	public function testGetValueTestmode()
 	{
-		$this->assertTrue( $this->_object->getValue( 'testmode' ) );
+		$this->assertTrue( $this->object->getValuePublic( 'testmode' ) );
 	}
 }
 
 
 class StripePublic extends MShop_Service_Provider_Payment_Stripe
 {
-	public function getValue( $name, $default = null )
+	public function getValuePublic( $name, $default = null )
 	{
-		return $this->_getValue( $name, $default );
+		return $this->getValue( $name, $default );
 	}
 }

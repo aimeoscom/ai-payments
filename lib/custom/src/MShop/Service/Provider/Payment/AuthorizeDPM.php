@@ -18,7 +18,7 @@ class MShop_Service_Provider_Payment_AuthorizeDPM
 	extends MShop_Service_Provider_Payment_AuthorizeSIM
 	implements MShop_Service_Provider_Payment_Interface
 {
-	private $_feConfig = array(
+	private $feConfig = array(
 		'payment.firstname' => array(
 			'code' => 'payment.firstname',
 			'internalcode'=> 'x_first_name',
@@ -144,11 +144,11 @@ class MShop_Service_Provider_Payment_AuthorizeDPM
 	 * @param array $params Request parameter if available
 	 * @return MShop_Common_Item_Helper_Form_Interface Form helper object
 	 */
-	protected function _getPaymentForm( MShop_Order_Item_Interface $order, array $params )
+	protected function getPaymentForm( MShop_Order_Item_Interface $order, array $params )
 	{
-		$feConfig = $this->_feConfig;
-		$form = parent::_getPaymentForm( $order, $params );
-		$baseItem = $this->_getOrderBase( $order->getBaseId(), MShop_Order_Manager_Base_Abstract::PARTS_ADDRESS );
+		$feConfig = $this->feConfig;
+		$form = parent::getPaymentForm( $order, $params );
+		$baseItem = $this->getOrderBase( $order->getBaseId(), MShop_Order_Manager_Base_Abstract::PARTS_ADDRESS );
 
 		try
 		{
@@ -166,7 +166,7 @@ class MShop_Service_Provider_Payment_AuthorizeDPM
 				$feConfig['payment.lastname']['default'] = $address->getLastname();
 			}
 
-			if( $this->_getValue( 'address' ) )
+			if( $this->getValue( 'address' ) )
 			{
 				$feConfig['payment.address1']['default'] = $address->getAddress1() . ' ' . $address->getAddress2();
 				$feConfig['payment.city']['default'] = $address->getCity();
@@ -192,7 +192,7 @@ class MShop_Service_Provider_Payment_AuthorizeDPM
 	 *
 	 * @return string Prefix without dot
 	 */
-	protected function _getConfigPrefix()
+	protected function getConfigPrefix()
 	{
 		return 'authorizenet';
 	}
@@ -205,7 +205,7 @@ class MShop_Service_Provider_Payment_AuthorizeDPM
 	 * @param mixed $default Default value if no configuration is found
 	 * @return mixed Configuration value
 	 */
-	protected function _getValue( $key, $default = null )
+	protected function getValue( $key, $default = null )
 	{
 		switch( $key )
 		{
@@ -213,6 +213,6 @@ class MShop_Service_Provider_Payment_AuthorizeDPM
 			case 'onsite': return true;
 		}
 
-		return parent::_getValue( $key, $default );
+		return parent::getValue( $key, $default );
 	}
 }

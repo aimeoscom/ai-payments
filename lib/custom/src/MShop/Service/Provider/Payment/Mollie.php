@@ -34,7 +34,7 @@ class MShop_Service_Provider_Payment_Mollie
 		}
 
 		if( isset( $params['orderid'] ) ) {
-			return $this->_getOrder( $params['orderid'] );
+			return $this->getOrder( $params['orderid'] );
 		}
 	}
 
@@ -44,7 +44,7 @@ class MShop_Service_Provider_Payment_Mollie
 	 *
 	 * @return string Prefix without dot
 	 */
-	protected function _getConfigPrefix()
+	protected function getConfigPrefix()
 	{
 		return 'mollie';
 	}
@@ -57,12 +57,12 @@ class MShop_Service_Provider_Payment_Mollie
 	 * @param mixed $default Default value if no configuration is found
 	 * @return mixed Configuration value
 	 */
-	protected function _getValue( $key, $default = null )
+	protected function getValue( $key, $default = null )
 	{
 		switch( $key ) {
 			case 'type': return 'Mollie';
 		}
 
-		return parent::_getValue( $key, $default );
+		return parent::getValue( $key, $default );
 	}
 }

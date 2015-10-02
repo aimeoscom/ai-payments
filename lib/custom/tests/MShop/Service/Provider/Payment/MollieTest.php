@@ -8,8 +8,8 @@
 
 class MShop_Service_Provider_Payment_MollieTest extends PHPUnit_Framework_TestCase
 {
-	private $_object;
-	private $_context;
+	private $object;
+	private $context;
 
 
 	/**
@@ -24,15 +24,15 @@ class MShop_Service_Provider_Payment_MollieTest extends PHPUnit_Framework_TestCa
 			$this->markTestSkipped( 'Omnipay library not available' );
 		}
 
-		$this->_context = TestHelper::getContext();
+		$this->context = TestHelper::getContext();
 
-		$serviceManager = MShop_Service_Manager_Factory::createManager( $this->_context );
+		$serviceManager = MShop_Service_Manager_Factory::createManager( $this->context );
 		$item = $serviceManager->createItem();
 		$item->setConfig( array( 'mollie.testmode' => true ) );
 
-		$this->_object = $this->getMockBuilder( 'MolliePublic' )
-			->setMethods( array( '_getOrder', '_getOrderBase', '_saveOrder', '_saveOrderBase', '_getProvider' ) )
-			->setConstructorArgs( array( $this->_context, $item ) )
+		$this->object = $this->getMockBuilder( 'MolliePublic' )
+			->setMethods( array( 'getOrder', 'getOrderBase', 'saveOrder', 'saveOrderBase', 'getProvider' ) )
+			->setConstructorArgs( array( $this->context, $item ) )
 			->getMock();
 	}
 
@@ -45,30 +45,30 @@ class MShop_Service_Provider_Payment_MollieTest extends PHPUnit_Framework_TestCa
 	 */
 	protected function tearDown()
 	{
-		unset( $this->_object, $this->_context );
+		unset( $this->object, $this->context );
 	}
 
 
 	public function testGetValueType()
 	{
-		$this->assertEquals( 'Mollie', $this->_object->getValue( 'type' ) );
+		$this->assertEquals( 'Mollie', $this->object->getValuePublic( 'type' ) );
 	}
 
 
 	public function testGetValueTestmode()
 	{
-		$this->assertTrue( $this->_object->getValue( 'testmode' ) );
+		$this->assertTrue( $this->object->getValuePublic( 'testmode' ) );
 	}
 
 
 	public function testUpdateSync()
 	{
-		$orderItem = $this->_getOrder();
+		$orderItem = $this->getOrder();
 
-		$this->_object->expects( $this->once() )->method( '_getOrder' )
+		$this->object->expects( $this->once() )->method( 'getOrder' )
 			->will( $this->returnValue( $orderItem ) );
 
-		$result = $this->_object->updateSync( array( 'orderid' => '1' ) );
+		$result = $this->object->updateSync( array( 'orderid' => '1' ) );
 
 		$this->assertInstanceOf( 'MShop_Order_Item_Interface', $result );
 	}
@@ -76,8 +76,8 @@ class MShop_Service_Provider_Payment_MollieTest extends PHPUnit_Framework_TestCa
 
 	public function testUpdateSyncPurchaseSucessful()
 	{
-		$orderItem = $this->_getOrder();
-		$baseItem = $this->_getOrderBase( MShop_Order_Manager_Base_Abstract::PARTS_SERVICE );
+		$orderItem = $this->getOrder();
+		$baseItem = $this->getOrderBase( MShop_Order_Manager_Base_Abstract::PARTS_SERVICE );
 
 
 		$provider = $this->getMockBuilder( 'Omnipay\Dummy\Gateway' )
@@ -95,13 +95,13 @@ class MShop_Service_Provider_Payment_MollieTest extends PHPUnit_Framework_TestCa
 			->getMock();
 
 
-		$this->_object->expects( $this->once() )->method( '_getOrder' )
+		$this->object->expects( $this->once() )->method( 'getOrder' )
 			->will( $this->returnValue( $orderItem ) );
 
-		$this->_object->expects( $this->once() )->method( '_getOrderBase' )
+		$this->object->expects( $this->once() )->method( 'getOrderBase' )
 			->will( $this->returnValue( $baseItem ) );
 
-		$this->_object->expects( $this->once() )->method( '_getProvider' )
+		$this->object->expects( $this->once() )->method( 'getProvider' )
 			->will( $this->returnValue( $provider ) );
 
 		$provider->expects( $this->once() )->method( 'supportsCompletePurchase' )
@@ -117,7 +117,7 @@ class MShop_Service_Provider_Payment_MollieTest extends PHPUnit_Framework_TestCa
 			->will( $this->returnValue( true ) );
 
 
-		$result = $this->_object->updateSync( array( 'orderid' => '1', 'id' => 'abc' ) );
+		$result = $this->object->updateSync( array( 'orderid' => '1', 'id' => 'abc' ) );
 
 		$this->assertInstanceOf( 'MShop_Order_Item_Interface', $result );
 	}
@@ -125,15 +125,15 @@ class MShop_Service_Provider_Payment_MollieTest extends PHPUnit_Framework_TestCa
 
 	public function testUpdateSyncNone()
 	{
-		$result = $this->_object->updateSync( array() );
+		$result = $this->object->updateSync( array() );
 
 		$this->assertEquals( null, $result );
 	}
 
 
-	protected function _getOrder()
+	protected function getOrder()
 	{
-		$manager = MShop_Order_Manager_Factory::createManager( $this->_context );
+		$manager = MShop_Order_Manager_Factory::createManager( $this->context );
 
 		$search = $manager->createSearch();
 		$search->setConditions( $search->compare( '==', 'order.datepayment', '2008-02-15 12:34:56' ) );
@@ -148,23 +148,23 @@ class MShop_Service_Provider_Payment_MollieTest extends PHPUnit_Framework_TestCa
 	}
 
 
-	protected function _getOrderBase( $parts = null )
+	protected function getOrderBase( $parts = null )
 	{
 		if( $parts === null ) {
 			$parts = MShop_Order_Manager_Base_Abstract::PARTS_ADDRESS | MShop_Order_Manager_Base_Abstract::PARTS_SERVICE;
 		}
 
-		$manager = MShop_Order_Manager_Factory::createManager( $this->_context )->getSubmanager( 'base' );
+		$manager = MShop_Order_Manager_Factory::createManager( $this->context )->getSubmanager( 'base' );
 
-		return $manager->load( $this->_getOrder()->getBaseId(), $parts );
+		return $manager->load( $this->getOrder()->getBaseId(), $parts );
 	}
 }
 
 
 class MolliePublic extends MShop_Service_Provider_Payment_Mollie
 {
-	public function getValue( $name, $default = null )
+	public function getValuePublic( $name, $default = null )
 	{
-		return $this->_getValue( $name, $default );
+		return $this->getValue( $name, $default );
 	}
 }
