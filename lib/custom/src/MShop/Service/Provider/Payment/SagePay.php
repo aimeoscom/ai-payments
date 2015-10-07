@@ -8,15 +8,18 @@
  */
 
 
+namespace Aimeos\MShop\Service\Provider\Payment;
+
+
 /**
  * Payment provider for SagePay.
  *
  * @package MShop
  * @subpackage Service
  */
-class MShop_Service_Provider_Payment_SagePay
-	extends MShop_Service_Provider_Payment_OmniPay
-	implements MShop_Service_Provider_Payment_Interface
+class SagePay
+	extends \Aimeos\MShop\Service\Provider\Payment\OmniPay
+	implements \Aimeos\MShop\Service\Provider\Payment\Iface
 {
 	/**
 	 * Returns the prefix for the configuration definitions

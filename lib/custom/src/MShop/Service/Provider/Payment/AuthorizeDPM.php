@@ -8,15 +8,18 @@
  */
 
 
+namespace Aimeos\MShop\Service\Provider\Payment;
+
+
 /**
  * Payment provider for Authorize.NET DPM.
  *
  * @package MShop
  * @subpackage Service
  */
-class MShop_Service_Provider_Payment_AuthorizeDPM
-	extends MShop_Service_Provider_Payment_AuthorizeSIM
-	implements MShop_Service_Provider_Payment_Interface
+class AuthorizeDPM
+	extends \Aimeos\MShop\Service\Provider\Payment\AuthorizeSIM
+	implements \Aimeos\MShop\Service\Provider\Payment\Iface
 {
 	private $feConfig = array(
 		'payment.firstname' => array(
@@ -140,15 +143,15 @@ class MShop_Service_Provider_Payment_AuthorizeDPM
 	/**
 	 * Returns the payment form for entering payment details at the shop site.
 	 *
-	 * @param MShop_Order_Item_Interface $order Order object
+	 * @param \Aimeos\MShop\Order\Item\Iface $order Order object
 	 * @param array $params Request parameter if available
-	 * @return MShop_Common_Item_Helper_Form_Interface Form helper object
+	 * @return \Aimeos\MShop\Common\Item\Helper\Form\Iface Form helper object
 	 */
-	protected function getPaymentForm( MShop_Order_Item_Interface $order, array $params )
+	protected function getPaymentForm( \Aimeos\MShop\Order\Item\Iface $order, array $params )
 	{
 		$feConfig = $this->feConfig;
 		$form = parent::getPaymentForm( $order, $params );
-		$baseItem = $this->getOrderBase( $order->getBaseId(), MShop_Order_Manager_Base_Abstract::PARTS_ADDRESS );
+		$baseItem = $this->getOrderBase( $order->getBaseId(), \Aimeos\MShop\Order\Manager\Base\Base::PARTS_ADDRESS );
 
 		try
 		{
@@ -177,10 +180,10 @@ class MShop_Service_Provider_Payment_AuthorizeDPM
 				$feConfig['payment.email']['default'] = $address->getEmail();
 			}
 		}
-		catch( MShop_Order_Exception $e ) { ; } // If address isn't available
+		catch( \Aimeos\MShop\Order\Exception $e ) { ; } // If address isn't available
 
 		foreach( $feConfig as $key => $config ) {
-			$form->setValue( $key, new MW_Common_Criteria_Attribute_Default( $config ) );
+			$form->setValue( $key, new \Aimeos\MW\Common\Criteria\Attribute\Standard( $config ) );
 		}
 
 		return $form;

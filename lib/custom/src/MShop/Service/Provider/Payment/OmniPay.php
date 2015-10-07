@@ -8,7 +8,10 @@
  */
 
 
-use Omnipay\Omnipay;
+namespace Aimeos\MShop\Service\Provider\Payment;
+
+
+use Omnipay\Omnipay as OPay;
 
 
 /**
@@ -17,9 +20,9 @@ use Omnipay\Omnipay;
  * @package MShop
  * @subpackage Service
  */
-class MShop_Service_Provider_Payment_OmniPay
-	extends MShop_Service_Provider_Payment_Abstract
-	implements MShop_Service_Provider_Payment_Interface
+class OmniPay
+	extends \Aimeos\MShop\Service\Provider\Payment\Base
+	implements \Aimeos\MShop\Service\Provider\Payment\Iface
 {
 	private $beConfig = array(
 		'type' => array(
@@ -223,7 +226,7 @@ class MShop_Service_Provider_Payment_OmniPay
 	 * Returns the configuration attribute definitions of the provider to generate a list of available fields and
 	 * rules for the value of each field in the administration interface.
 	 *
-	 * @return array List of attribute definitions implementing MW_Common_Critera_Attribute_Interface
+	 * @return array List of attribute definitions implementing \Aimeos\MW\Common\Critera\Attribute\Iface
 	 */
 	public function getConfigBE()
 	{
@@ -239,7 +242,7 @@ class MShop_Service_Provider_Payment_OmniPay
 		foreach( $config as $key => $config )
 		{
 			$config['code'] = $prefix . '.' . $config['code'];
-			$list[$prefix.'.'.$key] = new MW_Common_Criteria_Attribute_Default( $config );
+			$list[$prefix.'.'.$key] = new \Aimeos\MW\Common\Criteria\Attribute\Standard( $config );
 		}
 
 		return $list;
@@ -278,9 +281,9 @@ class MShop_Service_Provider_Payment_OmniPay
 	/**
 	 * Cancels the authorization for the given order if supported.
 	 *
-	 * @param MShop_Order_Item_Interface $order Order invoice object
+	 * @param \Aimeos\MShop\Order\Item\Iface $order Order invoice object
 	 */
-	public function cancel( MShop_Order_Item_Interface $order )
+	public function cancel( \Aimeos\MShop\Order\Item\Iface $order )
 	{
 		$provider = $this->getProvider();
 
@@ -289,7 +292,7 @@ class MShop_Service_Provider_Payment_OmniPay
 		}
 
 		$base = $this->getOrderBase( $order->getBaseId() );
-		$service = $base->getService( MShop_Order_Item_Base_Service_Abstract::TYPE_PAYMENT );
+		$service = $base->getService( \Aimeos\MShop\Order\Item\Base\Service\Base::TYPE_PAYMENT );
 
 		$data = array(
 			'transactionReference' => $service->getAttribute( 'TRANSACTIONID', 'payment/omnipay' ),
@@ -302,7 +305,7 @@ class MShop_Service_Provider_Payment_OmniPay
 
 		if( $response->isSuccessful() )
 		{
-			$status = MShop_Order_Item_Abstract::PAY_CANCELED;
+			$status = \Aimeos\MShop\Order\Item\Base::PAY_CANCELED;
 			$order->setPaymentStatus( $status );
 			$this->saveOrder( $order );
 		}
@@ -312,9 +315,9 @@ class MShop_Service_Provider_Payment_OmniPay
 	/**
 	 * Captures the money later on request for the given order if supported.
 	 *
-	 * @param MShop_Order_Item_Interface $order Order invoice object
+	 * @param \Aimeos\MShop\Order\Item\Iface $order Order invoice object
 	 */
-	public function capture( MShop_Order_Item_Interface $order )
+	public function capture( \Aimeos\MShop\Order\Item\Iface $order )
 	{
 		$provider = $this->getProvider();
 
@@ -323,7 +326,7 @@ class MShop_Service_Provider_Payment_OmniPay
 		}
 
 		$base = $this->getOrderBase( $order->getBaseId() );
-		$service = $base->getService( MShop_Order_Item_Base_Service_Abstract::TYPE_PAYMENT );
+		$service = $base->getService( \Aimeos\MShop\Order\Item\Base\Service\Base::TYPE_PAYMENT );
 
 		$data = array(
 			'transactionReference' => $service->getAttribute( 'TRANSACTIONID', 'payment/omnipay' ),
@@ -336,7 +339,7 @@ class MShop_Service_Provider_Payment_OmniPay
 
 		if( $response->isSuccessful() )
 		{
-			$status = MShop_Order_Item_Abstract::PAY_RECEIVED;
+			$status = \Aimeos\MShop\Order\Item\Base::PAY_RECEIVED;
 			$order->setPaymentStatus( $status );
 		}
 	}
@@ -354,11 +357,11 @@ class MShop_Service_Provider_Payment_OmniPay
 
 		switch( $what )
 		{
-			case MShop_Service_Provider_Payment_Abstract::FEAT_CAPTURE:
+			case \Aimeos\MShop\Service\Provider\Payment\Base::FEAT_CAPTURE:
 				return $provider->supportsCapture();
-			case MShop_Service_Provider_Payment_Abstract::FEAT_CANCEL:
+			case \Aimeos\MShop\Service\Provider\Payment\Base::FEAT_CANCEL:
 				return $provider->supportsVoid();
-			case MShop_Service_Provider_Payment_Abstract::FEAT_REFUND:
+			case \Aimeos\MShop\Service\Provider\Payment\Base::FEAT_REFUND:
 				return $provider->supportsRefund();
 		}
 
@@ -370,12 +373,12 @@ class MShop_Service_Provider_Payment_OmniPay
 	 * Tries to get an authorization or captures the money immediately for the given order if capturing the money
 	 * separately isn't supported or not configured by the shop owner.
 	 *
-	 * @param MShop_Order_Item_Interface $order Order invoice object
+	 * @param \Aimeos\MShop\Order\Item\Iface $order Order invoice object
 	 * @param array $params Request parameter if available
-	 * @return MShop_Common_Item_Helper_Form_Default Form object with URL, action and parameters to redirect to
+	 * @return \Aimeos\MShop\Common\Item\Helper\Form\Standard Form object with URL, action and parameters to redirect to
 	 * 	(e.g. to an external server of the payment provider or to a local success page)
 	 */
-	public function process( MShop_Order_Item_Interface $order, array $params = array() )
+	public function process( \Aimeos\MShop\Order\Item\Iface $order, array $params = array() )
 	{
 		if( $this->getValue( 'onsite' ) == true && ( !isset( $params['number'] ) || !isset( $params['cvv'] ) ) ) {
 			return $this->getPaymentForm( $order, $params );
@@ -388,9 +391,9 @@ class MShop_Service_Provider_Payment_OmniPay
 	/**
 	 * Refunds the money for the given order if supported.
 	 *
-	 * @param MShop_Order_Item_Interface $order Order invoice object
+	 * @param \Aimeos\MShop\Order\Item\Iface $order Order invoice object
 	 */
-	public function refund( MShop_Order_Item_Interface $order )
+	public function refund( \Aimeos\MShop\Order\Item\Iface $order )
 	{
 		$provider = $this->getProvider();
 
@@ -399,7 +402,7 @@ class MShop_Service_Provider_Payment_OmniPay
 		}
 
 		$base = $this->getOrderBase( $order->getBaseId() );
-		$service = $base->getService( MShop_Order_Item_Base_Service_Abstract::TYPE_PAYMENT );
+		$service = $base->getService( \Aimeos\MShop\Order\Item\Base\Service\Base::TYPE_PAYMENT );
 
 		$data = array(
 			'transactionReference' => $service->getAttribute( 'TRANSACTIONID', 'payment/omnipay' ),
@@ -416,7 +419,7 @@ class MShop_Service_Provider_Payment_OmniPay
 			$this->setAttributes( $service, $attr, 'payment/omnipay' );
 			$this->saveOrderBase( $base );
 
-			$status = MShop_Order_Item_Abstract::PAY_REFUND;
+			$status = \Aimeos\MShop\Order\Item\Base::PAY_REFUND;
 			$order->setPaymentStatus( $status );
 			$this->saveOrder( $order );
 		}
@@ -430,7 +433,7 @@ class MShop_Service_Provider_Payment_OmniPay
 	 * @param string|null $body Information sent within the body of the request
 	 * @param string|null &$output Response body for notification requests
 	 * @param array &$header Response headers for notification requests
-	 * @return MShop_Order_Item_Interface|null Order item if update was successful, null if the given parameters are not valid for this provider
+	 * @return \Aimeos\MShop\Order\Item\Iface|null Order item if update was successful, null if the given parameters are not valid for this provider
 	 */
 	public function updateSync( array $params = array(), $body = null, &$output = null, array &$header = array() )
 	{
@@ -452,12 +455,12 @@ class MShop_Service_Provider_Payment_OmniPay
 			if( $this->getValue( 'authorize', false ) && $provider->supportsCompleteAuthorize() )
 			{
 				$response = $provider->completeAuthorize( $params )->send();
-				$status = MShop_Order_Item_Abstract::PAY_AUTHORIZED;
+				$status = \Aimeos\MShop\Order\Item\Base::PAY_AUTHORIZED;
 			}
 			elseif( $provider->supportsCompletePurchase() )
 			{
 				$response = $provider->completePurchase( $params )->send();
-				$status = MShop_Order_Item_Abstract::PAY_RECEIVED;
+				$status = \Aimeos\MShop\Order\Item\Base::PAY_RECEIVED;
 			}
 			else
 			{
@@ -475,19 +478,19 @@ class MShop_Service_Provider_Payment_OmniPay
 			{
 				$url = $response->getRedirectUrl();
 				$header[] = array( 'HTTP/1.1 500 Unexpected redirect' );
-				throw new MShop_Service_Exception( sprintf( 'Unexpected redirect: %1$s', $url ) );
+				throw new \Aimeos\MShop\Service\Exception( sprintf( 'Unexpected redirect: %1$s', $url ) );
 			}
 			else
 			{
-				$order->setPaymentStatus( MShop_Order_Item_Abstract::PAY_REFUSED );
+				$order->setPaymentStatus( \Aimeos\MShop\Order\Item\Base::PAY_REFUSED );
 				$this->saveOrder( $order );
 
-				throw new MShop_Service_Exception( $response->getMessage() );
+				throw new \Aimeos\MShop\Service\Exception( $response->getMessage() );
 			}
 		}
-		catch( Exception $e )
+		catch( \Exception $e )
 		{
-			throw new MShop_Service_Exception( $e->getMessage() );
+			throw new \Aimeos\MShop\Service\Exception( $e->getMessage() );
 		}
 
 		return $order;
@@ -514,7 +517,7 @@ class MShop_Service_Provider_Payment_OmniPay
 	{
 		if( !isset( $this->provider ) )
 		{
-			$this->provider = Omnipay::create( $this->getValue( 'type' ) );
+			$this->provider = OPay::create( $this->getValue( 'type' ) );
 			$this->provider->setTestMode( (bool) $this->getValue( 'testmode', false ) );
 			$this->provider->initialize( $this->getServiceItem()->getConfig() );
 		}
@@ -554,15 +557,15 @@ class MShop_Service_Provider_Payment_OmniPay
 	/**
 	 * Returns the payment form for entering payment details at the shop site.
 	 *
-	 * @param MShop_Order_Item_Interface $order Order object
+	 * @param \Aimeos\MShop\Order\Item\Iface $order Order object
 	 * @param array $params Request parameter if available
-	 * @return MShop_Common_Item_Helper_Form_Interface Form helper object
+	 * @return \Aimeos\MShop\Common\Item\Helper\Form\Iface Form helper object
 	 */
-	protected function getPaymentForm( MShop_Order_Item_Interface $order, array $params )
+	protected function getPaymentForm( \Aimeos\MShop\Order\Item\Iface $order, array $params )
 	{
 		$list = array();
 		$feConfig = $this->feConfig;
-		$baseItem = $this->getOrderBase( $order->getBaseId(), MShop_Order_Manager_Base_Abstract::PARTS_ADDRESS );
+		$baseItem = $this->getOrderBase( $order->getBaseId(), \Aimeos\MShop\Order\Manager\Base\Base::PARTS_ADDRESS );
 
 		try
 		{
@@ -593,18 +596,18 @@ class MShop_Service_Provider_Payment_OmniPay
 				$feConfig['payment.email']['default'] = $address->getEmail();
 			}
 		}
-		catch( MShop_Order_Exception $e ) { ; } // If address isn't available
+		catch( \Aimeos\MShop\Order\Exception $e ) { ; } // If address isn't available
 
 		$year = date( 'Y' );
 		$feConfig['payment.expirymonth']['default'] = array( 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 );
 		$feConfig['payment.expiryyear']['default'] = array( $year, $year+1, $year+2, $year+3, $year+4, $year+5, $year+6, $year+7 );
 
 		foreach( $feConfig as $key => $config ) {
-			$list[$key] = new MW_Common_Criteria_Attribute_Default( $config );
+			$list[$key] = new \Aimeos\MW\Common\Criteria\Attribute\Standard( $config );
 		}
 
 		$url = $this->getConfigValue( array( 'payment.url-self' ) );
-		return new MShop_Common_Item_Helper_Form_Default( $url, 'POST', $list, false );
+		return new \Aimeos\MShop\Common\Item\Helper\Form\Standard( $url, 'POST', $list, false );
 	}
 
 
@@ -612,7 +615,7 @@ class MShop_Service_Provider_Payment_OmniPay
 	 * Returns the form for redirecting customers to the payment gateway.
 	 *
 	 * @param \Omnipay\Common\Message\RedirectResponseInterface $response Omnipay response object
-	 * @return MShop_Common_Item_Helper_Form_Interface Form helper object
+	 * @return \Aimeos\MShop\Common\Item\Helper\Form\Iface Form helper object
 	 */
 	protected function getRedirectForm( \Omnipay\Common\Message\RedirectResponseInterface $response )
 	{
@@ -620,7 +623,7 @@ class MShop_Service_Provider_Payment_OmniPay
 
 		foreach( (array) $response->getRedirectData() as $key => $value )
 		{
-			$list[$key] = new MW_Common_Criteria_Attribute_Default( array(
+			$list[$key] = new \Aimeos\MW\Common\Criteria\Attribute\Standard( array(
 				'label' => $key,
 				'code' => $key,
 				'type' => 'string',
@@ -634,7 +637,7 @@ class MShop_Service_Provider_Payment_OmniPay
 		$url = $response->getRedirectUrl();
 		$method = $response->getRedirectMethod();
 
-		return new MShop_Common_Item_Helper_Form_Default( $url, $method, $list );
+		return new \Aimeos\MShop\Common\Item\Helper\Form\Standard( $url, $method, $list );
 	}
 
 
@@ -642,12 +645,12 @@ class MShop_Service_Provider_Payment_OmniPay
 	 * Tries to get an authorization or captures the money immediately for the given order if capturing the money
 	 * separately isn't supported or not configured by the shop owner.
 	 *
-	 * @param MShop_Order_Item_Interface $order Order invoice object
+	 * @param \Aimeos\MShop\Order\Item\Iface $order Order invoice object
 	 * @param array $params Request parameter if available
-	 * @return MShop_Common_Item_Helper_Form_Default Form object with URL, action and parameters to redirect to
+	 * @return \Aimeos\MShop\Common\Item\Helper\Form\Standard Form object with URL, action and parameters to redirect to
 	 * 	(e.g. to an external server of the payment provider or to a local success page)
 	 */
-	protected function processOrder( MShop_Order_Item_Interface $order, array $params = array() )
+	protected function processOrder( \Aimeos\MShop\Order\Item\Iface $order, array $params = array() )
 	{
 		$urls = $this->getPaymentUrls();
 		$baseItem = $this->getOrderBase( $order->getBaseId() );
@@ -672,12 +675,12 @@ class MShop_Service_Provider_Payment_OmniPay
 			if( $this->getValue( 'authorize', false ) && $provider->supportsAuthorize() )
 			{
 				$response = $provider->authorize( $data )->send();
-				$status = MShop_Order_Item_Abstract::PAY_AUTHORIZED;
+				$status = \Aimeos\MShop\Order\Item\Base::PAY_AUTHORIZED;
 			}
 			else
 			{
 				$response = $provider->purchase( $data )->send();
-				$status = MShop_Order_Item_Abstract::PAY_RECEIVED;
+				$status = \Aimeos\MShop\Order\Item\Base::PAY_RECEIVED;
 			}
 
 			if( $response->isSuccessful() )
@@ -693,30 +696,30 @@ class MShop_Service_Provider_Payment_OmniPay
 			}
 			else
 			{
-				$order->setPaymentStatus( MShop_Order_Item_Abstract::PAY_REFUSED );
+				$order->setPaymentStatus( \Aimeos\MShop\Order\Item\Base::PAY_REFUSED );
 				$this->saveOrder( $order );
 
-				throw new MShop_Service_Exception( $response->getMessage() );
+				throw new \Aimeos\MShop\Service\Exception( $response->getMessage() );
 			}
 		}
-		catch( Exception $e )
+		catch( \Exception $e )
 		{
-			throw new MShop_Service_Exception( $e->getMessage() );
+			throw new \Aimeos\MShop\Service\Exception( $e->getMessage() );
 		}
 
-		return new MShop_Common_Item_Helper_Form_Default( $urls['returnUrl'], 'POST', array() );
+		return new \Aimeos\MShop\Common\Item\Helper\Form\Standard( $urls['returnUrl'], 'POST', array() );
 	}
 
 
 	/**
 	 * Addes the transation reference to the order service attributes.
 	 *
-	 * @param MShop_Order_Item_Base_Interface $baseItem Order base object with service items attached
+	 * @param \Aimeos\MShop\Order\Item\Base\Iface $baseItem Order base object with service items attached
 	 * @param string $ref Transaction reference from the payment gateway
 	 */
-	protected function saveTransationRef( MShop_Order_Item_Base_Interface $baseItem, $ref )
+	protected function saveTransationRef( \Aimeos\MShop\Order\Item\Base\Iface $baseItem, $ref )
 	{
-		$serviceItem = $baseItem->getService( MShop_Order_Item_Base_Service_Abstract::TYPE_PAYMENT );
+		$serviceItem = $baseItem->getService( \Aimeos\MShop\Order\Item\Base\Service\Base::TYPE_PAYMENT );
 
 		$attr = array( 'TRANSACTIONID' => $ref );
 		$this->setAttributes( $serviceItem, $attr, 'payment/omnipay' );

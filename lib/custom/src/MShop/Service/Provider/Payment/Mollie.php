@@ -8,15 +8,18 @@
  */
 
 
+namespace Aimeos\MShop\Service\Provider\Payment;
+
+
 /**
  * Payment provider for Mollie.
  *
  * @package MShop
  * @subpackage Service
  */
-class MShop_Service_Provider_Payment_Mollie
-	extends MShop_Service_Provider_Payment_OmniPay
-	implements MShop_Service_Provider_Payment_Interface
+class Mollie
+	extends \Aimeos\MShop\Service\Provider\Payment\OmniPay
+	implements \Aimeos\MShop\Service\Provider\Payment\Iface
 {
 	/**
 	 * Updates the orders for which status updates were received via direct requests (like HTTP).
@@ -25,7 +28,7 @@ class MShop_Service_Provider_Payment_Mollie
 	 * @param string|null $body Information sent within the body of the request
 	 * @param string|null &$response Response body for notification requests
 	 * @param array &$header Response headers for notification requests
-	 * @return MShop_Order_Item_Interface|null Order item if update was successful, null if the given parameters are not valid for this provider
+	 * @return \Aimeos\MShop\Order\Item\Iface|null Order item if update was successful, null if the given parameters are not valid for this provider
 	 */
 	public function updateSync( array $params = array(), $body = null, &$response = null, array &$header = array() )
 	{

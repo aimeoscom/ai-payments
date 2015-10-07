@@ -8,14 +8,17 @@
  */
 
 
+namespace Aimeos\MShop\Service\Provider\Payment;
+
+
 /**
  * Payment provider for Authorize.NET AIM.
  *
  * @package MShop
  * @subpackage Service
  */
-class MShop_Service_Provider_Payment_AuthorizeAIM
-	extends MShop_Service_Provider_Payment_OmniPay
+class AuthorizeAIM
+	extends \Aimeos\MShop\Service\Provider\Payment\OmniPay
 {
 	/**
 	 * Returns the prefix for the configuration definitions

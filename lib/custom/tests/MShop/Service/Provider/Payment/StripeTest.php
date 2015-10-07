@@ -1,12 +1,13 @@
 <?php
 
+namespace Aimeos\MShop\Service\Provider\Payment;
+
+
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Aimeos (aimeos.org), 2015
  */
-
-
-class MShop_Service_Provider_Payment_StripeTest extends PHPUnit_Framework_TestCase
+class StripeTest extends \PHPUnit_Framework_TestCase
 {
 	private $object;
 
@@ -19,9 +20,9 @@ class MShop_Service_Provider_Payment_StripeTest extends PHPUnit_Framework_TestCa
 	 */
 	protected function setUp()
 	{
-		$context = TestHelper::getContext();
+		$context = \TestHelper::getContext();
 
-		$serviceManager = MShop_Service_Manager_Factory::createManager( $context );
+		$serviceManager = \Aimeos\MShop\Service\Manager\Factory::createManager( $context );
 		$item = $serviceManager->createItem();
 		$item->setConfig( array( 'stripe.testmode' => true ) );
 
@@ -92,7 +93,7 @@ class MShop_Service_Provider_Payment_StripeTest extends PHPUnit_Framework_TestCa
 }
 
 
-class StripePublic extends MShop_Service_Provider_Payment_Stripe
+class StripePublic extends \Aimeos\MShop\Service\Provider\Payment\Stripe
 {
 	public function getValuePublic( $name, $default = null )
 	{

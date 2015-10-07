@@ -1,12 +1,13 @@
 <?php
 
+namespace Aimeos\MShop\Service\Provider\Payment;
+
+
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Aimeos (aimeos.org), 2015
  */
-
-
-class MShop_Service_Provider_Payment_SagePayTest extends PHPUnit_Framework_TestCase
+class SagePayTest extends \PHPUnit_Framework_TestCase
 {
 	private $object;
 	private $context;
@@ -20,14 +21,14 @@ class MShop_Service_Provider_Payment_SagePayTest extends PHPUnit_Framework_TestC
 	 */
 	protected function setUp()
 	{
-		$this->context = TestHelper::getContext();
+		$this->context = \TestHelper::getContext();
 
-		$serviceManager = MShop_Service_Manager_Factory::createManager( $this->context );
+		$serviceManager = \Aimeos\MShop\Service\Manager\Factory::createManager( $this->context );
 		$item = $serviceManager->createItem();
 		$item->setConfig( array( 'sagepay.testmode' => true ) );
 
-		$this->object = $this->getMockBuilder( 'SagePayPublic' )
-			->setMethods( array( '_getOrder', '_getOrderBase', '_saveOrder', '_saveOrderBase', '_getProvider' ) )
+		$this->object = $this->getMockBuilder( 'Aimeos\MShop\Service\Provider\Payment\SagePayPublic' )
+			->setMethods( array( 'getOrder', 'getOrderBase', 'saveOrder', 'saveOrderBase', 'getProvider' ) )
 			->setConstructorArgs( array( $this->context, $item ) )
 			->getMock();
 	}
@@ -64,7 +65,7 @@ class MShop_Service_Provider_Payment_SagePayTest extends PHPUnit_Framework_TestC
 }
 
 
-class SagePayPublic extends MShop_Service_Provider_Payment_SagePay
+class SagePayPublic extends \Aimeos\MShop\Service\Provider\Payment\SagePay
 {
 	public function getValuePublic( $name, $default = null )
 	{

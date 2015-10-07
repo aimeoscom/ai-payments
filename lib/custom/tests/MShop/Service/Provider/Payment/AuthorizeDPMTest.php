@@ -1,12 +1,13 @@
 <?php
 
+namespace Aimeos\MShop\Service\Provider\Payment;
+
+
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Aimeos (aimeos.org), 2015
  */
-
-
-class MShop_Service_Provider_Payment_AuthorizeDpmTest extends PHPUnit_Framework_TestCase
+class AuthorizeDpmTest extends \PHPUnit_Framework_TestCase
 {
 	private $object;
 	private $context;
@@ -20,7 +21,7 @@ class MShop_Service_Provider_Payment_AuthorizeDpmTest extends PHPUnit_Framework_
 	 */
 	protected function setUp()
 	{
-		$this->context = TestHelper::getContext();
+		$this->context = \TestHelper::getContext();
 
 		$conf = array(
 			'authorizenet.address' => '1',
@@ -28,12 +29,12 @@ class MShop_Service_Provider_Payment_AuthorizeDpmTest extends PHPUnit_Framework_
 			'authorizenet.testmode' => true,
 		);
 
-		$serviceManager = MShop_Service_Manager_Factory::createManager( $this->context );
+		$serviceManager = \Aimeos\MShop\Service\Manager\Factory::createManager( $this->context );
 		$item = $serviceManager->createItem();
 		$item->setConfig( $conf );
 
-		$this->object = $this->getMockBuilder( 'AuthorizeDPMPublic' )
-			->setMethods( array( '_getOrder', '_getOrderBase', '_saveOrder', '_saveOrderBase', '_getProvider' ) )
+		$this->object = $this->getMockBuilder( 'Aimeos\MShop\Service\Provider\Payment\AuthorizeDPMPublic' )
+			->setMethods( array( 'getOrder', 'getOrderBase', 'saveOrder', 'saveOrderBase', 'getProvider' ) )
 			->setConstructorArgs( array( $this->context, $item ) )
 			->getMock();
 	}
@@ -71,18 +72,18 @@ class MShop_Service_Provider_Payment_AuthorizeDpmTest extends PHPUnit_Framework_
 
 	public function testProcessOnsiteAddress()
 	{
-		$this->object->expects( $this->any() )->method( '_getOrderBase' )
+		$this->object->expects( $this->any() )->method( 'getOrderBase' )
 			->will( $this->returnValue( $this->getOrderBase() ) );
 
 		$result = $this->object->process( $this->getOrder(), array() );
 
-		$this->assertInstanceOf( 'MShop_Common_Item_Helper_Form_Interface', $result );
+		$this->assertInstanceOf( '\\Aimeos\\MShop\\Common\\Item\\Helper\\Form\\Iface', $result );
 	}
 
 
 	protected function getOrder()
 	{
-		$manager = MShop_Order_Manager_Factory::createManager( $this->context );
+		$manager = \Aimeos\MShop\Order\Manager\Factory::createManager( $this->context );
 
 		$search = $manager->createSearch();
 		$search->setConditions( $search->compare( '==', 'order.datepayment', '2008-02-15 12:34:56' ) );
@@ -90,7 +91,7 @@ class MShop_Service_Provider_Payment_AuthorizeDpmTest extends PHPUnit_Framework_
 		$result = $manager->searchItems( $search );
 
 		if( ( $item = reset( $result ) ) === false ) {
-			throw new Exception( 'No order found' );
+			throw new \Exception( 'No order found' );
 		}
 
 		return $item;
@@ -100,17 +101,17 @@ class MShop_Service_Provider_Payment_AuthorizeDpmTest extends PHPUnit_Framework_
 	protected function getOrderBase( $parts = null )
 	{
 		if( $parts === null ) {
-			$parts = MShop_Order_Manager_Base_Abstract::PARTS_ADDRESS | MShop_Order_Manager_Base_Abstract::PARTS_SERVICE;
+			$parts = \Aimeos\MShop\Order\Manager\Base\Base::PARTS_ADDRESS | \Aimeos\MShop\Order\Manager\Base\Base::PARTS_SERVICE;
 		}
 
-		$manager = MShop_Order_Manager_Factory::createManager( $this->context )->getSubmanager( 'base' );
+		$manager = \Aimeos\MShop\Order\Manager\Factory::createManager( $this->context )->getSubmanager( 'base' );
 
 		return $manager->load( $this->getOrder()->getBaseId(), $parts );
 	}
 }
 
 
-class AuthorizeDPMPublic extends MShop_Service_Provider_Payment_AuthorizeDPM
+class AuthorizeDPMPublic extends \Aimeos\MShop\Service\Provider\Payment\AuthorizeDPM
 {
 	public function getValuePublic( $name, $default = null )
 	{

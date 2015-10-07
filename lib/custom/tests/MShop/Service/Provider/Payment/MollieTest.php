@@ -1,12 +1,13 @@
 <?php
 
+namespace Aimeos\MShop\Service\Provider\Payment;
+
+
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Aimeos (aimeos.org), 2015
  */
-
-
-class MShop_Service_Provider_Payment_MollieTest extends PHPUnit_Framework_TestCase
+class MollieTest extends \PHPUnit_Framework_TestCase
 {
 	private $object;
 	private $context;
@@ -24,13 +25,13 @@ class MShop_Service_Provider_Payment_MollieTest extends PHPUnit_Framework_TestCa
 			$this->markTestSkipped( 'Omnipay library not available' );
 		}
 
-		$this->context = TestHelper::getContext();
+		$this->context = \TestHelper::getContext();
 
-		$serviceManager = MShop_Service_Manager_Factory::createManager( $this->context );
+		$serviceManager = \Aimeos\MShop\Service\Manager\Factory::createManager( $this->context );
 		$item = $serviceManager->createItem();
 		$item->setConfig( array( 'mollie.testmode' => true ) );
 
-		$this->object = $this->getMockBuilder( 'MolliePublic' )
+		$this->object = $this->getMockBuilder( 'Aimeos\MShop\Service\Provider\Payment\MolliePublic' )
 			->setMethods( array( 'getOrder', 'getOrderBase', 'saveOrder', 'saveOrderBase', 'getProvider' ) )
 			->setConstructorArgs( array( $this->context, $item ) )
 			->getMock();
@@ -70,14 +71,14 @@ class MShop_Service_Provider_Payment_MollieTest extends PHPUnit_Framework_TestCa
 
 		$result = $this->object->updateSync( array( 'orderid' => '1' ) );
 
-		$this->assertInstanceOf( 'MShop_Order_Item_Interface', $result );
+		$this->assertInstanceOf( '\\Aimeos\\MShop\\Order\\Item\\Iface', $result );
 	}
 
 
 	public function testUpdateSyncPurchaseSucessful()
 	{
 		$orderItem = $this->getOrder();
-		$baseItem = $this->getOrderBase( MShop_Order_Manager_Base_Abstract::PARTS_SERVICE );
+		$baseItem = $this->getOrderBase( \Aimeos\MShop\Order\Manager\Base\Base::PARTS_SERVICE );
 
 
 		$provider = $this->getMockBuilder( 'Omnipay\Dummy\Gateway' )
@@ -119,7 +120,7 @@ class MShop_Service_Provider_Payment_MollieTest extends PHPUnit_Framework_TestCa
 
 		$result = $this->object->updateSync( array( 'orderid' => '1', 'id' => 'abc' ) );
 
-		$this->assertInstanceOf( 'MShop_Order_Item_Interface', $result );
+		$this->assertInstanceOf( '\\Aimeos\\MShop\\Order\\Item\\Iface', $result );
 	}
 
 
@@ -133,7 +134,7 @@ class MShop_Service_Provider_Payment_MollieTest extends PHPUnit_Framework_TestCa
 
 	protected function getOrder()
 	{
-		$manager = MShop_Order_Manager_Factory::createManager( $this->context );
+		$manager = \Aimeos\MShop\Order\Manager\Factory::createManager( $this->context );
 
 		$search = $manager->createSearch();
 		$search->setConditions( $search->compare( '==', 'order.datepayment', '2008-02-15 12:34:56' ) );
@@ -141,7 +142,7 @@ class MShop_Service_Provider_Payment_MollieTest extends PHPUnit_Framework_TestCa
 		$result = $manager->searchItems( $search );
 
 		if( ( $item = reset( $result ) ) === false ) {
-			throw new Exception( 'No order found' );
+			throw new \Exception( 'No order found' );
 		}
 
 		return $item;
@@ -151,17 +152,17 @@ class MShop_Service_Provider_Payment_MollieTest extends PHPUnit_Framework_TestCa
 	protected function getOrderBase( $parts = null )
 	{
 		if( $parts === null ) {
-			$parts = MShop_Order_Manager_Base_Abstract::PARTS_ADDRESS | MShop_Order_Manager_Base_Abstract::PARTS_SERVICE;
+			$parts = \Aimeos\MShop\Order\Manager\Base\Base::PARTS_ADDRESS | \Aimeos\MShop\Order\Manager\Base\Base::PARTS_SERVICE;
 		}
 
-		$manager = MShop_Order_Manager_Factory::createManager( $this->context )->getSubmanager( 'base' );
+		$manager = \Aimeos\MShop\Order\Manager\Factory::createManager( $this->context )->getSubmanager( 'base' );
 
 		return $manager->load( $this->getOrder()->getBaseId(), $parts );
 	}
 }
 
 
-class MolliePublic extends MShop_Service_Provider_Payment_Mollie
+class MolliePublic extends \Aimeos\MShop\Service\Provider\Payment\Mollie
 {
 	public function getValuePublic( $name, $default = null )
 	{
