@@ -183,7 +183,7 @@ class AuthorizeDPM
 		catch( \Aimeos\MShop\Order\Exception $e ) { ; } // If address isn't available
 
 		foreach( $feConfig as $key => $config ) {
-			$form->setValue( $key, new \Aimeos\MW\Common\Criteria\Attribute\Standard( $config ) );
+			$form->setValue( $key, new \Aimeos\MW\Criteria\Attribute\Standard( $config ) );
 		}
 
 		return $form;

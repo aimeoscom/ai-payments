@@ -242,7 +242,7 @@ class OmniPay
 		foreach( $config as $key => $config )
 		{
 			$config['code'] = $prefix . '.' . $config['code'];
-			$list[$prefix.'.'.$key] = new \Aimeos\MW\Common\Criteria\Attribute\Standard( $config );
+			$list[$prefix.'.'.$key] = new \Aimeos\MW\Criteria\Attribute\Standard( $config );
 		}
 
 		return $list;
@@ -603,7 +603,7 @@ class OmniPay
 		$feConfig['payment.expiryyear']['default'] = array( $year, $year+1, $year+2, $year+3, $year+4, $year+5, $year+6, $year+7 );
 
 		foreach( $feConfig as $key => $config ) {
-			$list[$key] = new \Aimeos\MW\Common\Criteria\Attribute\Standard( $config );
+			$list[$key] = new \Aimeos\MW\Criteria\Attribute\Standard( $config );
 		}
 
 		$url = $this->getConfigValue( array( 'payment.url-self' ) );
@@ -623,7 +623,7 @@ class OmniPay
 
 		foreach( (array) $response->getRedirectData() as $key => $value )
 		{
-			$list[$key] = new \Aimeos\MW\Common\Criteria\Attribute\Standard( array(
+			$list[$key] = new \Aimeos\MW\Criteria\Attribute\Standard( array(
 				'label' => $key,
 				'code' => $key,
 				'type' => 'string',
