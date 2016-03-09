@@ -297,7 +297,7 @@ class OmniPay
 		$data = array(
 			'transactionReference' => $service->getAttribute( 'TRANSACTIONID', 'payment/omnipay' ),
 			'currency' => $base->getPrice()->getCurrencyId(),
-			'amount' => $base->getPrice()->getValue(),
+			'amount' => $this->getAmount( $base->getPrice() ),
 			'transactionId' => $order->getId(),
 		);
 
@@ -331,7 +331,7 @@ class OmniPay
 		$data = array(
 			'transactionReference' => $service->getAttribute( 'TRANSACTIONID', 'payment/omnipay' ),
 			'currency' => $base->getPrice()->getCurrencyId(),
-			'amount' => $base->getPrice()->getValue(),
+			'amount' => $this->getAmount( $base->getPrice() ),
 			'transactionId' => $order->getId(),
 		);
 
@@ -407,7 +407,7 @@ class OmniPay
 		$data = array(
 			'transactionReference' => $service->getAttribute( 'TRANSACTIONID', 'payment/omnipay' ),
 			'currency' => $base->getPrice()->getCurrencyId(),
-			'amount' => $base->getPrice()->getValue(),
+			'amount' => $this->getAmount( $base->getPrice() ),
 			'transactionId' => $order->getId(),
 		);
 
@@ -442,11 +442,11 @@ class OmniPay
 		}
 
 		$order = $this->getOrder( $params['orderid'] );
-		$baseItem = $this->getOrderBase( $order->getBaseId() );
+		$base = $this->getOrderBase( $order->getBaseId() );
 
 		$params['transactionId'] = $order->getId();
-		$params['amount'] = $baseItem->getPrice()->getValue();
-		$params['currency'] = $baseItem->getLocale()->getCurrencyId();
+		$params['amount'] = $this->getAmount( $base->getPrice() );
+		$params['currency'] = $base->getLocale()->getCurrencyId();
 
 		try
 		{
@@ -469,7 +469,7 @@ class OmniPay
 
 			if( $response->isSuccessful() )
 			{
-				$this->saveTransationRef( $baseItem, $response->getTransactionReference() );
+				$this->saveTransationRef( $base, $response->getTransactionReference() );
 
 				$order->setPaymentStatus( $status );
 				$this->saveOrder( $order );
@@ -653,7 +653,7 @@ class OmniPay
 	protected function processOrder( \Aimeos\MShop\Order\Item\Iface $order, array $params = array() )
 	{
 		$urls = $this->getPaymentUrls();
-		$baseItem = $this->getOrderBase( $order->getBaseId() );
+		$base = $this->getOrderBase( $order->getBaseId() );
 
 		$desc = $this->getContext()->getI18n()->dt( 'mshop', 'Order %1$s' );
 		$orderid = $order->getId();
@@ -663,8 +663,8 @@ class OmniPay
 			'card' => $params,
 			'transactionId' => $orderid,
 			'description' => sprintf( $desc, $orderid ),
-			'amount' => $baseItem->getPrice()->getValue(),
-			'currency' => $baseItem->getLocale()->getCurrencyId(),
+			'amount' => $this->getAmount( $base->getPrice() ),
+			'currency' => $base->getLocale()->getCurrencyId(),
 			'clientIp' => $this->getConfigValue( array( 'client.ipaddress' ) ),
 		) + $urls;
 
@@ -685,7 +685,7 @@ class OmniPay
 
 			if( $response->isSuccessful() )
 			{
-				$this->saveTransationRef( $baseItem, $response->getTransactionReference() );
+				$this->saveTransationRef( $base, $response->getTransactionReference() );
 
 				$order->setPaymentStatus( $status );
 				$this->saveOrder( $order );
