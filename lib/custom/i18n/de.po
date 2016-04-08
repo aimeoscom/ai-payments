@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ai-payments\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-09-29 14:45+0200\n"
+"POT-Creation-Date: 2016-03-09 13:05+0100\n"
 "PO-Revision-Date: 2015-07-21 16:56+0000\n"
 "Last-Translator: Aimeos <aimeos@aimeos.org>\n"
 "Language-Team: German (http://www.transifex.com/aimeos/ai-payments/language/de/)\n"
@@ -18,12 +18,12 @@ msgstr ""
 "Language: de\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: src/MShop/Service/Provider/Payment/OmniPay.php:655
+#: src/MShop/Service/Provider/Payment/OmniPay.php:658
 #, php-format
 msgid "Order %1$s"
 msgstr "Bestellung %1$s"
 
-#: src/MShop/Service/Provider/Payment/OmniPay.php:478
+#: src/MShop/Service/Provider/Payment/OmniPay.php:481
 #, php-format
 msgid "Unexpected redirect: %1$s"
 msgstr "Unerwartete Weiterleitung: %1$s"
