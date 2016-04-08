@@ -224,7 +224,13 @@ class OmniPayTest extends \PHPUnit_Framework_TestCase
 
 	public function testProcessOffsiteAuthorizeFailure()
 	{
-		$provider = new \Omnipay\Dummy\Gateway();
+		$provider = $this->getMockBuilder( '\Omnipay\Dummy\Gateway' )
+			->setMethods( array( 'authorize' ) )
+			->disableOriginalConstructor()
+			->getMock();
+
+		$provider->expects( $this->once() )->method( 'authorize' )
+			->will( $this->throwException( new \Exception() ) );
 
 		$this->object->expects( $this->once() )->method( 'getProvider' )
 			->will( $this->returnValue( $provider ) );
