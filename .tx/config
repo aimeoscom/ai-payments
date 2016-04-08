@@ -7,3 +7,8 @@ source_file = lib/custom/i18n/ai-payments-custom.pot
 source_lang = en
 type = PO
 
+[ai-payments.lib-custom-code]
+file_filter = lib/custom/i18n/code/<lang>.po
+source_file = lib/custom/i18n/code/ai-payments-custom-code.pot
+source_lang = en
+type = PO
