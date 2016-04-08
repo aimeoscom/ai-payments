@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project name="ai-payments extension - HTML client" default="all">
+<project name="ai-payments extension - client" default="all">
 
 	<target name="build" description="Builds package for deployment">
 		<foreach param="mo-fname" absparam="mo-filename" target="build-mo">
             <fileset dir="./i18n">
-                <include name="code/*.po" />
+                <include name="**/*.po" />
             </fileset>
         </foreach>
 	</target>
