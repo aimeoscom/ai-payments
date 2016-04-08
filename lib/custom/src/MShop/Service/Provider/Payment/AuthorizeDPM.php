@@ -149,8 +149,8 @@ class AuthorizeDPM
 	 */
 	protected function getPaymentForm( \Aimeos\MShop\Order\Item\Iface $order, array $params )
 	{
+		$list = array();
 		$feConfig = $this->feConfig;
-		$form = parent::getPaymentForm( $order, $params );
 		$baseItem = $this->getOrderBase( $order->getBaseId(), \Aimeos\MShop\Order\Manager\Base\Base::PARTS_ADDRESS );
 
 		try
@@ -183,10 +183,11 @@ class AuthorizeDPM
 		catch( \Aimeos\MShop\Order\Exception $e ) { ; } // If address isn't available
 
 		foreach( $feConfig as $key => $config ) {
-			$form->setValue( $key, new \Aimeos\MW\Criteria\Attribute\Standard( $config ) );
+			$list[$key] = new \Aimeos\MW\Criteria\Attribute\Standard( $config );
 		}
 
-		return $form;
+		$url = $this->getConfigValue( array( 'payment.url-self' ) );
+		return new \Aimeos\MShop\Common\Item\Helper\Form\Standard( $url, 'POST', $list, false );
 	}
 
 
