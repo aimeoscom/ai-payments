@@ -13,6 +13,8 @@ Aimeos payment extension
 Aimeos extension for additional payment methods and their service provider.
 Some of them may have beta quality and improvements or contributions are always welcome!
 
+**Tip:** There's also [commercial support](https://aimeos.com/support/) available if you need help to get a specific provider working.
+
 ## Table of contents
 
 - [Installation](#installation)
