@@ -443,8 +443,10 @@ class OmniPay
 
 		$order = $this->getOrder( $params['orderid'] );
 		$base = $this->getOrderBase( $order->getBaseId() );
+		$service = $base->getService( \Aimeos\MShop\Order\Item\Base\Service\Base::TYPE_PAYMENT );
 
 		$params['transactionId'] = $order->getId();
+		$params['transactionReference'] = $service->getAttribute( 'TRANSACTIONID', 'payment/omnipay' );
 		$params['amount'] = $this->getAmount( $base->getPrice() );
 		$params['currency'] = $base->getLocale()->getCurrencyId();
 
@@ -692,6 +694,12 @@ class OmniPay
 			}
 			elseif( $response->isRedirect() )
 			{
+				if( ( $ref = $response->getTransactionReference() ) != null )
+				{
+					$this->saveTransationRef( $base, $ref );
+					$this->saveOrder( $order );
+				}
+
 				return $this->getRedirectForm( $response );
 			}
 			else
