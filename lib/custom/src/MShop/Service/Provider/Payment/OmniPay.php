@@ -694,10 +694,8 @@ class OmniPay
 			}
 			elseif( $response->isRedirect() )
 			{
-				if( ( $ref = $response->getTransactionReference() ) != null )
-				{
+				if( ( $ref = $response->getTransactionReference() ) != null ) {
 					$this->saveTransationRef( $base, $ref );
-					$this->saveOrder( $order );
 				}
 
 				return $this->getRedirectForm( $response );
