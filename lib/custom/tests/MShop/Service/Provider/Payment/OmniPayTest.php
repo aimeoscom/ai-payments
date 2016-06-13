@@ -33,7 +33,7 @@ class OmniPayTest extends \PHPUnit_Framework_TestCase
 		$this->serviceItem->setConfig( array( 'omnipay.type' => 'Dummy' ) );
 
 		$this->object = $this->getMockBuilder( '\\Aimeos\\MShop\\Service\\Provider\\Payment\\OmniPay' )
-			->setMethods( array( 'getOrder', 'getOrderBase', 'saveOrder', 'saveOrderBase', 'getProvider' ) )
+			->setMethods( array( 'getOrder', 'getOrderBase', 'saveOrder', 'saveOrderBase', 'getProvider', 'saveTransationRef' ) )
 			->setConstructorArgs( array( $this->context, $this->serviceItem ) )
 			->getMock();
 	}
@@ -261,8 +261,8 @@ class OmniPayTest extends \PHPUnit_Framework_TestCase
 			->getMock();
 
 		$response = $this->getMockBuilder( 'Aimeos\MShop\Service\Provider\Payment\ResponseRedirectTest' )
+			->setMethods( array( 'getTransactionReference' ) )
 			->disableOriginalConstructor()
-			->setMethods( null )
 			->getMock();
 
 
@@ -272,11 +272,16 @@ class OmniPayTest extends \PHPUnit_Framework_TestCase
 		$this->object->expects( $this->once() )->method( 'getProvider' )
 			->will( $this->returnValue( $provider ) );
 
+		$this->object->expects( $this->once() )->method( 'saveTransationRef' );
+
 		$provider->expects( $this->once() )->method( 'authorize' )
 			->will( $this->returnValue( $request ) );
 
 		$request->expects( $this->once() )->method( 'send' )
 			->will( $this->returnValue( $response ) );
+
+		$response->expects( $this->once() )->method( 'getTransactionReference' )
+			->will( $this->returnValue( '1234' ) );
 
 
 		$params = array(
