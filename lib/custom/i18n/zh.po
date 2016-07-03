@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ai-payments\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-03-09 13:05+0100\n"
+"POT-Creation-Date: 2016-07-03 16:55+0200\n"
 "PO-Revision-Date: 2016-06-06 05:35+0000\n"
 "Last-Translator: Bruce Liu <zcon.bruce@gmail.com>\n"
 "Language-Team: Chinese (http://www.transifex.com/aimeos/ai-payments/language/zh/)\n"
@@ -18,12 +18,12 @@ msgstr ""
 "Language: zh\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: src/MShop/Service/Provider/Payment/OmniPay.php:658
+#: src/MShop/Service/Provider/Payment/OmniPay.php:660
 #, php-format
 msgid "Order %1$s"
 msgstr "訂單 %1$s"
 
-#: src/MShop/Service/Provider/Payment/OmniPay.php:481
+#: src/MShop/Service/Provider/Payment/OmniPay.php:483
 #, php-format
 msgid "Unexpected redirect: %1$s"
 msgstr "未預期的重新導向: %1$s"
