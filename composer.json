@@ -22,6 +22,7 @@
 	"require": {
 		"php": ">=5.3.3",
 		"composer/installers": "^1.0",
+		"aimeos/aimeos-core": "2016.07.*",
 		"omnipay/authorizenet": "~2.0",
 		"omnipay/cardsave": "~2.0",
 		"omnipay/mollie": "~3.0",
