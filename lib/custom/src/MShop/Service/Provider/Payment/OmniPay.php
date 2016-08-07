@@ -499,6 +499,31 @@ class OmniPay
 	}
 
 
+	protected function getCardDetails( \Aimeos\MShop\Order\Item\Base\Iface $base, array $params )
+	{
+		if( $this->getValue( 'address' ) )
+		{
+			$addr = $base->getAddress( \Aimeos\MShop\Order\Item\Base\Address\Base::TYPE_PAYMENT );
+
+			$params['billingName'] = $addr->getFirstname() . ' ' . $addr->getLastname();
+			$params['billingFirstName'] = $addr->getFirstname();
+			$params['billingLastName'] = $addr->getLastname();
+			$params['billingCompany'] = $addr->getCompany();
+			$params['billingAddress1'] = $addr->getAddress1();
+			$params['billingAddress2'] = $addr->getAddress2();
+			$params['billingCity'] = $addr->getCity();
+			$params['billingPostcode'] = $addr->getPostal();
+			$params['billingState'] = $addr->getState();
+			$params['billingCountry'] = $addr->getCountryId();
+			$params['billingPhone'] = $addr->getTelephone();
+			$params['billingFax'] = $addr->getTelefax();
+			$params['email'] = $addr->getEmail();
+		}
+
+		return new \Omnipay\Common\CreditCard( $params );
+	}
+
+
 	/**
 	 * Returns the prefix for the configuration definitions
 	 *
@@ -655,19 +680,22 @@ class OmniPay
 	protected function processOrder( \Aimeos\MShop\Order\Item\Iface $order, array $params = array() )
 	{
 		$urls = $this->getPaymentUrls();
-		$base = $this->getOrderBase( $order->getBaseId() );
+		$parts = \Aimeos\MShop\Order\Manager\Base\Base::PARTS_SERVICE | \Aimeos\MShop\Order\Manager\Base\Base::PARTS_ADDRESS;
+		$base = $this->getOrderBase( $order->getBaseId(), $parts );
 
 		$desc = $this->getContext()->getI18n()->dt( 'mshop', 'Order %1$s' );
+		$card = $this->getCardDetails( $base, $params );
 		$orderid = $order->getId();
 
 		$data = array(
 			'token' => '',
-			'card' => $params,
+			'card' => $card,
 			'transactionId' => $orderid,
 			'description' => sprintf( $desc, $orderid ),
 			'amount' => $this->getAmount( $base->getPrice() ),
 			'currency' => $base->getLocale()->getCurrencyId(),
-			'clientIp' => $this->getConfigValue( array( 'client.ipaddress' ) ),
+			'language' => $base->getAddress( \Aimeos\MShop\Order\Item\Base\Address\Base::TYPE_PAYMENT )->getLanguageId(),
+			'clientIp' => $this->getValue( 'client.ipaddress' ),
 		) + $urls;
 
 		try
