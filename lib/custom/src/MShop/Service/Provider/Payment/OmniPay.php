@@ -501,7 +501,7 @@ class OmniPay
 
 	protected function getCardDetails( \Aimeos\MShop\Order\Item\Base\Iface $base, array $params )
 	{
-		if( $this->getValue( 'omnipay.address' ) )
+		if( $this->getValue( 'address' ) )
 		{
 			$addr = $base->getAddress( \Aimeos\MShop\Order\Item\Base\Address\Base::TYPE_PAYMENT );
 
@@ -680,7 +680,8 @@ class OmniPay
 	protected function processOrder( \Aimeos\MShop\Order\Item\Iface $order, array $params = array() )
 	{
 		$urls = $this->getPaymentUrls();
-		$base = $this->getOrderBase( $order->getBaseId() );
+		$parts = \Aimeos\MShop\Order\Manager\Base\Base::PARTS_SERVICE | \Aimeos\MShop\Order\Manager\Base\Base::PARTS_ADDRESS;
+		$base = $this->getOrderBase( $order->getBaseId(), $parts );
 
 		$desc = $this->getContext()->getI18n()->dt( 'mshop', 'Order %1$s' );
 		$card = $this->getCardDetails( $base, $params );
@@ -693,6 +694,7 @@ class OmniPay
 			'description' => sprintf( $desc, $orderid ),
 			'amount' => $this->getAmount( $base->getPrice() ),
 			'currency' => $base->getLocale()->getCurrencyId(),
+			'language' => $base->getAddress( \Aimeos\MShop\Order\Item\Base\Address\Base::TYPE_PAYMENT )->getLanguageId(),
 			'clientIp' => $this->getValue( 'client.ipaddress' ),
 		) + $urls;
 
