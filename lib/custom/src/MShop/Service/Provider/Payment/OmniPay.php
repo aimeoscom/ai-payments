@@ -499,6 +499,31 @@ class OmniPay
 	}
 
 
+	protected function getCardDetails( \Aimeos\MShop\Order\Item\Base\Iface $base, array $params )
+	{
+		if( $this->getValue( 'omnipay.address' ) )
+		{
+			$addr = $base->getAddress( \Aimeos\MShop\Order\Item\Base\Address\Base::TYPE_PAYMENT );
+
+			$params['billingName'] = $addr->getFirstname() . ' ' . $addr->getLastname();
+			$params['billingFirstName'] = $addr->getFirstname();
+			$params['billingLastName'] = $addr->getLastname();
+			$params['billingCompany'] = $addr->getCompany();
+			$params['billingAddress1'] = $addr->getAddress1();
+			$params['billingAddress2'] = $addr->getAddress2();
+			$params['billingCity'] = $addr->getCity();
+			$params['billingPostcode'] = $addr->getPostal();
+			$params['billingState'] = $addr->getState();
+			$params['billingCountry'] = $addr->getCountryId();
+			$params['billingPhone'] = $addr->getTelephone();
+			$params['billingFax'] = $addr->getTelefax();
+			$params['email'] = $addr->getEmail();
+		}
+
+		return new \Omnipay\Common\CreditCard( $params );
+	}
+
+
 	/**
 	 * Returns the prefix for the configuration definitions
 	 *
@@ -658,16 +683,17 @@ class OmniPay
 		$base = $this->getOrderBase( $order->getBaseId() );
 
 		$desc = $this->getContext()->getI18n()->dt( 'mshop', 'Order %1$s' );
+		$card = $this->getCardDetails( $base, $params );
 		$orderid = $order->getId();
 
 		$data = array(
 			'token' => '',
-			'card' => $params,
+			'card' => $card,
 			'transactionId' => $orderid,
 			'description' => sprintf( $desc, $orderid ),
 			'amount' => $this->getAmount( $base->getPrice() ),
 			'currency' => $base->getLocale()->getCurrencyId(),
-			'clientIp' => $this->getConfigValue( array( 'client.ipaddress' ) ),
+			'clientIp' => $this->getValue( 'client.ipaddress' ),
 		) + $urls;
 
 		try
