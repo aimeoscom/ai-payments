@@ -398,13 +398,13 @@ class OmniPayTest extends \PHPUnit_Framework_TestCase
 			->getMock();
 
 		$request = $this->getMockBuilder( '\Omnipay\Dummy\Message\AuthorizeRequest' )
-			->disableOriginalConstructor()
 			->setMethods( array( 'send' ) )
+			->disableOriginalConstructor()
 			->getMock();
 
 		$response = $this->getMockBuilder( 'Omnipay\Dummy\Message\Response' )
-			->disableOriginalConstructor()
 			->setMethods( array( 'isSuccessful' ) )
+			->disableOriginalConstructor()
 			->getMock();
 
 
@@ -446,13 +446,13 @@ class OmniPayTest extends \PHPUnit_Framework_TestCase
 			->getMock();
 
 		$request = $this->getMockBuilder( '\Omnipay\Dummy\Message\AuthorizeRequest' )
-			->disableOriginalConstructor()
 			->setMethods( array( 'send' ) )
+			->disableOriginalConstructor()
 			->getMock();
 
 		$response = $this->getMockBuilder( 'Aimeos\MShop\Service\Provider\Payment\ResponseRedirectTest' )
+			->setMethods( array( 'getTransactionReference', 'isRedirect' ) )
 			->disableOriginalConstructor()
-			->setMethods( array( 'isRedirect' ) )
 			->getMock();
 
 
@@ -731,6 +731,11 @@ if( class_exists( 'Omnipay\Dummy\Message\Response' )
 		public function getRedirectData()
 		{
 			return array( 'key' => 'value' );
+		}
+
+		public function getTransactionReference()
+		{
+			return 123;
 		}
 	}
 }

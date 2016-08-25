@@ -92,13 +92,13 @@ class CardSaveTest extends \PHPUnit_Framework_TestCase
 			->getMock();
 
 		$request = $this->getMockBuilder( '\Omnipay\Dummy\Message\AuthorizeRequest' )
-			->disableOriginalConstructor()
 			->setMethods( array( 'send' ) )
+			->disableOriginalConstructor()
 			->getMock();
 
 		$response = $this->getMockBuilder( 'Omnipay\Dummy\Message\Response' )
+			->setMethods( array( 'getTransactionReference', 'isSuccessful' ) )
 			->disableOriginalConstructor()
-			->setMethods( array( 'isSuccessful' ) )
 			->getMock();
 
 
@@ -122,6 +122,9 @@ class CardSaveTest extends \PHPUnit_Framework_TestCase
 
 		$response->expects( $this->once() )->method( 'isSuccessful' )
 			->will( $this->returnValue( true ) );
+
+		$response->expects( $this->once() )->method( 'getTransactionReference' )
+			->will( $this->returnValue( 123 ) );
 
 
 		$result = $this->object->updateSync( array( 'orderid' => '1', 'PaRes' => 'abc', 'MD' => '123' ) );

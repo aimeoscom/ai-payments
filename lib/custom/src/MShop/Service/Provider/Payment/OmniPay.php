@@ -499,6 +499,13 @@ class OmniPay
 	}
 
 
+	/**
+	 * Returns an Omnipay credit card object
+	 *
+	 * @param \Aimeos\MShop\Order\Item\Base\Iface $base Order base object with addresses and services
+	 * @param array $params POST parameters passed to the provider
+	 * @return \Omnipay\Common\CreditCard Credit card object
+	 */
 	protected function getCardDetails( \Aimeos\MShop\Order\Item\Base\Iface $base, array $params )
 	{
 		if( $this->getValue( 'address' ) )
@@ -532,6 +539,34 @@ class OmniPay
 	protected function getConfigPrefix()
 	{
 		return 'omnipay';
+	}
+
+
+	/**
+	 * Returns the data passed to the Omnipay library
+	 *
+	 * @param \Aimeos\MShop\Order\Item\Base\Iface $base Basket object
+	 * @param $orderid Unique order ID
+	 * @param array $params Request parameter if available
+	 */
+	protected function getData( \Aimeos\MShop\Order\Item\Base\Iface $base, $orderid, array $params )
+	{
+		$urls = $this->getPaymentUrls();
+		$desc = $this->getContext()->getI18n()->dt( 'mshop', 'Order %1$s' );
+		$card = $this->getCardDetails( $base, $params );
+
+		$data = array(
+			'token' => '',
+			'card' => $card,
+			'transactionId' => $orderid,
+			'description' => sprintf( $desc, $orderid ),
+			'amount' => $this->getAmount( $base->getPrice() ),
+			'currency' => $base->getLocale()->getCurrencyId(),
+			'language' => $base->getAddress( \Aimeos\MShop\Order\Item\Base\Address\Base::TYPE_PAYMENT )->getLanguageId(),
+			'clientIp' => $this->getValue( 'client.ipaddress' ),
+		) + $urls;
+
+		return $data;
 	}
 
 
@@ -679,24 +714,10 @@ class OmniPay
 	 */
 	protected function processOrder( \Aimeos\MShop\Order\Item\Iface $order, array $params = array() )
 	{
-		$urls = $this->getPaymentUrls();
 		$parts = \Aimeos\MShop\Order\Manager\Base\Base::PARTS_SERVICE | \Aimeos\MShop\Order\Manager\Base\Base::PARTS_ADDRESS;
 		$base = $this->getOrderBase( $order->getBaseId(), $parts );
-
-		$desc = $this->getContext()->getI18n()->dt( 'mshop', 'Order %1$s' );
-		$card = $this->getCardDetails( $base, $params );
-		$orderid = $order->getId();
-
-		$data = array(
-			'token' => '',
-			'card' => $card,
-			'transactionId' => $orderid,
-			'description' => sprintf( $desc, $orderid ),
-			'amount' => $this->getAmount( $base->getPrice() ),
-			'currency' => $base->getLocale()->getCurrencyId(),
-			'language' => $base->getAddress( \Aimeos\MShop\Order\Item\Base\Address\Base::TYPE_PAYMENT )->getLanguageId(),
-			'clientIp' => $this->getValue( 'client.ipaddress' ),
-		) + $urls;
+		$data = $this->getData( $base, $order->getId(), $params );
+		$urls = $this->getPaymentUrls();
 
 		try
 		{
