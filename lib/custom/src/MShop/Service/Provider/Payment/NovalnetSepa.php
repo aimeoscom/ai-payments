@@ -18,7 +18,7 @@ namespace Aimeos\MShop\Service\Provider\Payment;
  * @subpackage Service
  */
 class NovalnetSepa
-	extends \Aimeos\MShop\Service\Provider\Payment\Omnipay
+	extends \Aimeos\MShop\Service\Provider\Payment\OmniPay
 	implements \Aimeos\MShop\Service\Provider\Payment\Iface
 {
 	private $feConfig = array(
