@@ -99,13 +99,30 @@ class NovalnetCredit
 
 		try
 		{
+			$attrs = $basket->getService( \Aimeos\MShop\Order\Item\Base\Service\Base::TYPE_PAYMENT )->getAttributes();
+
+			foreach( $attrs as $item )
+			{
+				if( isset( $feconfig[$item->getCode()] ) ) {
+					$feconfig[$item->getCode()]['default'] = $item->getValue();
+				}
+			}
+		}
+		catch( \Aimeos\MShop\Order\Exception $e ) { ; } // If payment isn't available yet
+
+
+		try
+		{
 			$address = $basket->getAddress();
 
-			if( ( $fn = $address->getFirstname() ) !== '' && ( $ln = $address->getLastname() ) !== '' ) {
+			if( $feconfig['novalnetcredit.holder']['default'] == ''
+				&& ( $fn = $address->getFirstname() ) !== '' && ( $ln = $address->getLastname() ) !== ''
+			) {
 				$feconfig['novalnetcredit.holder']['default'] = $fn . ' ' . $ln;
 			}
 		}
 		catch( \Aimeos\MShop\Order\Exception $e ) { ; } // If address isn't available
+
 
 		foreach( $feconfig as $key => $config ) {
 			$list[$key] = new \Aimeos\MW\Criteria\Attribute\Standard( $config );

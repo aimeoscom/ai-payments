@@ -66,13 +66,30 @@ class NovalnetSepa
 
 		try
 		{
+			$attrs = $basket->getService( \Aimeos\MShop\Order\Item\Base\Service\Base::TYPE_PAYMENT )->getAttributes();
+
+			foreach( $attrs as $item )
+			{
+				if( isset( $feconfig[$item->getCode()] ) ) {
+					$feconfig[$item->getCode()]['default'] = $item->getValue();
+				}
+			}
+		}
+		catch( \Aimeos\MShop\Order\Exception $e ) { ; } // If payment isn't available yet
+
+
+		try
+		{
 			$address = $basket->getAddress();
 
-			if( ( $fn = $address->getFirstname() ) !== '' && ( $ln = $address->getLastname() ) !== '' ) {
+			if( $feconfig['novalnetsepa.holder']['default'] == ''
+				&& ( $fn = $address->getFirstname() ) !== '' && ( $ln = $address->getLastname() ) !== ''
+			) {
 				$feconfig['novalnetsepa.holder']['default'] = $fn . ' ' . $ln;
 			}
 		}
 		catch( \Aimeos\MShop\Order\Exception $e ) { ; } // If address isn't available
+
 
 		foreach( $feconfig as $key => $config ) {
 			$list[$key] = new \Aimeos\MW\Criteria\Attribute\Standard( $config );
@@ -134,7 +151,6 @@ class NovalnetSepa
 		$urls = $this->getPaymentUrls();
 		$card = $this->getCardDetails( $base, $params );
 		$desc = $this->getContext()->getI18n()->dt( 'mshop', 'Order %1$s' );
-		$service = $base->getService( \Aimeos\MShop\Order\Item\Base\Service\Base::TYPE_PAYMENT );
 
 		$data = array(
 			'token' => '',
@@ -145,9 +161,9 @@ class NovalnetSepa
 			'currency' => $base->getLocale()->getCurrencyId(),
 			'language' => $base->getAddress( \Aimeos\MShop\Order\Item\Base\Address\Base::TYPE_PAYMENT )->getLanguageId(),
 			'clientIp' => $this->getValue( 'client.ipaddress' ),
-			'bic' => $service->getAttribute( 'bic', 'session' ),
-			'iban' => $service->getAttribute( 'iban', 'session' ),
-			'bankaccount_holder' => $service->getAttribute( 'holder', 'session' ),
+			'bic' => ( isset( $params['novalnetsepa.bic'] ) ? $params['novalnetsepa.bic'] : '' ),
+			'iban' => ( isset( $params['novalnetsepa.iban'] ) ? $params['novalnetsepa.iban'] : '' ),
+			'bankaccount_holder' => ( isset( $params['novalnetsepa.holder'] ) ? $params['novalnetsepa.holder'] : '' ),
 		) + $urls;
 
 		return $data;
