@@ -103,8 +103,13 @@ class NovalnetCredit
 
 			foreach( $attrs as $item )
 			{
-				if( isset( $feconfig[$item->getCode()] ) ) {
-					$feconfig[$item->getCode()]['default'] = $item->getValue();
+				if( isset( $feconfig[$item->getCode()] ) )
+				{
+					if( is_array( $feconfig[$item->getCode()]['default'] ) ) {
+						$feconfig[$item->getCode()]['default'] = array_merge( array( $item->getValue() ), $feconfig[$item->getCode()]['default'] );
+					} else {
+						$feconfig[$item->getCode()]['default'] = $item->getValue();
+					}
 				}
 			}
 		}
@@ -200,13 +205,11 @@ class NovalnetCredit
 			$params['email'] = $addr->getEmail();
 		}
 
-		$service = $base->getService( \Aimeos\MShop\Order\Item\Base\Service\Base::TYPE_PAYMENT );
-
-		$params['holder'] = $service->getAttribute( 'ccholder' );
-		$params['number'] = $service->getAttribute( 'ccnumber' );
-		$params['expiryYear'] = $service->getAttribute( 'ccyear' );
-		$params['expiryMonth'] = $service->getAttribute( 'ccmonth' );
-		$params['cvv'] = $service->getAttribute( 'cccvv' );
+		$params['holder'] = ( isset( $params['novalnetcredit.holder'] ) ? $params['novalnetcredit.holder'] : '' );
+		$params['number'] = ( isset( $params['novalnetcredit.number'] ) ? $params['novalnetcredit.number'] : '' );
+		$params['expiryYear'] = ( isset( $params['novalnetcredit.year'] ) ? $params['novalnetcredit.year'] : '' );
+		$params['expiryMonth'] = ( isset( $params['novalnetcredit.month'] ) ? $params['novalnetcredit.month'] : '' );
+		$params['cvv'] = ( isset( $params['novalnetcredit.cvv'] ) ? $params['novalnetcredit.cvv'] : '' );
 
 		return new \Omnipay\Common\CreditCard( $params );
 	}
