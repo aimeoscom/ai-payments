@@ -233,7 +233,7 @@ class OmniPayTest extends \PHPUnit_Framework_TestCase
 			->getMock();
 
 		$provider->expects( $this->once() )->method( 'authorize' )
-			->will( $this->throwException( new \Exception() ) );
+			->will( $this->throwException( new \RuntimeException() ) );
 
 		$this->object->expects( $this->once() )->method( 'getProvider' )
 			->will( $this->returnValue( $provider ) );
@@ -686,7 +686,7 @@ class OmniPayTest extends \PHPUnit_Framework_TestCase
 		$result = $manager->searchItems( $search );
 
 		if( ( $item = reset( $result ) ) === false ) {
-			throw new \Exception( 'No order found' );
+			throw new \RuntimeException( 'No order found' );
 		}
 
 		return $item;

@@ -61,7 +61,7 @@ class NovalnetCreditTest extends \PHPUnit_Framework_TestCase
 		if( ( $order = reset( $orderItems ) ) === false )
 		{
 			$msg = 'No Order found with statuspayment "%1$s" and type "%2$s"';
-			throw new \Exception( sprintf( $msg, \Aimeos\MShop\Order\Item\Base::PAY_AUTHORIZED, \Aimeos\MShop\Order\Item\Base::TYPE_WEB ) );
+			throw new \RuntimeException( sprintf( $msg, \Aimeos\MShop\Order\Item\Base::PAY_AUTHORIZED, \Aimeos\MShop\Order\Item\Base::TYPE_WEB ) );
 		}
 
 		$basket = $orderBaseManager->load( $order->getBaseId() );
@@ -162,7 +162,7 @@ class NovalnetCreditTest extends \PHPUnit_Framework_TestCase
 		$result = $manager->searchItems( $search );
 
 		if( ( $item = reset( $result ) ) === false ) {
-			throw new \Exception( 'No order found' );
+			throw new \RuntimeException( 'No order found' );
 		}
 
 		return $item;
