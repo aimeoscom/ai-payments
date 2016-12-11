@@ -510,38 +510,40 @@ class OmniPay
 	{
 		if( $this->getValue( 'address' ) )
 		{
-            $addresses = $base->getAddresses();
+			$addresses = $base->getAddresses();
 
-            $addr = $addresses[ \Aimeos\MShop\Order\Item\Base\Address\Base::TYPE_PAYMENT  ];
-            $params['billingName'] = $addr->getFirstname() . ' ' . $addr->getLastname();
-            $params['billingFirstName'] = $addr->getFirstname();
-            $params['billingLastName'] = $addr->getLastname();
-            $params['billingCompany'] = $addr->getCompany();
-            $params['billingAddress1'] = $addr->getAddress1();
-            $params['billingAddress2'] = $addr->getAddress2();
-            $params['billingCity'] = $addr->getCity();
-            $params['billingPostcode'] = $addr->getPostal();
-            $params['billingState'] = $addr->getState();
-            $params['billingCountry'] = $addr->getCountryId();
-            $params['billingPhone'] = $addr->getTelephone();
-            $params['billingFax'] = $addr->getTelefax();
-            $params['email'] = $addr->getEmail();
+			if ( is_object($addresses[ \Aimeos\MShop\Order\Item\Base\Address\Base::TYPE_PAYMENT  ]) ) {
+				$addr = $addresses[ \Aimeos\MShop\Order\Item\Base\Address\Base::TYPE_PAYMENT  ];
+				$params['billingName'] = $addr->getFirstname() . ' ' . $addr->getLastname();
+				$params['billingFirstName'] = $addr->getFirstname();
+				$params['billingLastName'] = $addr->getLastname();
+				$params['billingCompany'] = $addr->getCompany();
+				$params['billingAddress1'] = $addr->getAddress1();
+				$params['billingAddress2'] = $addr->getAddress2();
+				$params['billingCity'] = $addr->getCity();
+				$params['billingPostcode'] = $addr->getPostal();
+				$params['billingState'] = $addr->getState();
+				$params['billingCountry'] = $addr->getCountryId();
+				$params['billingPhone'] = $addr->getTelephone();
+				$params['billingFax'] = $addr->getTelefax();
+				$params['email'] = $addr->getEmail();
 
-            if ( is_object($addresses[ \Aimeos\MShop\Order\Item\Base\Address\Base::TYPE_DELIVERY  ]) ) {
-                $addr = $addresses[\Aimeos\MShop\Order\Item\Base\Address\Base::TYPE_DELIVERY];
-            }
-            $params['shippingName'] = $addr->getFirstname() . ' ' . $addr->getLastname();
-            $params['shippingFirstName'] = $addr->getFirstname();
-            $params['shippingLastName'] = $addr->getLastname();
-            $params['shippingCompany'] = $addr->getCompany();
-            $params['shippingAddress1'] = $addr->getAddress1();
-            $params['shippingAddress2'] = $addr->getAddress2();
-            $params['shippingCity'] = $addr->getCity();
-            $params['shippingPostcode'] = $addr->getPostal();
-            $params['shippingState'] = $addr->getState();
-            $params['shippingCountry'] = $addr->getCountryId();
-            $params['shippingPhone'] = $addr->getTelephone();
-            $params['shippingFax'] = $addr->getTelefax();
+				if ( is_object($addresses[ \Aimeos\MShop\Order\Item\Base\Address\Base::TYPE_DELIVERY  ]) ) {
+					$addr = $addresses[\Aimeos\MShop\Order\Item\Base\Address\Base::TYPE_DELIVERY];
+				}
+				$params['shippingName'] = $addr->getFirstname() . ' ' . $addr->getLastname();
+				$params['shippingFirstName'] = $addr->getFirstname();
+				$params['shippingLastName'] = $addr->getLastname();
+				$params['shippingCompany'] = $addr->getCompany();
+				$params['shippingAddress1'] = $addr->getAddress1();
+				$params['shippingAddress2'] = $addr->getAddress2();
+				$params['shippingCity'] = $addr->getCity();
+				$params['shippingPostcode'] = $addr->getPostal();
+				$params['shippingState'] = $addr->getState();
+				$params['shippingCountry'] = $addr->getCountryId();
+				$params['shippingPhone'] = $addr->getTelephone();
+				$params['shippingFax'] = $addr->getTelefax();
+			}
 		}
 
 		return new \Omnipay\Common\CreditCard( $params );
