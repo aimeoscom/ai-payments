@@ -512,8 +512,10 @@ class OmniPay
 		{
 			$addresses = $base->getAddresses();
 
-			if ( is_object($addresses[ \Aimeos\MShop\Order\Item\Base\Address\Base::TYPE_PAYMENT  ]) ) {
-				$addr = $addresses[ \Aimeos\MShop\Order\Item\Base\Address\Base::TYPE_PAYMENT  ];
+			if( isset( $addresses[\Aimeos\MShop\Order\Item\Base\Address\Base::TYPE_PAYMENT ] ) )
+			{
+				$addr = $addresses[\Aimeos\MShop\Order\Item\Base\Address\Base::TYPE_PAYMENT];
+
 				$params['billingName'] = $addr->getFirstname() . ' ' . $addr->getLastname();
 				$params['billingFirstName'] = $addr->getFirstname();
 				$params['billingLastName'] = $addr->getLastname();
@@ -528,9 +530,10 @@ class OmniPay
 				$params['billingFax'] = $addr->getTelefax();
 				$params['email'] = $addr->getEmail();
 
-				if ( is_object($addresses[ \Aimeos\MShop\Order\Item\Base\Address\Base::TYPE_DELIVERY  ]) ) {
+				if( isset( $addresses[\Aimeos\MShop\Order\Item\Base\Address\Base::TYPE_DELIVERY ] ) ) {
 					$addr = $addresses[\Aimeos\MShop\Order\Item\Base\Address\Base::TYPE_DELIVERY];
 				}
+
 				$params['shippingName'] = $addr->getFirstname() . ' ' . $addr->getLastname();
 				$params['shippingFirstName'] = $addr->getFirstname();
 				$params['shippingLastName'] = $addr->getLastname();
