@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ai-payments\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-12-02 10:44+0100\n"
+"POT-Creation-Date: 2017-01-03 12:08+0100\n"
 "PO-Revision-Date: 2015-07-20 09:55+0000\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Serbian (http://www.transifex.com/aimeos/ai-payments/language/sr/)\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
 #: src/MShop/Service/Provider/Payment/NovalnetSepa.php:153
-#: src/MShop/Service/Provider/Payment/OmniPay.php:555
+#: src/MShop/Service/Provider/Payment/OmniPay.php:577
 #, php-format
 msgid "Order %1$s"
 msgstr ""

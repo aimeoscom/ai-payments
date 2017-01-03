@@ -1,25 +1,25 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-#
+# 
 # Translators:
 # Bruce Liu <zcon.bruce@gmail.com>, 2016
 msgid ""
 msgstr ""
 "Project-Id-Version: ai-payments\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-12-02 10:44+0100\n"
+"POT-Creation-Date: 2017-01-03 12:08+0100\n"
 "PO-Revision-Date: 2016-06-06 05:35+0000\n"
 "Last-Translator: Bruce Liu <zcon.bruce@gmail.com>\n"
 "Language-Team: Chinese (http://www.transifex.com/aimeos/ai-payments/language/zh/)\n"
-"Language: zh\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: zh\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
 #: src/MShop/Service/Provider/Payment/NovalnetSepa.php:153
-#: src/MShop/Service/Provider/Payment/OmniPay.php:555
+#: src/MShop/Service/Provider/Payment/OmniPay.php:577
 #, php-format
 msgid "Order %1$s"
 msgstr "訂單 %1$s"
