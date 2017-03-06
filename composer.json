@@ -11,12 +11,6 @@
 		"forum": "https://aimeos.org/help",
 		"wiki": "https://aimeos.org/docs"
 	},
-	"repositories": [
-		{
-			"type": "vcs",
-			"url": "https://github.com/aimeos/php-coveralls.git"
-		}
-	],
 	"prefer-stable": true,
 	"minimum-stability": "dev",
 	"require": {
@@ -30,7 +24,6 @@
 		"omnipay/stripe": "~2.0"
 	},
 	"require-dev": {
-		"satooshi/php-coveralls": "dev-master",
 		"omnipay/dummy": "~2.0"
 	},
 	"autoload": {
