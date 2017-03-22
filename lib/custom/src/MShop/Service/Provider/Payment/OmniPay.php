@@ -653,7 +653,7 @@ class OmniPay
 
 		try
 		{
-			$address = $baseItem->getAddress();
+			$address = $baseItem->getAddress( \Aimeos\MShop\Order\Item\Base\Address\Base::TYPE_PAYMENT );
 
 			if( !isset( $params[ $feConfig['payment.firstname']['internalcode'] ] )
 				|| $params[ $feConfig['payment.firstname']['internalcode'] ] == ''
