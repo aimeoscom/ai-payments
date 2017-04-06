@@ -75,7 +75,7 @@ class AuthorizeDpmTest extends \PHPUnit_Framework_TestCase
 		$this->object->expects( $this->any() )->method( 'getOrderBase' )
 			->will( $this->returnValue( $this->getOrderBase() ) );
 
-		$result = $this->object->process( $this->getOrder(), array() );
+		$result = $this->object->process( $this->getOrder(), [] );
 
 		$this->assertInstanceOf( '\\Aimeos\\MShop\\Common\\Item\\Helper\\Form\\Iface', $result );
 	}

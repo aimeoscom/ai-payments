@@ -262,7 +262,7 @@ class OmniPay
 
 		$prefix = $this->getConfigPrefix();
 		$config = $this->beConfig;
-		$list = array();
+		$list = [];
 
 		if( $prefix !== 'omnipay' ) {
 			unset( $config['type'], $config['onsite'] );
@@ -378,7 +378,7 @@ class OmniPay
 	 * @return \Aimeos\MShop\Common\Item\Helper\Form\Standard Form object with URL, action and parameters to redirect to
 	 * 	(e.g. to an external server of the payment provider or to a local success page)
 	 */
-	public function process( \Aimeos\MShop\Order\Item\Iface $order, array $params = array() )
+	public function process( \Aimeos\MShop\Order\Item\Iface $order, array $params = [] )
 	{
 		if( $this->getValue( 'onsite' ) == true && ( !isset( $params['number'] ) || !isset( $params['cvv'] ) ) ) {
 			return $this->getPaymentForm( $order, $params );
@@ -435,7 +435,7 @@ class OmniPay
 	 * @param array &$header Response headers for notification requests
 	 * @return \Aimeos\MShop\Order\Item\Iface|null Order item if update was successful, null if the given parameters are not valid for this provider
 	 */
-	public function updateSync( array $params = array(), $body = null, &$output = null, array &$header = array() )
+	public function updateSync( array $params = [], $body = null, &$output = null, array &$header = [] )
 	{
 		if( !isset( $params['orderid'] ) ) {
 			return null;
@@ -647,7 +647,7 @@ class OmniPay
 	 */
 	protected function getPaymentForm( \Aimeos\MShop\Order\Item\Iface $order, array $params )
 	{
-		$list = array();
+		$list = [];
 		$feConfig = $this->feConfig;
 		$baseItem = $this->getOrderBase( $order->getBaseId(), \Aimeos\MShop\Order\Manager\Base\Base::PARTS_ADDRESS );
 
@@ -703,7 +703,7 @@ class OmniPay
 	 */
 	protected function getRedirectForm( \Omnipay\Common\Message\RedirectResponseInterface $response )
 	{
-		$list = array();
+		$list = [];
 
 		foreach( (array) $response->getRedirectData() as $key => $value )
 		{
@@ -734,7 +734,7 @@ class OmniPay
 	 * @return \Aimeos\MShop\Common\Item\Helper\Form\Standard Form object with URL, action and parameters to redirect to
 	 * 	(e.g. to an external server of the payment provider or to a local success page)
 	 */
-	protected function processOrder( \Aimeos\MShop\Order\Item\Iface $order, array $params = array() )
+	protected function processOrder( \Aimeos\MShop\Order\Item\Iface $order, array $params = [] )
 	{
 		$parts = \Aimeos\MShop\Order\Manager\Base\Base::PARTS_SERVICE | \Aimeos\MShop\Order\Manager\Base\Base::PARTS_ADDRESS;
 		$base = $this->getOrderBase( $order->getBaseId(), $parts );
@@ -784,7 +784,7 @@ class OmniPay
 			throw new \Aimeos\MShop\Service\Exception( $e->getMessage() );
 		}
 
-		return new \Aimeos\MShop\Common\Item\Helper\Form\Standard( $urls['returnUrl'], 'POST', array() );
+		return new \Aimeos\MShop\Common\Item\Helper\Form\Standard( $urls['returnUrl'], 'POST', [] );
 	}
 
 

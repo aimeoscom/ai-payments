@@ -149,7 +149,7 @@ class AuthorizeDPM
 	 */
 	protected function getPaymentForm( \Aimeos\MShop\Order\Item\Iface $order, array $params )
 	{
-		$list = array();
+		$list = [];
 		$feConfig = $this->feConfig;
 		$baseItem = $this->getOrderBase( $order->getBaseId(), \Aimeos\MShop\Order\Manager\Base\Base::PARTS_ADDRESS );
 

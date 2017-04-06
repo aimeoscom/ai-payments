@@ -118,7 +118,7 @@ class OmniPayTest extends \PHPUnit_Framework_TestCase
 		$this->object->expects( $this->once() )->method( 'getOrderBase' )
 			->will( $this->returnValue( $this->getOrderBase() ) );
 
-		$result = $this->object->process( $this->getOrder(), array() );
+		$result = $this->object->process( $this->getOrder(), [] );
 
 		$this->assertInstanceOf( '\\Aimeos\\MShop\\Common\\Item\\Helper\\Form\\Iface', $result );
 	}
@@ -140,7 +140,7 @@ class OmniPayTest extends \PHPUnit_Framework_TestCase
 		$this->object->expects( $this->once() )->method( 'getOrderBase' )
 			->will( $this->returnValue( $baseItem ) );
 
-		$result = $this->object->process( $this->getOrder(), array() );
+		$result = $this->object->process( $this->getOrder(), [] );
 
 		$this->assertInstanceOf( '\\Aimeos\\MShop\\Common\\Item\\Helper\\Form\\Iface', $result );
 	}
@@ -247,7 +247,7 @@ class OmniPayTest extends \PHPUnit_Framework_TestCase
 			->will( $this->returnValue( $baseItem ) );
 
 		$this->setExpectedException( '\\Aimeos\\MShop\\Service\\Exception' );
-		$this->object->process( $this->getOrder(), array() );
+		$this->object->process( $this->getOrder(), [] );
 	}
 
 
@@ -330,7 +330,7 @@ class OmniPayTest extends \PHPUnit_Framework_TestCase
 
 	public function testUpdateSyncNone()
 	{
-		$result = $this->object->updateSync( array() );
+		$result = $this->object->updateSync( [] );
 
 		$this->assertEquals( null, $result );
 	}

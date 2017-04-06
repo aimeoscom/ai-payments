@@ -61,7 +61,7 @@ class NovalnetSepa
 	 */
 	public function getConfigFE( \Aimeos\MShop\Order\Item\Base\Iface $basket )
 	{
-		$list = array();
+		$list = [];
 		$feconfig = $this->feConfig;
 
 		try
@@ -133,7 +133,7 @@ class NovalnetSepa
 	 * @return \Aimeos\MShop\Common\Item\Helper\Form\Standard Form object with URL, action and parameters to redirect to
 	 * 	(e.g. to an external server of the payment provider or to a local success page)
 	 */
-	public function process( \Aimeos\MShop\Order\Item\Iface $order, array $params = array() )
+	public function process( \Aimeos\MShop\Order\Item\Iface $order, array $params = [] )
 	{
 		return $this->processOrder( $order, $params );
 	}

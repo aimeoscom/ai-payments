@@ -30,7 +30,7 @@ class AuthorizeSIM
 	 * @param array &$header Response headers for notification requests
 	 * @return \Aimeos\MShop\Order\Item\Iface|null Order item if update was successful, null if the given parameters are not valid for this provider
 	 */
-	public function updateSync( array $params = array(), $body = null, &$output = null, array &$header = array() )
+	public function updateSync( array $params = [], $body = null, &$output = null, array &$header = [] )
 	{
 		if( isset( $params['x_MD5_Hash'] ) )
 		{

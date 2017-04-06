@@ -129,7 +129,7 @@ class AuthorizeSimTest extends \PHPUnit_Framework_TestCase
 
 	public function testUpdateSyncNone()
 	{
-		$result = $this->object->updateSync( array() );
+		$result = $this->object->updateSync( [] );
 
 		$this->assertEquals( null, $result );
 	}
