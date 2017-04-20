@@ -9,7 +9,7 @@
 namespace Aimeos\MShop\Service\Provider\Payment;
 
 
-class NovalnetCreditTest extends \PHPUnit_Framework_TestCase
+class NovalnetCreditTest extends \PHPUnit\Framework\TestCase
 {
 	private $object;
 	private $ordServItem;

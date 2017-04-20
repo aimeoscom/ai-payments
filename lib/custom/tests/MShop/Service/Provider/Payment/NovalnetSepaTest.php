@@ -9,7 +9,7 @@
 namespace Aimeos\MShop\Service\Provider\Payment;
 
 
-class NovalnetSepaTest extends \PHPUnit_Framework_TestCase
+class NovalnetSepaTest extends \PHPUnit\Framework\TestCase
 {
 	private $object;
 	private $ordServItem;
