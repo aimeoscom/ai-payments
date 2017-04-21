@@ -441,7 +441,23 @@ class OmniPay
 			return null;
 		}
 
-		$order = $this->getOrder( $params['orderid'] );
+		return $this->updateSyncOrder( $params['orderid'], $params, $body, $output, $header );
+	}
+
+
+	/**
+	 * Updates the order for the given ID.
+	 *
+	 * @param string $orderid Order ID sent by the payment provider
+	 * @param array $params Associative list of request parameters
+	 * @param string|null $body Information sent within the body of the request
+	 * @param string|null &$output Response body for notification requests
+	 * @param array &$header Response headers for notification requests
+	 * @return \Aimeos\MShop\Order\Item\Iface|null Order item if update was successful, null if the given parameters are not valid for this provider
+	 */
+	protected function updateSyncOrder( $orderid, array $params = [], $body = null, &$output = null, array &$header = [] )
+	{
+		$order = $this->getOrder( $orderid );
 		$base = $this->getOrderBase( $order->getBaseId() );
 		$service = $base->getService( \Aimeos\MShop\Order\Item\Base\Service\Base::TYPE_PAYMENT );
 
