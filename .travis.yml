@@ -13,7 +13,7 @@ before_script:
   - git clone --depth=50 --branch=2017.04 git://github.com/aimeos/aimeos-core.git ../aimeos-core
   - cd ../aimeos-core
   - mv ../ai-payments ext/
-  - composer require "omnipay/omnipay:~2.0"
+  - composer require "omnipay/omnipay:2.3.x-dev"
   - mysql -e 'create database aimeos;'
   - echo "<?php return array( 'db' => array( 'adapter' => 'mysql', 'host' => '127.0.0.1', 'database' => 'aimeos', 'username' => 'root', 'password' => '', 'limit' => 2, 'opt-persistent' => false, 'stmt' => array( \"SET NAMES 'utf8'\", \"SET SESSION sql_mode='ANSI'\" ) ) );" > config/resource.php
 
