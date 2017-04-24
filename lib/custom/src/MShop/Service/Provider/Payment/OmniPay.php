@@ -457,6 +457,7 @@ class OmniPay
 	 */
 	protected function updateSyncOrder( $orderid, array $params = [], $body = null, &$output = null, array &$header = [] )
 	{
+		$status = null;
 		$order = $this->getOrder( $orderid );
 		$base = $this->getOrderBase( $order->getBaseId() );
 		$service = $base->getService( \Aimeos\MShop\Order\Item\Base\Service\Base::TYPE_PAYMENT );
@@ -480,6 +481,12 @@ class OmniPay
 				$response = $provider->completePurchase( $params )->send();
 				$status = \Aimeos\MShop\Order\Item\Base::PAY_RECEIVED;
 			}
+			elseif( $provider->supportsAcceptNotification() )
+			{
+				$request = $provider->acceptNotification();
+				$status = $this->translateStatus( $request->getTransactionStatus() );
+				$response = $request->send();
+			}
 			else
 			{
 				return $order;
@@ -489,7 +496,17 @@ class OmniPay
 			{
 				$this->saveTransationRef( $base, $response->getTransactionReference() );
 
-				$order->setPaymentStatus( $status );
+				if( $status !== null )
+				{
+					$order->setPaymentStatus( $status );
+					$this->saveOrder( $order );
+				}
+			}
+			elseif( $response->isCancelled() )
+			{
+				$this->saveTransationRef( $base, $response->getTransactionReference() );
+
+				$order->setPaymentStatus( \Aimeos\MShop\Order\Item\Base::PAY_CANCELED );
 				$this->saveOrder( $order );
 			}
 			elseif( $response->isRedirect() )
@@ -817,5 +834,25 @@ class OmniPay
 		$attr = array( 'TRANSACTIONID' => $ref );
 		$this->setAttributes( $serviceItem, $attr, 'payment/omnipay' );
 		$this->saveOrderBase( $baseItem );
+	}
+
+
+	/**
+	 * Translates the Omnipay status into the Aimeos payment status value
+	 *
+	 * @param string $status Omnipay payment status
+	 * @return integer|null Aimeos payment status value or null for no new status
+	 */
+	protected function translateStatus( $status )
+	{
+		switch( $status )
+		{
+			case \Omnipay\Common\Message\NotificationInterface::STATUS_COMPLETED:
+				return \Aimeos\MShop\Order\Item\Base::PAY_RECEIVED;
+			case \Omnipay\Common\Message\NotificationInterface::STATUS_PENDING:
+				return \Aimeos\MShop\Order\Item\Base::PAY_PENDING;
+			case \Omnipay\Common\Message\NotificationInterface::STATUS_FAILED:
+				return \Aimeos\MShop\Order\Item\Base::PAY_REFUSED;
+		}
 	}
 }
