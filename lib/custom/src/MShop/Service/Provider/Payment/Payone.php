@@ -32,10 +32,12 @@ class Payone
 	 */
 	public function updateSync( array $params = [], $body = null, &$output = null, array &$header = [] )
 	{
-		if( isset( $params['reference'] ) ) {
-			return $this->updateSyncOrder( $params['reference'], $params, $body, $output, $header );
-		}
+		if( isset( $params['reference'] ) )
+		{
+			$result = $this->updateSyncOrder( $params['reference'], $params, $body, $output, $header );
+			$output = 'TSOK'; // payment update successful
 
-		return parent::updateSync( $params, $body, $output, $header );
+			return $result;
+		}
 	}
 }
