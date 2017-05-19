@@ -50,6 +50,6 @@ class Payone
 	 */
 	protected function getOrder( $id )
 	{
-		return \Aimeos\MShop\Factory::createManager( $this->context, 'order' )->getItem( $id );
+		return \Aimeos\MShop\Factory::createManager( $this->getContext(), 'order' )->getItem( $id );
 	}
 }
