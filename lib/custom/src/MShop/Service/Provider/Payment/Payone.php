@@ -64,7 +64,6 @@ class Payone
 				'accessMethod' => 'classic',
 				'items' => $items,
 			) );
-
 		return $data;
 	}
 	
