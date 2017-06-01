@@ -22,6 +22,52 @@ class Payone
 	implements \Aimeos\MShop\Service\Provider\Payment\Iface
 {
 	/**
+	 * Returns the data passed to the Omnipay library
+	 *
+	 * @param \Aimeos\MShop\Order\Item\Base\Iface $base Basket object
+	 * @param $orderid Unique order ID
+	 * @param array $params Request parameter if available
+	 */
+	protected function getData( \Aimeos\MShop\Order\Item\Base\Iface $base, $orderid, array $params )
+	{
+		$data = parent::getData( $base, $orderid, $params );
+		$lines = [];
+		foreach( $base->getProducts() as $product )  {
+			$lines[] = new \Omnipay\Payone\Extend\Item([
+				'id' => (string) $product->toArray()['order.base.product.prodcode'],
+				'name' => $product->getName(),
+				'itemType' => 'goods', // Available types: goods, shipping etc.
+				'quantity' => $product->getQuantity(),
+				'price' => $product->getPrice()->getValue(),
+				'vat' => (int) $product->getPrice()->getTaxRate(),
+			]);
+		}
+		if ($base->getService('delivery')->getPrice()->getCosts() != '0.00') {
+			$deliveryObject = $base->getService('delivery');
+			$lines[] = new \Omnipay\Payone\Extend\Item([
+				'id' => (string) $deliveryObject->getId(),
+				'name'->getService('delivery')->getName()
+				'itemType' => 'shipment',
+				'quantity' => 1,
+				'price' => $deliveryObject->getPrice()->getCosts(),
+				'vat' => (int) $deliveryObject->getPrice()->getTaxRate(),
+			]);
+		}
+		if ($base->getService('delivery')->getPrice()->getCosts() != '0.00') {
+			$completePrice = (string) ( (float) $deliveryObject->getPrice()->getCosts() + (float) $base->getPrice()->getValue() );
+		} else {
+			$completePrice = $base->getPrice()->getValue();
+		}
+		$items = new \Omnipay\Common\ItemBag($lines);
+		$data = array_merge($data, array(
+				'amount' => $completePrice,
+				'accessMethod' => 'classic',
+				'items' => $items,
+			) );
+		return $data;
+	}
+	
+	/**
 	 * Updates the orders for which status updates were received via direct requests (like HTTP).
 	 *
 	 * @param array $params Associative list of request parameters
