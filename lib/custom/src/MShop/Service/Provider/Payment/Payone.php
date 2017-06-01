@@ -30,43 +30,48 @@ class Payone
 	 */
 	protected function getData( \Aimeos\MShop\Order\Item\Base\Iface $base, $orderid, array $params )
 	{
-		$data = parent::getData( $base, $orderid, $params );
 		$lines = [];
-		foreach( $base->getProducts() as $product )  {
+		$delivery = $base->getService('delivery');
+		$completePrice = $base->getPrice()->getValue();
+
+		foreach( $base->getProducts() as $product )
+		{
+			$list = $product->toArray();
+
 			$lines[] = new \Omnipay\Payone\Extend\Item([
-				'id' => (string) $product->toArray()['order.base.product.prodcode'],
+				'id' => $list['order.base.product.prodcode'],
 				'name' => $product->getName(),
 				'itemType' => 'goods', // Available types: goods, shipping etc.
 				'quantity' => $product->getQuantity(),
 				'price' => $product->getPrice()->getValue(),
-				'vat' => (int) $product->getPrice()->getTaxRate(),
+				'vat' => (int) $base->getPrice()->getTaxFlag(),
 			]);
 		}
-		if ($base->getService('delivery')->getPrice()->getCosts() != '0.00') {
-			$deliveryObject = $base->getService('delivery');
+
+		if( $delivery->getPrice()->getCosts() != '0.00' )
+		{
 			$lines[] = new \Omnipay\Payone\Extend\Item([
-				'id' => (string) $deliveryObject->getId(),
-				'name'->getService('delivery')->getName()
+				'id' => $delivery->getId(),
+				'name' => $delivery->getName(),
 				'itemType' => 'shipment',
 				'quantity' => 1,
-				'price' => $deliveryObject->getPrice()->getCosts(),
-				'vat' => (int) $deliveryObject->getPrice()->getTaxRate(),
+				'price' => $delivery->getPrice()->getCosts(),
+				'vat' => (int) $base->getPrice()->getTaxFlag(),
 			]);
+
+			$completePrice = (string) ( (float) $delivery->getPrice()->getCosts() + (float) $completePrice );
 		}
-		if ($base->getService('delivery')->getPrice()->getCosts() != '0.00') {
-			$completePrice = (string) ( (float) $deliveryObject->getPrice()->getCosts() + (float) $base->getPrice()->getValue() );
-		} else {
-			$completePrice = $base->getPrice()->getValue();
-		}
-		$items = new \Omnipay\Common\ItemBag($lines);
-		$data = array_merge($data, array(
+
+		return array_merge(
+			parent::getData( $base, $orderid, $params ),
+			array(
 				'amount' => $completePrice,
 				'accessMethod' => 'classic',
-				'items' => $items,
-			) );
-		return $data;
+				'items' => new \Omnipay\Common\ItemBag( $lines ),
+			)
+		);
 	}
-	
+
 	/**
 	 * Updates the orders for which status updates were received via direct requests (like HTTP).
 	 *
