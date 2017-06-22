@@ -606,22 +606,20 @@ class OmniPay
 	 */
 	protected function getData( \Aimeos\MShop\Order\Item\Base\Iface $base, $orderid, array $params )
 	{
-		$urls = $this->getPaymentUrls();
-		$desc = $this->getContext()->getI18n()->dt( 'mshop', 'Order %1$s' );
-		$card = $this->getCardDetails( $base, $params );
-
 		$data = array(
-			'token' => '',
-			'card' => $card,
 			'transactionId' => $orderid,
-			'description' => sprintf( $desc, $orderid ),
 			'amount' => $this->getAmount( $base->getPrice() ),
 			'currency' => $base->getLocale()->getCurrencyId(),
 			'language' => $base->getAddress( \Aimeos\MShop\Order\Item\Base\Address\Base::TYPE_PAYMENT )->getLanguageId(),
+			'description' => sprintf( $this->getContext()->getI18n()->dt( 'mshop', 'Order %1$s' ), $orderid ),
 			'clientIp' => $this->getValue( 'client.ipaddress' ),
-		) + $urls;
+		);
 
-		return $data;
+		if( $this->getValue( 'onsite', false ) || $this->getValue( 'address', false ) ) {
+			$data['card'] = $this->getCardDetails( $base, $params );
+		}
+
+		return $data + $this->getPaymentUrls();
 	}
 
 

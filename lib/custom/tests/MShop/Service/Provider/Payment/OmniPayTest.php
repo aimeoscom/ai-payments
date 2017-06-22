@@ -208,7 +208,7 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 		$parts = \Aimeos\MShop\Order\Manager\Base\Base::PARTS_ADDRESS | \Aimeos\MShop\Order\Manager\Base\Base::PARTS_SERVICE;
 		$baseItem = $this->getOrderBase( $parts );
 
-		$this->serviceItem->setConfig( array( 'omnipay.type' => 'Dummy', 'omnipay.authorize' => '1' ) );
+		$this->serviceItem->setConfig( array( 'omnipay.type' => 'Dummy', 'omnipay.authorize' => '1', 'omnipay.onsite' => 1 ) );
 
 		$this->object->expects( $this->once() )->method( 'getOrderBase' )
 			->will( $this->returnValue( $baseItem ) );
@@ -217,6 +217,7 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 			'number' => '4929000000006',
 			'expiryMonth' => '1',
 			'expiryYear' => '2099',
+			'cvv' => '123',
 		);
 
 		$result = $this->object->process( $this->getOrder(), $params );
