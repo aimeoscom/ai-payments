@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-01-03 12:08+0100\n"
+"POT-Creation-Date: 2017-06-28 18:59+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,12 +18,12 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 #: src/MShop/Service/Provider/Payment/NovalnetSepa.php:153
-#: src/MShop/Service/Provider/Payment/OmniPay.php:577
+#: src/MShop/Service/Provider/Payment/OmniPay.php:614
 #, php-format
 msgid "Order %1$s"
 msgstr ""
 
-#: src/MShop/Service/Provider/Payment/OmniPay.php:483
+#: src/MShop/Service/Provider/Payment/OmniPay.php:516
 #, php-format
 msgid "Unexpected redirect: %1$s"
 msgstr ""
