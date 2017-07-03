@@ -15,7 +15,7 @@
 	"minimum-stability": "dev",
 	"require": {
 		"php": ">=5.3.3",
-		"aimeos/aimeos-core": "dev-master",
+		"aimeos/aimeos-core": "~2017.07",
 		"composer/installers": "^1.0",
 		"omnipay/authorizenet": "~2.0",
 		"omnipay/cardsave": "~2.0",
