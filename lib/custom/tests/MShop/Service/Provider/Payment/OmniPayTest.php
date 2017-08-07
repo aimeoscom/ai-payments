@@ -386,6 +386,62 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 	}
 
 
+	public function testUpdateSyncNotifictionPending()
+	{
+		$orderItem = $this->getOrder();
+		$baseItem = $this->getOrderBase( \Aimeos\MShop\Order\Manager\Base\Base::PARTS_SERVICE );
+
+
+		$provider = $this->getMockBuilder( 'Omnipay\Dummy\Gateway' )
+			->setMethods( array( 'supportsAcceptNotification', 'acceptNotification' ) )
+			->getMock();
+
+		$request = $this->getMockBuilder( '\Omnipay\Dummy\Message\AuthorizeRequest' )
+			->disableOriginalConstructor()
+			->setMethods( array( 'getTransactionStatus', 'send' ) )
+			->getMock();
+
+		$response = $this->getMockBuilder( 'Omnipay\Dummy\Message\Response' )
+			->disableOriginalConstructor()
+			->setMethods( array( 'isSuccessful', 'isPending' ) )
+			->getMock();
+
+
+		$this->object->expects( $this->once() )->method( 'getOrder' )
+			->will( $this->returnValue( $orderItem ) );
+
+		$this->object->expects( $this->once() )->method( 'getOrderBase' )
+			->will( $this->returnValue( $baseItem ) );
+
+		$this->object->expects( $this->once() )->method( 'getProvider' )
+			->will( $this->returnValue( $provider ) );
+
+		$provider->expects( $this->once() )->method( 'supportsAcceptNotification' )
+			->will( $this->returnValue( true ) );
+
+		$provider->expects( $this->once() )->method( 'acceptNotification' )
+			->will( $this->returnValue( $request ) );
+
+		$request->expects( $this->once() )->method( 'getTransactionStatus' )
+			->will( $this->returnValue( null ) );
+
+		$request->expects( $this->once() )->method( 'send' )
+			->will( $this->returnValue( $response ) );
+
+		$response->expects( $this->once() )->method( 'isSuccessful' )
+			->will( $this->returnValue( false ) );
+
+		$response->expects( $this->once() )->method( 'isPending' )
+			->will( $this->returnValue( true ) );
+
+
+		$result = $this->object->updateSync( array( 'orderid' => '1' ) );
+
+		$this->assertInstanceOf( '\\Aimeos\\MShop\\Order\\Item\\Iface', $result );
+		$this->assertEquals( \Aimeos\MShop\Order\Item\Base::PAY_PENDING, $result->getPaymentStatus() );
+	}
+
+
 	public function testUpdateSyncNotifictionCancelled()
 	{
 		$orderItem = $this->getOrder();

@@ -502,6 +502,13 @@ class OmniPay
 					$this->saveOrder( $order );
 				}
 			}
+			elseif( $response->isPending() )
+			{
+				$this->saveTransationRef( $base, $response->getTransactionReference() );
+
+				$order->setPaymentStatus( \Aimeos\MShop\Order\Item\Base::PAY_PENDING );
+				$this->saveOrder( $order );
+			}
 			elseif( $response->isCancelled() )
 			{
 				$this->saveTransationRef( $base, $response->getTransactionReference() );

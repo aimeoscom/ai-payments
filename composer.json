@@ -17,6 +17,7 @@
 		"php": ">=5.3.3",
 		"aimeos/aimeos-core": "dev-master",
 		"composer/installers": "^1.0",
+		"omnipay/common": "~2.5",
 		"omnipay/authorizenet": "~2.0",
 		"omnipay/cardsave": "~2.0",
 		"omnipay/mollie": "~3.0",
