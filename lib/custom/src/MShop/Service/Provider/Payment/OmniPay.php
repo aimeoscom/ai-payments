@@ -230,7 +230,7 @@ class OmniPay
 	 */
 	public function getConfigBE()
 	{
-		$list = parent::getConfigBE();
+		$list = [];
 
 		$prefix = $this->getConfigPrefix();
 		$config = $this->beConfig;
