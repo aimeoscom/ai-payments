@@ -1,26 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <project name="ai-payments extension - custom library extensions" default="test">
-	
+
 	<target name="test" description="Executes unit tests">
 		<echo msg="Executing unit tests" />
 		<delete file="tests/unittest.log" quiet="true" failonerror="false" />
 		<exec command="${bindir}phpunit -d memory_limit=-1 --include-path ${coredir} --configuration=phpunit.xml ."
-			  dir="tests" checkreturn="true" logoutput="true"/>
+			  dir="tests" checkreturn="true" logoutput="true" passthru="true" />
 	</target>
-	
+
 	<target name="coverage" description="Generates code coverage report">
 		<echo msg="Generating code coverage report" />
 		<delete file="tests/unittests.log" quiet="true" failonerror="false" />
 		<delete dir="deploy/coverage" quiet="true" failonerror="false" />
 		<exec command="${bindir}phpunit -d memory_limit=-1 --include-path ${coredir} --configuration=phpunit-coverage.xml ."
-			  dir="tests" checkreturn="true" logoutput="true"/>
+			  dir="tests" checkreturn="true" logoutput="true" passthru="true" />
 	</target>
-	
+
 	<target name="check" description="Executes code sniffer">
 		<echo msg="Executing code sniffer" />
 		<exec command="${bindir}phpcs -n --standard=${codestddir}/Metaways src tests/MShop"
-			  checkreturn="true" logoutput="true"/>
+			  checkreturn="true" logoutput="true" passthru="true" />
 	</target>
 
 	<target name="clean" description="Cleans up temporary files">
@@ -35,7 +35,7 @@
 
 	<target name="i18n" description="Creates translation message files">
 		<exec command="find ./src/ -type f | xgettext -s --no-wrap --add-comments=/ --language=PHP --from-code=UTF-8 --keyword=sprintf:1 --keyword=dt:2,2t --keyword=dn:2,3,4t -o i18n/ai-payments-custom.pot -f -"
-			checkreturn="true" logoutput="true" /> 
+			checkreturn="true" logoutput="true" />
         <foreach param="po-fname" absparam="po-filename" target="i18n-update">
             <fileset dir="./i18n">
                 <include name="*.po" />
@@ -45,8 +45,8 @@
 
 	<target name="i18n-update" description="Updates translation message files">
 		<fail unless="po-filename" message="Missing file name" />
-		<exec command="msgmerge -s --no-wrap -U --backup=none ${po-filename} i18n/ai-payments-custom.pot" checkreturn="true" logoutput="true" /> 
-		<exec command="msgattrib -s --no-wrap --clear-obsolete -o ${po-filename} ${po-filename}" checkreturn="true" logoutput="true" /> 
+		<exec command="msgmerge -s --no-wrap -U --backup=none ${po-filename} i18n/ai-payments-custom.pot" checkreturn="true" logoutput="true" />
+		<exec command="msgattrib -s --no-wrap --clear-obsolete -o ${po-filename} ${po-filename}" checkreturn="true" logoutput="true" />
     </target>
 
 	<target name="build" description="Builds package for deployment">
@@ -59,7 +59,7 @@
 
 	<target name="build-mo" description="Generates binary translation files">
 		<fail unless="mo-filename" message="Missing file name" />
-		<exec command="msgfmt --statistics -c -o `echo ${mo-filename} | sed s/\.po//` ${mo-filename}" checkreturn="true" logoutput="true" /> 
+		<exec command="msgfmt --statistics -c -o `echo ${mo-filename} | sed s/\.po//` ${mo-filename}" checkreturn="true" logoutput="true" />
     </target>
 
 	<target name="all" depends="test,check" description="Builds all parts of the package">
