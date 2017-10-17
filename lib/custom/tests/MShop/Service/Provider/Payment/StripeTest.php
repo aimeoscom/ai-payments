@@ -1,23 +1,19 @@
 <?php
 
-namespace Aimeos\MShop\Service\Provider\Payment;
-
-
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Aimeos (aimeos.org), 2015-2017
  */
+
+
+namespace Aimeos\MShop\Service\Provider\Payment;
+
+
 class StripeTest extends \PHPUnit\Framework\TestCase
 {
 	private $object;
 
 
-	/**
-	 * Sets up the fixture, for example, opens a network connection.
-	 * This method is called before a test is executed.
-	 *
-	 * @access protected
-	 */
 	protected function setUp()
 	{
 		$context = \TestHelper::getContext();
@@ -30,12 +26,6 @@ class StripeTest extends \PHPUnit\Framework\TestCase
 	}
 
 
-	/**
-	 * Tears down the fixture, for example, closes a network connection.
-	 * This method is called after a test is executed.
-	 *
-	 * @access protected
-	 */
 	protected function tearDown()
 	{
 		unset( $this->object );
@@ -65,7 +55,7 @@ class StripeTest extends \PHPUnit\Framework\TestCase
 
 		$result = $this->object->checkConfigBE( $attributes );
 
-		$this->assertEquals( 7, count( $result ) );
+		$this->assertEquals( 3, count( $result ) );
 		$this->assertEquals( null, $result['stripe.address'] );
 		$this->assertEquals( null, $result['stripe.authorize'] );
 		$this->assertEquals( null, $result['stripe.testmode'] );
