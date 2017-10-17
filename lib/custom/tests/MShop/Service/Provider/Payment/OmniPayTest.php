@@ -1,12 +1,14 @@
 <?php
 
-namespace Aimeos\MShop\Service\Provider\Payment;
-
-
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Aimeos (aimeos.org), 2015-2017
  */
+
+
+namespace Aimeos\MShop\Service\Provider\Payment;
+
+
 class OmniPayTest extends \PHPUnit\Framework\TestCase
 {
 	private $object;
@@ -14,12 +16,6 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 	private $serviceItem;
 
 
-	/**
-	 * Sets up the fixture, for example, opens a network connection.
-	 * This method is called before a test is executed.
-	 *
-	 * @access protected
-	 */
 	protected function setUp()
 	{
 		if( !class_exists( 'Omnipay\Omnipay' ) ) {
@@ -39,12 +35,6 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 	}
 
 
-	/**
-	 * Tears down the fixture, for example, closes a network connection.
-	 * This method is called after a test is executed.
-	 *
-	 * @access protected
-	 */
 	protected function tearDown()
 	{
 		unset( $this->object );
@@ -78,20 +68,16 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 			'omnipay.authorize' => '1',
 			'omnipay.onsite' => '0',
 			'omnipay.testmode' => '1',
-			'payment.url-cancel' => 'http://cancelUrl',
-			'payment.url-success' => 'http://returnUrl'
 		);
 
 		$result = $object->checkConfigBE( $attributes );
 
-		$this->assertEquals( 9, count( $result ) );
+		$this->assertEquals( 5, count( $result ) );
 		$this->assertEquals( null, $result['omnipay.type'] );
 		$this->assertEquals( null, $result['omnipay.address'] );
 		$this->assertEquals( null, $result['omnipay.authorize'] );
 		$this->assertEquals( null, $result['omnipay.onsite'] );
 		$this->assertEquals( null, $result['omnipay.testmode'] );
-		$this->assertEquals( null, $result['payment.url-cancel'] );
-		$this->assertEquals( null, $result['payment.url-success'] );
 	}
 
 
