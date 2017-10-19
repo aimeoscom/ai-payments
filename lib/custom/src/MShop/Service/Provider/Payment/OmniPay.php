@@ -295,7 +295,7 @@ class OmniPay
 		$service = $base->getService( \Aimeos\MShop\Order\Item\Base\Service\Base::TYPE_PAYMENT );
 
 		$data = array(
-			'transactionReference' => $service->getAttribute( 'TRANSACTIONID', 'payment/omnipay' ),
+			'transactionReference' => $this->getTransactionReference( $base ),
 			'currency' => $base->getPrice()->getCurrencyId(),
 			'amount' => $this->getAmount( $base->getPrice() ),
 			'transactionId' => $order->getId(),
@@ -329,7 +329,7 @@ class OmniPay
 		$service = $base->getService( \Aimeos\MShop\Order\Item\Base\Service\Base::TYPE_PAYMENT );
 
 		$data = array(
-			'transactionReference' => $service->getAttribute( 'TRANSACTIONID', 'payment/omnipay' ),
+			'transactionReference' => $this->getTransactionReference( $base ),
 			'currency' => $base->getPrice()->getCurrencyId(),
 			'amount' => $this->getAmount( $base->getPrice() ),
 			'transactionId' => $order->getId(),
@@ -401,11 +401,12 @@ class OmniPay
 			return;
 		}
 
+		$code = $this->getServiceItem()->getCode();
 		$base = $this->getOrderBase( $order->getBaseId() );
-		$service = $base->getService( \Aimeos\MShop\Order\Item\Base\Service\Base::TYPE_PAYMENT );
+		$service = $base->getService( \Aimeos\MShop\Order\Item\Base\Service\Base::TYPE_PAYMENT, $code );
 
 		$data = array(
-			'transactionReference' => $service->getAttribute( 'TRANSACTIONID', 'payment/omnipay' ),
+			'transactionReference' => $this->getTransactionReference( $base ),
 			'currency' => $base->getPrice()->getCurrencyId(),
 			'amount' => $this->getAmount( $base->getPrice() ),
 			'transactionId' => $order->getId(),
@@ -460,10 +461,9 @@ class OmniPay
 		$status = null;
 		$order = $this->getOrder( $orderid );
 		$base = $this->getOrderBase( $order->getBaseId() );
-		$service = $base->getService( \Aimeos\MShop\Order\Item\Base\Service\Base::TYPE_PAYMENT );
 
 		$params['transactionId'] = $order->getId();
-		$params['transactionReference'] = $service->getAttribute( 'TRANSACTIONID', 'payment/omnipay' );
+		$params['transactionReference'] = $this->getTransactionReference( $base );
 		$params['amount'] = $this->getAmount( $base->getPrice() );
 		$params['currency'] = $base->getLocale()->getCurrencyId();
 
@@ -481,7 +481,7 @@ class OmniPay
 				$response = $provider->completePurchase( $params )->send();
 				$status = \Aimeos\MShop\Order\Item\Base::PAY_RECEIVED;
 			}
-			elseif( $provider->supportsAcceptNotification() )
+			elseif( method_exists( $provider, 'supportsAcceptNotification' ) && $provider->supportsAcceptNotification() )
 			{
 				$request = $provider->acceptNotification();
 				$status = $this->translateStatus( $request->getTransactionStatus() );
@@ -492,7 +492,7 @@ class OmniPay
 				return $order;
 			}
 
-			if( $response->isSuccessful() )
+			if( method_exists( $response, 'isSuccessful' ) && $response->isSuccessful() )
 			{
 				$this->saveTransationRef( $base, $response->getTransactionReference() );
 
@@ -502,21 +502,21 @@ class OmniPay
 					$this->saveOrder( $order );
 				}
 			}
-			elseif( $response->isPending() )
+			elseif( method_exists( $response, 'isPending' ) && $response->isPending() )
 			{
 				$this->saveTransationRef( $base, $response->getTransactionReference() );
 
 				$order->setPaymentStatus( \Aimeos\MShop\Order\Item\Base::PAY_PENDING );
 				$this->saveOrder( $order );
 			}
-			elseif( $response->isCancelled() )
+			elseif( method_exists( $response, 'isCancelled' ) && $response->isCancelled() )
 			{
 				$this->saveTransationRef( $base, $response->getTransactionReference() );
 
 				$order->setPaymentStatus( \Aimeos\MShop\Order\Item\Base::PAY_CANCELED );
 				$this->saveOrder( $order );
 			}
-			elseif( $response->isRedirect() )
+			elseif( method_exists( $response, 'isRedirect' ) && $response->isRedirect() )
 			{
 				$url = $response->getRedirectUrl();
 				$header[] = array( 'HTTP/1.1 500 Unexpected redirect' );
@@ -764,6 +764,21 @@ class OmniPay
 
 
 	/**
+	 * Returns the payment transaction ID stored in the basket
+	 *
+	 * @param \Aimeos\MShop\Order\Item\Base\Iface $base Basket including (payment) service items
+	 * @return string|null Payment transaction ID or null if not available
+	 */
+	protected function getTransactionReference( \Aimeos\MShop\Order\Item\Base\Iface $base )
+	{
+		$code = $this->getServiceItem()->getCode();
+		$service = $base->getService( \Aimeos\MShop\Order\Item\Base\Service\Base::TYPE_PAYMENT, $code );
+
+		return $service->getAttribute( 'TRANSACTIONID', 'payment/omnipay' );
+	}
+
+
+	/**
 	 * Tries to get an authorization or captures the money immediately for the given order if capturing the money
 	 * separately isn't supported or not configured by the shop owner.
 	 *
@@ -837,7 +852,8 @@ class OmniPay
 	 */
 	protected function saveTransationRef( \Aimeos\MShop\Order\Item\Base\Iface $baseItem, $ref )
 	{
-		$serviceItem = $baseItem->getService( \Aimeos\MShop\Order\Item\Base\Service\Base::TYPE_PAYMENT );
+		$code = $this->getServiceItem()->getCode();
+		$serviceItem = $baseItem->getService( \Aimeos\MShop\Order\Item\Base\Service\Base::TYPE_PAYMENT, $code );
 
 		$attr = array( 'TRANSACTIONID' => $ref );
 		$this->setAttributes( $serviceItem, $attr, 'payment/omnipay' );
@@ -853,6 +869,10 @@ class OmniPay
 	 */
 	protected function translateStatus( $status )
 	{
+		if( !interface_exists( '\Omnipay\Common\Message\NotificationInterface' ) ) {
+			return \Aimeos\MShop\Order\Item\Base::PAY_REFUSED;
+		}
+
 		switch( $status )
 		{
 			case \Omnipay\Common\Message\NotificationInterface::STATUS_COMPLETED:

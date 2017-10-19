@@ -27,6 +27,7 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 		$serviceManager = \Aimeos\MShop\Service\Manager\Factory::createManager( $this->context );
 		$this->serviceItem = $serviceManager->createItem();
 		$this->serviceItem->setConfig( array( 'omnipay.type' => 'Dummy' ) );
+		$this->serviceItem->setCode( 'OGONE' );
 
 		$this->object = $this->getMockBuilder( '\\Aimeos\\MShop\\Service\\Provider\\Payment\\OmniPay' )
 			->setMethods( array( 'getOrder', 'getOrderBase', 'saveOrder', 'saveOrderBase', 'getProvider', 'saveTransationRef' ) )

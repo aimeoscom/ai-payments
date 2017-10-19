@@ -28,10 +28,11 @@ class NovalnetSepaTest extends \PHPUnit\Framework\TestCase
 		$serviceManager = \Aimeos\MShop\Service\Manager\Factory::createManager( $this->context );
 		$this->serviceItem = $serviceManager->createItem();
 		$this->serviceItem->setConfig( array( 'omnipay.type' => 'Dummy' ) );
+		$this->serviceItem->setCode( 'OGONE' );
 
 		$this->ordServItem = \Aimeos\MShop\Factory::createManager( $this->context, 'order/base/service' )->createItem();
 		$serviceItem = \Aimeos\MShop\Factory::createManager( $this->context, 'service' )->createItem();
-		$serviceItem->setCode( 'test' );
+		$serviceItem->setCode( 'OGONE' );
 
 		$this->object = $this->getMockBuilder( '\\Aimeos\\MShop\\Service\\Provider\\Payment\\NovalnetSepa' )
 			->setMethods( array( 'getOrder', 'getOrderBase', 'saveOrder', 'saveOrderBase', 'getProvider' ) )

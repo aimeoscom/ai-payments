@@ -66,9 +66,10 @@ class NovalnetSepa
 
 		try
 		{
-			$attrs = $basket->getService( \Aimeos\MShop\Order\Item\Base\Service\Base::TYPE_PAYMENT )->getAttributes();
+			$code = $this->getServiceItem()->getCode();
+			$service = $basket->getService( \Aimeos\MShop\Order\Item\Base\Service\Base::TYPE_PAYMENT, $code );
 
-			foreach( $attrs as $item )
+			foreach( $service->getAttributes() as $item )
 			{
 				if( isset( $feconfig[$item->getCode()] ) ) {
 					$feconfig[$item->getCode()]['default'] = $item->getValue();
