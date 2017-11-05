@@ -687,7 +687,7 @@ class OmniPay
 	{
 		$list = [];
 		$feConfig = $this->feConfig;
-		$baseItem = $this->getOrderBase( $order->getBaseId(), \Aimeos\MShop\Order\Manager\Base\Base::PARTS_ADDRESS );
+		$baseItem = $this->getOrderBase( $order->getBaseId(), \Aimeos\MShop\Order\Item\Base\Base::PARTS_ADDRESS );
 
 		try
 		{
@@ -789,9 +789,9 @@ class OmniPay
 	 */
 	protected function processOrder( \Aimeos\MShop\Order\Item\Iface $order, array $params = [] )
 	{
-		$parts = \Aimeos\MShop\Order\Manager\Base\Base::PARTS_SERVICE
-			| \Aimeos\MShop\Order\Manager\Base\Base::PARTS_PRODUCT
-			| \Aimeos\MShop\Order\Manager\Base\Base::PARTS_ADDRESS;
+		$parts = \Aimeos\MShop\Order\Item\Base\Base::PARTS_SERVICE
+			| \Aimeos\MShop\Order\Item\Base\Base::PARTS_PRODUCT
+			| \Aimeos\MShop\Order\Item\Base\Base::PARTS_ADDRESS;
 
 		$base = $this->getOrderBase( $order->getBaseId(), $parts );
 		$data = $this->getData( $base, $order->getId(), $params );

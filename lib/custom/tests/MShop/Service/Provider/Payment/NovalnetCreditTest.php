@@ -113,7 +113,7 @@ class NovalnetCreditTest extends \PHPUnit\Framework\TestCase
 
 	public function testProcess()
 	{
-		$parts = \Aimeos\MShop\Order\Manager\Base\Base::PARTS_ADDRESS | \Aimeos\MShop\Order\Manager\Base\Base::PARTS_SERVICE;
+		$parts = \Aimeos\MShop\Order\Item\Base\Base::PARTS_ADDRESS | \Aimeos\MShop\Order\Item\Base\Base::PARTS_SERVICE;
 		$baseItem = $this->getOrderBase( $parts );
 
 
@@ -173,7 +173,7 @@ class NovalnetCreditTest extends \PHPUnit\Framework\TestCase
 	protected function getOrderBase( $parts = null )
 	{
 		if( $parts === null ) {
-			$parts = \Aimeos\MShop\Order\Manager\Base\Base::PARTS_ADDRESS | \Aimeos\MShop\Order\Manager\Base\Base::PARTS_SERVICE;
+			$parts = \Aimeos\MShop\Order\Item\Base\Base::PARTS_ADDRESS | \Aimeos\MShop\Order\Item\Base\Base::PARTS_SERVICE;
 		}
 
 		$manager = \Aimeos\MShop\Order\Manager\Factory::createManager( $this->context )->getSubmanager( 'base' );

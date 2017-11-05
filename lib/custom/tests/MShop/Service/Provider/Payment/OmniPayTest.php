@@ -116,7 +116,7 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 		$provider = $this->getMockBuilder( 'Omnipay\Gateway\Manual' )->setMethods( null )->getMock();
 		$this->object->expects( $this->any() )->method( 'getProvider' )->will( $this->returnValue( $provider ) );
 
-		$baseItem = $this->getOrderBase( \Aimeos\MShop\Order\Manager\Base\Base::PARTS_NONE );
+		$baseItem = $this->getOrderBase( \Aimeos\MShop\Order\Item\Base\Base::PARTS_NONE );
 
 		$conf = array(
 				'omnipay.type' => 'Dummy',
@@ -140,7 +140,7 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 		$this->object->expects( $this->once() )->method( 'getProvider' )
 			->will( $this->returnValue( $provider ) );
 
-		$parts = \Aimeos\MShop\Order\Manager\Base\Base::PARTS_ADDRESS | \Aimeos\MShop\Order\Manager\Base\Base::PARTS_SERVICE;
+		$parts = \Aimeos\MShop\Order\Item\Base\Base::PARTS_ADDRESS | \Aimeos\MShop\Order\Item\Base\Base::PARTS_SERVICE;
 		$baseItem = $this->getOrderBase( $parts );
 
 		$this->serviceItem->setConfig( array( 'omnipay.type' => 'Dummy', 'omnipay.address' => '1' ) );
@@ -166,7 +166,7 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 		$this->object->expects( $this->once() )->method( 'getProvider' )
 			->will( $this->returnValue( $provider ) );
 
-		$parts = \Aimeos\MShop\Order\Manager\Base\Base::PARTS_ADDRESS | \Aimeos\MShop\Order\Manager\Base\Base::PARTS_SERVICE;
+		$parts = \Aimeos\MShop\Order\Item\Base\Base::PARTS_ADDRESS | \Aimeos\MShop\Order\Item\Base\Base::PARTS_SERVICE;
 		$baseItem = $this->getOrderBase( $parts );
 
 		$this->serviceItem->setConfig( array( 'omnipay.type' => 'Dummy' ) );
@@ -192,7 +192,7 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 		$this->object->expects( $this->once() )->method( 'getProvider' )
 			->will( $this->returnValue( $provider ) );
 
-		$parts = \Aimeos\MShop\Order\Manager\Base\Base::PARTS_ADDRESS | \Aimeos\MShop\Order\Manager\Base\Base::PARTS_SERVICE;
+		$parts = \Aimeos\MShop\Order\Item\Base\Base::PARTS_ADDRESS | \Aimeos\MShop\Order\Item\Base\Base::PARTS_SERVICE;
 		$baseItem = $this->getOrderBase( $parts );
 
 		$this->serviceItem->setConfig( array( 'omnipay.type' => 'Dummy', 'omnipay.authorize' => '1', 'omnipay.onsite' => 1 ) );
@@ -226,7 +226,7 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 		$this->object->expects( $this->once() )->method( 'getProvider' )
 			->will( $this->returnValue( $provider ) );
 
-		$parts = \Aimeos\MShop\Order\Manager\Base\Base::PARTS_ADDRESS | \Aimeos\MShop\Order\Manager\Base\Base::PARTS_SERVICE;
+		$parts = \Aimeos\MShop\Order\Item\Base\Base::PARTS_ADDRESS | \Aimeos\MShop\Order\Item\Base\Base::PARTS_SERVICE;
 		$baseItem = $this->getOrderBase( $parts );
 
 		$this->serviceItem->setConfig( array( 'omnipay.type' => 'Dummy', 'omnipay.authorize' => '1' ) );
@@ -241,7 +241,7 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 
 	public function testProcessOffsiteRedirect()
 	{
-		$parts = \Aimeos\MShop\Order\Manager\Base\Base::PARTS_ADDRESS | \Aimeos\MShop\Order\Manager\Base\Base::PARTS_SERVICE;
+		$parts = \Aimeos\MShop\Order\Item\Base\Base::PARTS_ADDRESS | \Aimeos\MShop\Order\Item\Base\Base::PARTS_SERVICE;
 		$baseItem = $this->getOrderBase( $parts );
 
 		$provider = $this->getMockBuilder( 'Omnipay\Dummy\Gateway' )
@@ -293,7 +293,7 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 	public function testUpdateSync()
 	{
 		$orderItem = $this->getOrder();
-		$baseItem = $this->getOrderBase( \Aimeos\MShop\Order\Manager\Base\Base::PARTS_SERVICE );
+		$baseItem = $this->getOrderBase( \Aimeos\MShop\Order\Item\Base\Base::PARTS_SERVICE );
 
 
 		$provider = $this->getMockBuilder( 'Omnipay\Dummy\Gateway' )
@@ -327,7 +327,7 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 	public function testUpdateSyncPurchaseSucessful()
 	{
 		$orderItem = $this->getOrder();
-		$baseItem = $this->getOrderBase( \Aimeos\MShop\Order\Manager\Base\Base::PARTS_SERVICE );
+		$baseItem = $this->getOrderBase( \Aimeos\MShop\Order\Item\Base\Base::PARTS_SERVICE );
 
 
 		$provider = $this->getMockBuilder( 'Omnipay\Dummy\Gateway' )
@@ -376,7 +376,7 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 	public function testUpdateSyncNotifictionPending()
 	{
 		$orderItem = $this->getOrder();
-		$baseItem = $this->getOrderBase( \Aimeos\MShop\Order\Manager\Base\Base::PARTS_SERVICE );
+		$baseItem = $this->getOrderBase( \Aimeos\MShop\Order\Item\Base\Base::PARTS_SERVICE );
 
 
 		$provider = $this->getMockBuilder( 'Omnipay\Dummy\Gateway' )
@@ -432,7 +432,7 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 	public function testUpdateSyncNotifictionCancelled()
 	{
 		$orderItem = $this->getOrder();
-		$baseItem = $this->getOrderBase( \Aimeos\MShop\Order\Manager\Base\Base::PARTS_SERVICE );
+		$baseItem = $this->getOrderBase( \Aimeos\MShop\Order\Item\Base\Base::PARTS_SERVICE );
 
 
 		$provider = $this->getMockBuilder( 'Omnipay\Dummy\Gateway' )
@@ -488,7 +488,7 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 	public function testUpdateSyncAuthorizeFailed()
 	{
 		$orderItem = $this->getOrder();
-		$baseItem = $this->getOrderBase( \Aimeos\MShop\Order\Manager\Base\Base::PARTS_SERVICE );
+		$baseItem = $this->getOrderBase( \Aimeos\MShop\Order\Item\Base\Base::PARTS_SERVICE );
 
 		$this->serviceItem->setConfig( array( 'omnipay.type' => 'Dummy', 'omnipay.authorize' => '1' ) );
 
@@ -538,7 +538,7 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 	public function testUpdateSyncRedirect()
 	{
 		$orderItem = $this->getOrder();
-		$baseItem = $this->getOrderBase( \Aimeos\MShop\Order\Manager\Base\Base::PARTS_SERVICE );
+		$baseItem = $this->getOrderBase( \Aimeos\MShop\Order\Item\Base\Base::PARTS_SERVICE );
 
 
 		$provider = $this->getMockBuilder( 'Omnipay\Dummy\Gateway' )
@@ -586,7 +586,7 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 	public function testCancel()
 	{
 		$orderItem = $this->getOrder();
-		$baseItem = $this->getOrderBase( \Aimeos\MShop\Order\Manager\Base\Base::PARTS_SERVICE );
+		$baseItem = $this->getOrderBase( \Aimeos\MShop\Order\Item\Base\Base::PARTS_SERVICE );
 
 
 		$provider = $this->getMockBuilder( 'Omnipay\Dummy\Gateway' )
@@ -651,7 +651,7 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 	public function testCapture()
 	{
 		$orderItem = $this->getOrder();
-		$baseItem = $this->getOrderBase( \Aimeos\MShop\Order\Manager\Base\Base::PARTS_SERVICE );
+		$baseItem = $this->getOrderBase( \Aimeos\MShop\Order\Item\Base\Base::PARTS_SERVICE );
 
 
 		$provider = $this->getMockBuilder( 'Omnipay\Dummy\Gateway' )
@@ -715,7 +715,7 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 	public function testRefund()
 	{
 		$orderItem = $this->getOrder();
-		$baseItem = $this->getOrderBase( \Aimeos\MShop\Order\Manager\Base\Base::PARTS_SERVICE );
+		$baseItem = $this->getOrderBase( \Aimeos\MShop\Order\Item\Base\Base::PARTS_SERVICE );
 
 
 		$provider = $this->getMockBuilder( 'Omnipay\Dummy\Gateway' )
@@ -796,7 +796,7 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 	protected function getOrderBase( $parts = null )
 	{
 		if( $parts === null ) {
-			$parts = \Aimeos\MShop\Order\Manager\Base\Base::PARTS_ADDRESS | \Aimeos\MShop\Order\Manager\Base\Base::PARTS_SERVICE;
+			$parts = \Aimeos\MShop\Order\Item\Base\Base::PARTS_ADDRESS | \Aimeos\MShop\Order\Item\Base\Base::PARTS_SERVICE;
 		}
 
 		$manager = \Aimeos\MShop\Order\Manager\Factory::createManager( $this->context )->getSubmanager( 'base' );
