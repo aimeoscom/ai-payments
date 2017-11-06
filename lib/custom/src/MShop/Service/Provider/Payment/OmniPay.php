@@ -428,6 +428,68 @@ class OmniPay
 
 
 	/**
+	 * Updates the order status sent by payment gateway notifications
+	 *
+	 * @param \Psr\Http\Message\ServerRequestInterface Request object
+	 * @return \Psr\Http\Message\ResponseInterface Response object
+	 */
+	public function updatePush( \Psr\Http\Message\ServerRequestInterface $request, \Psr\Http\Message\ResponseInterface $response )
+	{
+		try
+		{
+			$provider = $this->getProvider();
+			$params = $request->getQueryParams();
+
+			if( !isset( $params['orderid'] ) ) {
+				throw new \Aimeos\MShop\Service\Exception( 'No order ID available' );
+			}
+
+			if( !method_exists( $provider, 'supportsAcceptNotification' ) || !$provider->supportsAcceptNotification() )
+			{
+				// call updateOrderSync()
+				return;
+			}
+
+			$order = $this->getOrder( $params['orderid'] );
+			$omniRequest = $provider->acceptNotification();
+			$omniResponse = $omniRequest->send();
+
+			if( method_exists( $omniResponse, 'isSuccessful' ) && $omniResponse->isSuccessful() )
+			{
+				$order->setPaymentStatus( $this->translateStatus( $omniRequest->getTransactionStatus() ) );
+			}
+			elseif( method_exists( $omniResponse, 'isPending' ) && $omniResponse->isPending() )
+			{
+				$order->setPaymentStatus( \Aimeos\MShop\Order\Item\Base::PAY_PENDING );
+			}
+			elseif( method_exists( $omniResponse, 'isCancelled' ) && $omniResponse->isCancelled() )
+			{
+				$order->setPaymentStatus( \Aimeos\MShop\Order\Item\Base::PAY_CANCELED );
+			}
+			else
+			{
+				$order->setPaymentStatus( \Aimeos\MShop\Order\Item\Base::PAY_REFUSED );
+				$this->saveOrder( $order );
+
+				throw new \Aimeos\MShop\Service\Exception( $omniResponse->getMessage() );
+			}
+
+			$base = $this->getOrderBase( $order->getBaseId() );
+			$this->saveTransationRef( $base, $omniResponse->getTransactionReference() );
+			$this->saveOrder( $order );
+
+			$response->withStatus( 200 );
+		}
+		catch( \Exception $e )
+		{
+			$response->withStatus( 500, $e->getMessage() );
+		}
+
+		return $response;
+	}
+
+
+	/**
 	 * Updates the orders for which status updates were received via direct requests (like HTTP).
 	 *
 	 * @param array $params Associative list of request parameters
@@ -442,24 +504,8 @@ class OmniPay
 			return null;
 		}
 
-		return $this->updateSyncOrder( $params['orderid'], $params, $body, $output, $header );
-	}
-
-
-	/**
-	 * Updates the order for the given ID.
-	 *
-	 * @param string $orderid Order ID sent by the payment provider
-	 * @param array $params Associative list of request parameters
-	 * @param string|null $body Information sent within the body of the request
-	 * @param string|null &$output Response body for notification requests
-	 * @param array &$header Response headers for notification requests
-	 * @return \Aimeos\MShop\Order\Item\Iface|null Order item if update was successful, null if the given parameters are not valid for this provider
-	 */
-	protected function updateSyncOrder( $orderid, array $params = [], $body = null, &$output = null, array &$header = [] )
-	{
 		$status = null;
-		$order = $this->getOrder( $orderid );
+		$order = $this->getOrder( $params['orderid'] );
 		$base = $this->getOrderBase( $order->getBaseId() );
 
 		$params['transactionId'] = $order->getId();
@@ -480,12 +526,6 @@ class OmniPay
 			{
 				$response = $provider->completePurchase( $params )->send();
 				$status = \Aimeos\MShop\Order\Item\Base::PAY_RECEIVED;
-			}
-			elseif( method_exists( $provider, 'supportsAcceptNotification' ) && $provider->supportsAcceptNotification() )
-			{
-				$request = $provider->acceptNotification();
-				$status = $this->translateStatus( $request->getTransactionStatus() );
-				$response = $request->send();
 			}
 			else
 			{

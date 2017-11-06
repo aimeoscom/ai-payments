@@ -91,16 +91,4 @@ class Payone
 			return $result;
 		}
 	}
-
-
-	/**
-	 * Returns the order item for the given ID without checking the service code
-	 *
-	 * @param string $id Unique order ID
-	 * @return \Aimeos\MShop\Order\Item\Iface $item Order object
-	 */
-	protected function getOrder( $id )
-	{
-		return \Aimeos\MShop\Factory::createManager( $this->getContext(), 'order' )->getItem( $id );
-	}
 }
