@@ -21,35 +21,73 @@ class AuthorizeSIM
 	extends \Aimeos\MShop\Service\Provider\Payment\OmniPay
 	implements \Aimeos\MShop\Service\Provider\Payment\Iface
 {
+	private $beConfig = array(
+		'payment.url-success' => array(
+			'code' => 'payment.url-success',
+			'internalcode'=> 'payment.url-success',
+			'label'=> 'URL to confirm page',
+			'type'=> 'string',
+			'internaltype'=> 'string',
+			'default'=> '',
+			'required'=> true,
+		),
+	);
+
+
 	/**
-	 * Updates the orders for which status updates were received via direct requests (like HTTP).
+	 * Returns the configuration attribute definitions of the provider to generate a list of available fields and
+	 * rules for the value of each field in the administration interface.
 	 *
-	 * @param array $params Associative list of request parameters
-	 * @param string|null $body Information sent within the body of the request
-	 * @param string|null &$output Response body for notification requests
-	 * @param array &$header Response headers for notification requests
-	 * @return \Aimeos\MShop\Order\Item\Iface|null Order item if update was successful, null if the given parameters are not valid for this provider
+	 * @return array List of attribute definitions implementing \Aimeos\MW\Common\Critera\Attribute\Iface
 	 */
-	public function updateSync( array $params = [], $body = null, &$output = null, array &$header = [] )
+	public function getConfigBE()
 	{
+		$list = parent::getConfigBE();
+
+		foreach( $this->beConfig as $key => $config )
+		{
+			$config['code'] = $config['code'];
+			$list[$key] = new \Aimeos\MW\Criteria\Attribute\Standard( $config );
+		}
+
+		return $list;
+	}
+
+
+	/**
+	 * Checks the backend configuration attributes for validity.
+	 *
+	 * @param array $attributes Attributes added by the shop owner in the administraton interface
+	 * @return array An array with the attribute keys as key and an error message as values for all attributes that are
+	 * 	known by the provider but aren't valid
+	 */
+	public function checkConfigBE( array $attributes )
+	{
+		return array_merge( parent::checkConfigBE( $attributes ), $this->checkConfig( $this->beConfig, $attributes ) );
+	}
+
+
+	/**
+	 * Updates the order status sent by payment gateway notifications
+	 *
+	 * @param \Psr\Http\Message\ServerRequestInterface Request object
+	 * @return \Psr\Http\Message\ResponseInterface Response object
+	 */
+	public function updatePush( \Psr\Http\Message\ServerRequestInterface $request, \Psr\Http\Message\ResponseInterface $response )
+	{
+		$params = (array) $request->getAttributes() + (array) $request->getParsedBody() + (array) $request->getQueryParams();
+
 		if( isset( $params['x_MD5_Hash'] ) )
 		{
-			$result = parent::updateSync( $params, $body, $output, $header );
+			$url = $this->getConfigValue( array( 'payment.url-success' ) );
+			$output = sprintf( $this->getValue( 'body', 'success' ), $url );
 
-			if( $result !== null )
-			{
-				$url = $this->getConfigValue( array( 'payment.url-success' ) );
-
-				$header[] = $this->getValue( 'header', 'Location: ' . $url );
-				$output = sprintf( $this->getValue( 'body', 'success' ), $url );
-			}
-
-			return $result;
+			$response = parent::updatePush( $request, $response );
+			$response = $response->withBody( $response->createStreamFromString( $output ) );
+			$response = $response->withHeader( 'Location', $url );
 		}
 
-		if( isset( $params['orderid'] ) ) {
-			return $this->getOrder( $params['orderid'] );
-		}
+		return $response;
 	}
 
 

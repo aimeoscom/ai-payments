@@ -22,27 +22,6 @@ class Mollie
 	implements \Aimeos\MShop\Service\Provider\Payment\Iface
 {
 	/**
-	 * Updates the orders for which status updates were received via direct requests (like HTTP).
-	 *
-	 * @param array $params Associative list of request parameters
-	 * @param string|null $body Information sent within the body of the request
-	 * @param string|null &$response Response body for notification requests
-	 * @param array &$header Response headers for notification requests
-	 * @return \Aimeos\MShop\Order\Item\Iface|null Order item if update was successful, null if the given parameters are not valid for this provider
-	 */
-	public function updateSync( array $params = [], $body = null, &$response = null, array &$header = [] )
-	{
-		if( isset( $params['id'] ) ) {
-			return parent::updateSync( $params, $body, $response );
-		}
-
-		if( isset( $params['orderid'] ) ) {
-			return $this->getOrder( $params['orderid'] );
-		}
-	}
-
-
-	/**
 	 * Returns the prefix for the configuration definitions
 	 *
 	 * @return string Prefix without dot

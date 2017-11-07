@@ -268,10 +268,10 @@ class OmniPay
 			unset( $config['type'], $config['onsite'] );
 		}
 
-		foreach( $config as $key => $config )
+		foreach( $config as $key => $cfg )
 		{
-			$config['code'] = $prefix . '.' . $config['code'];
-			$list[$prefix.'.'.$key] = $config;
+			$cfg['code'] = $prefix . '.' . $cfg['code'];
+			$list[$prefix.'.'.$key] = $cfg;
 		}
 
 		return array_merge( $errors, $this->checkConfig( $list, $attributes ) );
@@ -490,22 +490,15 @@ class OmniPay
 
 
 	/**
-	 * Updates the orders for which status updates were received via direct requests (like HTTP).
+	 * Updates the orders for whose status updates have been received by the confirmation page
 	 *
-	 * @param array $params Associative list of request parameters
-	 * @param string|null $body Information sent within the body of the request
-	 * @param string|null &$output Response body for notification requests
-	 * @param array &$header Response headers for notification requests
-	 * @return \Aimeos\MShop\Order\Item\Iface|null Order item if update was successful, null if the given parameters are not valid for this provider
+	 * @param \Psr\Http\Message\ServerRequestInterface $request Request object with parameters and request body
+	 * @param \Aimeos\MShop\Order\Item\Iface $order Order item that should be updated
+	 * @return \Aimeos\MShop\Order\Item\Iface Updated order item
+	 * @throws \Aimeos\MShop\Service\Exception If updating the orders failed
 	 */
-	public function updateSync( array $params = [], $body = null, &$output = null, array &$header = [] )
+	public function updateSync( \Psr\Http\Message\ServerRequestInterface $request, \Aimeos\MShop\Order\Item\Iface $order )
 	{
-		if( !isset( $params['orderid'] ) ) {
-			return null;
-		}
-
-		$status = null;
-		$order = $this->getOrder( $params['orderid'] );
 		$base = $this->getOrderBase( $order->getBaseId() );
 
 		$params['transactionId'] = $order->getId();
@@ -516,6 +509,8 @@ class OmniPay
 		try
 		{
 			$provider = $this->getProvider();
+			$params = (array) $request->getAttributes() + (array) $request->getParsedBody() + (array) $request->getQueryParams();
+
 
 			if( $this->getValue( 'authorize', false ) && $provider->supportsCompleteAuthorize() )
 			{
@@ -534,41 +529,29 @@ class OmniPay
 
 			if( method_exists( $response, 'isSuccessful' ) && $response->isSuccessful() )
 			{
-				$this->saveTransationRef( $base, $response->getTransactionReference() );
-
-				if( $status !== null )
-				{
-					$order->setPaymentStatus( $status );
-					$this->saveOrder( $order );
-				}
+				$order->setPaymentStatus( $status );
 			}
 			elseif( method_exists( $response, 'isPending' ) && $response->isPending() )
 			{
-				$this->saveTransationRef( $base, $response->getTransactionReference() );
-
 				$order->setPaymentStatus( \Aimeos\MShop\Order\Item\Base::PAY_PENDING );
-				$this->saveOrder( $order );
 			}
 			elseif( method_exists( $response, 'isCancelled' ) && $response->isCancelled() )
 			{
-				$this->saveTransationRef( $base, $response->getTransactionReference() );
-
 				$order->setPaymentStatus( \Aimeos\MShop\Order\Item\Base::PAY_CANCELED );
-				$this->saveOrder( $order );
 			}
 			elseif( method_exists( $response, 'isRedirect' ) && $response->isRedirect() )
 			{
 				$url = $response->getRedirectUrl();
-				$header[] = array( 'HTTP/1.1 500 Unexpected redirect' );
 				throw new \Aimeos\MShop\Service\Exception( sprintf( 'Unexpected redirect: %1$s', $url ) );
 			}
 			else
 			{
-				$order->setPaymentStatus( \Aimeos\MShop\Order\Item\Base::PAY_REFUSED );
-				$this->saveOrder( $order );
-
+				$this->saveOrder( $order->setPaymentStatus( \Aimeos\MShop\Order\Item\Base::PAY_REFUSED ) );
 				throw new \Aimeos\MShop\Service\Exception( $response->getMessage() );
 			}
+
+			$this->saveTransationRef( $base, $response->getTransactionReference() );
+			$this->saveOrder( $order );
 		}
 		catch( \Exception $e )
 		{

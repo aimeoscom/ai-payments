@@ -13,6 +13,7 @@ class AuthorizeSimTest extends \PHPUnit\Framework\TestCase
 {
 	private $object;
 	private $context;
+	private $serviceItem;
 
 
 	protected function setUp()
@@ -24,20 +25,50 @@ class AuthorizeSimTest extends \PHPUnit\Framework\TestCase
 		$this->context = \TestHelper::getContext();
 
 		$serviceManager = \Aimeos\MShop\Service\Manager\Factory::createManager( $this->context );
-		$item = $serviceManager->createItem();
-		$item->setConfig( array( 'authorizenet.testmode' => true ) );
-		$item->setCode( 'OGONE' );
+		$this->serviceItem = $serviceManager->createItem();
+		$this->serviceItem->setConfig( array( 'authorizenet.testmode' => true ) );
+		$this->serviceItem->setCode( 'OGONE' );
 
 		$this->object = $this->getMockBuilder( 'Aimeos\MShop\Service\Provider\Payment\AuthorizeSIMPublic' )
 			->setMethods( array( 'getOrder', 'getOrderBase', 'saveOrder', 'saveOrderBase', 'getProvider' ) )
-			->setConstructorArgs( array( $this->context, $item ) )
+			->setConstructorArgs( array( $this->context, $this->serviceItem ) )
 			->getMock();
 	}
 
 
 	protected function tearDown()
 	{
-		unset( $this->object, $this->context );
+		unset( $this->object, $this->context, $this->serviceItem );
+	}
+
+
+	public function testGetConfigBE()
+	{
+		$object = new \Aimeos\MShop\Service\Provider\Payment\AuthorizeSIM( $this->context, $this->serviceItem );
+
+		$result = $object->getConfigBE();
+
+		$this->assertInternalType( 'array', $result );
+		$this->assertArrayHasKey( 'authorizenet.address', $result );
+		$this->assertArrayHasKey( 'authorizenet.authorize', $result );
+		$this->assertArrayHasKey( 'authorizenet.testmode', $result );
+		$this->assertArrayHasKey( 'payment.url-success', $result );
+	}
+
+
+	public function testCheckConfigBE()
+	{
+		$object = new \Aimeos\MShop\Service\Provider\Payment\AuthorizeSIM( $this->context, $this->serviceItem );
+
+		$attributes = array( 'payment.url-success' => 'https://localhost' );
+
+		$result = $object->checkConfigBE( $attributes );
+
+		$this->assertEquals( 4, count( $result ) );
+		$this->assertEquals( null, $result['authorizenet.address'] );
+		$this->assertEquals( null, $result['authorizenet.authorize'] );
+		$this->assertEquals( null, $result['authorizenet.testmode'] );
+		$this->assertEquals( null, $result['payment.url-success'] );
 	}
 
 
@@ -53,105 +84,27 @@ class AuthorizeSimTest extends \PHPUnit\Framework\TestCase
 	}
 
 
-	public function testUpdateSync()
+	public function testUpdatePush()
 	{
-		$orderItem = $this->getOrder();
+		$psr7stream = $this->getMockBuilder( '\Psr\Http\Message\StreamInterface' )->getMock();
+		$psr7request = $this->getMockBuilder( '\Psr\Http\Message\ServerRequestInterface' )->getMock();
+		$psr7response = $this->getMockBuilder( '\Aimeos\MW\View\Helper\Response\Iface' )->getMock();
 
-		$this->object->expects( $this->once() )->method( 'getOrder' )
-			->will( $this->returnValue( $orderItem ) );
+		$psr7request->expects( $this->once() )->method( 'getAttributes' )
+			->will( $this->returnValue( ['x_MD5_Hash' => 1] ) );
 
-		$result = $this->object->updateSync( array( 'orderid' => '1' ) );
+		$psr7response->expects( $this->once() )->method( 'withBody' )
+			->will( $this->returnValue( $psr7response ) );
 
-		$this->assertInstanceOf( '\\Aimeos\\MShop\\Order\\Item\\Iface', $result );
-	}
+		$psr7response->expects( $this->once() )->method( 'withHeader' )
+			->will( $this->returnValue( $psr7response ) );
 
+		$psr7response->expects( $this->once() )->method( 'createStreamFromString' )
+			->will( $this->returnValue( $psr7stream ) );
 
-	public function testUpdateSyncPurchaseSucessful()
-	{
-		$orderItem = $this->getOrder();
-		$baseItem = $this->getOrderBase( \Aimeos\MShop\Order\Item\Base\Base::PARTS_SERVICE );
+		$result = $this->object->updatePush( $psr7request, $psr7response );
 
-
-		$provider = $this->getMockBuilder( 'Omnipay\Dummy\Gateway' )
-			->setMethods( array( 'supportsCompletePurchase', 'completePurchase' ) )
-			->getMock();
-
-		$request = $this->getMockBuilder( '\Omnipay\Dummy\Message\AuthorizeRequest' )
-			->setMethods( array( 'send' ) )
-			->disableOriginalConstructor()
-			->getMock();
-
-		$response = $this->getMockBuilder( 'Omnipay\Dummy\Message\Response' )
-			->setMethods( array( 'getTransactionReference', 'isSuccessful' ) )
-			->disableOriginalConstructor()
-			->getMock();
-
-
-		$this->object->expects( $this->once() )->method( 'getOrder' )
-			->will( $this->returnValue( $orderItem ) );
-
-		$this->object->expects( $this->once() )->method( 'getOrderBase' )
-			->will( $this->returnValue( $baseItem ) );
-
-		$this->object->expects( $this->once() )->method( 'getProvider' )
-			->will( $this->returnValue( $provider ) );
-
-		$provider->expects( $this->once() )->method( 'supportsCompletePurchase' )
-			->will( $this->returnValue( true ) );
-
-		$provider->expects( $this->once() )->method( 'completePurchase' )
-			->will( $this->returnValue( $request ) );
-
-		$request->expects( $this->once() )->method( 'send' )
-			->will( $this->returnValue( $response ) );
-
-		$response->expects( $this->once() )->method( 'isSuccessful' )
-			->will( $this->returnValue( true ) );
-
-		$response->expects( $this->once() )->method( 'getTransactionReference' )
-			->will( $this->returnValue( 123 ) );
-
-
-		$result = $this->object->updateSync( array( 'orderid' => '1', 'x_MD5_Hash' => 'abc' ) );
-
-		$this->assertInstanceOf( '\\Aimeos\\MShop\\Order\\Item\\Iface', $result );
-	}
-
-
-	public function testUpdateSyncNone()
-	{
-		$result = $this->object->updateSync( [] );
-
-		$this->assertEquals( null, $result );
-	}
-
-
-	protected function getOrder()
-	{
-		$manager = \Aimeos\MShop\Order\Manager\Factory::createManager( $this->context );
-
-		$search = $manager->createSearch();
-		$search->setConditions( $search->compare( '==', 'order.datepayment', '2008-02-15 12:34:56' ) );
-
-		$result = $manager->searchItems( $search );
-
-		if( ( $item = reset( $result ) ) === false ) {
-			throw new \RuntimeException( 'No order found' );
-		}
-
-		return $item;
-	}
-
-
-	protected function getOrderBase( $parts = null )
-	{
-		if( $parts === null ) {
-			$parts = \Aimeos\MShop\Order\Item\Base\Base::PARTS_ADDRESS | \Aimeos\MShop\Order\Item\Base\Base::PARTS_SERVICE;
-		}
-
-		$manager = \Aimeos\MShop\Order\Manager\Factory::createManager( $this->context )->getSubmanager( 'base' );
-
-		return $manager->load( $this->getOrder()->getBaseId(), $parts );
+		$this->assertInstanceOf( '\Psr\Http\Message\ResponseInterface', $result );
 	}
 }
 

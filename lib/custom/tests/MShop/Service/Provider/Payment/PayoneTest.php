@@ -24,7 +24,7 @@ class PayoneTest extends \PHPUnit\Framework\TestCase
 
 		$this->object = $this->getMockBuilder( '\\Aimeos\\MShop\\Service\\Provider\\Payment\\Payone' )
 			->setConstructorArgs( array( $this->context, $this->serviceItem ) )
-			->setMethods( array( 'updateSyncOrder' ) )
+			->setMethods( array( 'updateSync' ) )
 			->getMock();
 	}
 
@@ -37,38 +37,23 @@ class PayoneTest extends \PHPUnit\Framework\TestCase
 	}
 
 
-	public function testUpdateSync()
+	public function testUpdatePush()
 	{
-		$this->object->expects( $this->once() )->method( 'updateSyncOrder' )
-			->will( $this->returnValue( $this->getOrder() ) );
+		$psr7stream = $this->getMockBuilder( '\Psr\Http\Message\StreamInterface' )->getMock();
+		$psr7request = $this->getMockBuilder( '\Psr\Http\Message\ServerRequestInterface' )->getMock();
+		$psr7response = $this->getMockBuilder( '\Aimeos\MW\View\Helper\Response\Iface' )->getMock();
 
-		$result = $this->object->updateSync( array( 'reference' => '1' ) );
+		$psr7request->expects( $this->once() )->method( 'getAttributes' )
+			->will( $this->returnValue( ['reference' => 1] ) );
 
-		$this->assertInstanceOf( '\\Aimeos\\MShop\\Order\\Item\\Iface', $result );
-	}
+		$psr7response->expects( $this->once() )->method( 'withBody' )
+			->will( $this->returnValue( $psr7response ) );
 
+		$psr7response->expects( $this->once() )->method( 'createStreamFromString' )
+			->will( $this->returnValue( $psr7stream ) );
 
-	public function testUpdateSyncNone()
-	{
-		$result = $this->object->updateSync( [] );
+		$result = $this->object->updatePush( $psr7request, $psr7response );
 
-		$this->assertEquals( null, $result );
-	}
-
-
-	protected function getOrder()
-	{
-		$manager = \Aimeos\MShop\Order\Manager\Factory::createManager( $this->context );
-
-		$search = $manager->createSearch();
-		$search->setConditions( $search->compare( '==', 'order.datepayment', '2008-02-15 12:34:56' ) );
-
-		$result = $manager->searchItems( $search );
-
-		if( ( $item = reset( $result ) ) === false ) {
-			throw new \RuntimeException( 'No order found' );
-		}
-
-		return $item;
+		$this->assertInstanceOf( '\Psr\Http\Message\ResponseInterface', $result );
 	}
 }

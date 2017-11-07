@@ -72,23 +72,23 @@ class Payone
 		);
 	}
 
+
 	/**
-	 * Updates the orders for which status updates were received via direct requests (like HTTP).
+	 * Updates the order status sent by payment gateway notifications
 	 *
-	 * @param array $params Associative list of request parameters
-	 * @param string|null $body Information sent within the body of the request
-	 * @param string|null &$output Response body for notification requests
-	 * @param array &$header Response headers for notification requests
-	 * @return \Aimeos\MShop\Order\Item\Iface|null Order item if update was successful, null if the given parameters are not valid for this provider
+	 * @param \Psr\Http\Message\ServerRequestInterface Request object
+	 * @return \Psr\Http\Message\ResponseInterface Response object
 	 */
-	public function updateSync( array $params = [], $body = null, &$output = null, array &$header = [] )
+	public function updatePush( \Psr\Http\Message\ServerRequestInterface $request, \Psr\Http\Message\ResponseInterface $response )
 	{
+		$params = (array) $request->getAttributes() + (array) $request->getParsedBody() + (array) $request->getQueryParams();
+
 		if( isset( $params['reference'] ) )
 		{
-			$result = $this->updateSyncOrder( $params['reference'], $params, $body, $output, $header );
-			$output = 'TSOK'; // payment update successful
-
-			return $result;
+			$response = parent::updatePush( $request, $response );
+			$response = $response->withBody( $response->createStreamFromString( 'TSOK' ) ); // payment update successful
 		}
+
+		return $response;
 	}
 }

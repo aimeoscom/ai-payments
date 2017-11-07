@@ -292,16 +292,13 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 
 	public function testUpdateSync()
 	{
-		$orderItem = $this->getOrder();
 		$baseItem = $this->getOrderBase( \Aimeos\MShop\Order\Item\Base\Base::PARTS_SERVICE );
 
+		$psr7request = $this->getMockBuilder( '\Psr\Http\Message\ServerRequestInterface' )->getMock();
 
 		$provider = $this->getMockBuilder( 'Omnipay\Dummy\Gateway' )
 			->setMethods( array( 'authorize' ) )
 			->getMock();
-
-		$this->object->expects( $this->once() )->method( 'getOrder' )
-			->will( $this->returnValue( $orderItem ) );
 
 		$this->object->expects( $this->once() )->method( 'getOrderBase' )
 			->will( $this->returnValue( $baseItem ) );
@@ -310,7 +307,7 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 			->will( $this->returnValue( $provider ) );
 
 
-		$result = $this->object->updateSync( array( 'orderid' => '1' ) );
+		$result = $this->object->updateSync( $psr7request, $this->getOrder() );
 
 		$this->assertInstanceOf( '\\Aimeos\\MShop\\Order\\Item\\Iface', $result );
 	}
@@ -318,15 +315,30 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 
 	public function testUpdateSyncNone()
 	{
-		$result = $this->object->updateSync( [] );
+		$baseItem = $this->getOrderBase( \Aimeos\MShop\Order\Item\Base\Base::PARTS_SERVICE );
 
-		$this->assertEquals( null, $result );
+
+		$provider = $this->getMockBuilder( 'Omnipay\Dummy\Gateway' )
+			->setMethods( array( 'supportsCompletePurchase', 'completePurchase' ) )
+			->getMock();
+
+		$psr7request = $this->getMockBuilder( '\Psr\Http\Message\ServerRequestInterface' )->getMock();
+
+		$this->object->expects( $this->once() )->method( 'getOrderBase' )
+			->will( $this->returnValue( $baseItem ) );
+
+		$this->object->expects( $this->once() )->method( 'getProvider' )
+			->will( $this->returnValue( $provider ) );
+
+
+		$result = $this->object->updateSync( $psr7request, $this->getOrder() );
+
+		$this->assertInstanceOf( '\\Aimeos\\MShop\\Order\\Item\\Iface', $result );
 	}
 
 
 	public function testUpdateSyncPurchaseSucessful()
 	{
-		$orderItem = $this->getOrder();
 		$baseItem = $this->getOrderBase( \Aimeos\MShop\Order\Item\Base\Base::PARTS_SERVICE );
 
 
@@ -344,9 +356,8 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 			->setMethods( array( 'isSuccessful' ) )
 			->getMock();
 
+		$psr7request = $this->getMockBuilder( '\Psr\Http\Message\ServerRequestInterface' )->getMock();
 
-		$this->object->expects( $this->once() )->method( 'getOrder' )
-			->will( $this->returnValue( $orderItem ) );
 
 		$this->object->expects( $this->once() )->method( 'getOrderBase' )
 			->will( $this->returnValue( $baseItem ) );
@@ -367,7 +378,7 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 			->will( $this->returnValue( true ) );
 
 
-		$result = $this->object->updateSync( array( 'orderid' => '1' ) );
+		$result = $this->object->updateSync( $psr7request, $this->getOrder() );
 
 		$this->assertInstanceOf( '\\Aimeos\\MShop\\Order\\Item\\Iface', $result );
 	}
@@ -623,9 +634,7 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 
 	public function testUpdateSyncAuthorizeFailed()
 	{
-		$orderItem = $this->getOrder();
 		$baseItem = $this->getOrderBase( \Aimeos\MShop\Order\Item\Base\Base::PARTS_SERVICE );
-
 		$this->serviceItem->setConfig( array( 'omnipay.type' => 'Dummy', 'omnipay.authorize' => '1' ) );
 
 
@@ -643,9 +652,11 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 			->disableOriginalConstructor()
 			->getMock();
 
+		$psr7request = $this->getMockBuilder( '\Psr\Http\Message\ServerRequestInterface' )->getMock();
 
-		$this->object->expects( $this->once() )->method( 'getOrder' )
-			->will( $this->returnValue( $orderItem ) );
+
+		$psr7request->expects( $this->once() )->method( 'getAttributes' )
+			->will( $this->returnValue( [] ) );
 
 		$this->object->expects( $this->once() )->method( 'getOrderBase' )
 			->will( $this->returnValue( $baseItem ) );
@@ -667,13 +678,12 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 
 
 		$this->setExpectedException( '\\Aimeos\\MShop\\Service\\Exception' );
-		$this->object->updateSync( array( 'orderid' => '1' ) );
+		$this->object->updateSync( $psr7request, $this->getOrder() );
 	}
 
 
 	public function testUpdateSyncRedirect()
 	{
-		$orderItem = $this->getOrder();
 		$baseItem = $this->getOrderBase( \Aimeos\MShop\Order\Item\Base\Base::PARTS_SERVICE );
 
 
@@ -691,9 +701,11 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 			->disableOriginalConstructor()
 			->getMock();
 
+		$psr7request = $this->getMockBuilder( '\Psr\Http\Message\ServerRequestInterface' )->getMock();
 
-		$this->object->expects( $this->once() )->method( 'getOrder' )
-			->will( $this->returnValue( $orderItem ) );
+
+		$psr7request->expects( $this->once() )->method( 'getAttributes' )
+			->will( $this->returnValue( [] ) );
 
 		$this->object->expects( $this->once() )->method( 'getOrderBase' )
 			->will( $this->returnValue( $baseItem ) );
@@ -715,7 +727,7 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 
 
 		$this->setExpectedException( '\\Aimeos\\MShop\\Service\\Exception' );
-		$this->object->updateSync( array( 'orderid' => '1' ) );
+		$this->object->updateSync( $psr7request, $this->getOrder() );
 	}
 
 
