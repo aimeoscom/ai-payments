@@ -435,10 +435,10 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 			->will( $this->returnValue( true ) );
 
 		$request->expects( $this->once() )->method( 'getTransactionStatus' )
-			->will( $this->returnValue( null ) );
+			->will( $this->returnValue( \Omnipay\Common\Message\NotificationInterface::STATUS_COMPLETED ) );
 
-		$cmpFcn =  function( $subject ) {
-			return $subject->getPaymentStatus() === \Aimeos\MShop\Order\Item\Base::PAY_REFUSED;
+		$cmpFcn = function( $subject ) {
+			return $subject->getPaymentStatus() === \Aimeos\MShop\Order\Item\Base::PAY_RECEIVED;
 		};
 
 		$this->object->expects( $this->once() )->method( 'saveOrder' )->with( $this->callback( $cmpFcn ) );
