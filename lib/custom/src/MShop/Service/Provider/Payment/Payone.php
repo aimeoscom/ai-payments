@@ -44,7 +44,7 @@ class Payone
 				'itemType' => 'goods', // Available types: goods, shipping etc.
 				'quantity' => $product->getQuantity(),
 				'price' => $product->getPrice()->getValue(),
-				'vat' => (int) $base->getPrice()->getTaxFlag(),
+				'vat' => (int) $product->getPrice()->getTaxRate(),
 			]);
 		}
 
@@ -56,7 +56,7 @@ class Payone
 				'itemType' => 'shipment',
 				'quantity' => 1,
 				'price' => $delivery->getPrice()->getCosts(),
-				'vat' => (int) $base->getPrice()->getTaxFlag(),
+				'vat' => (int) $delivery->getPrice()->getTaxRate(),
 			]);
 
 			$completePrice = (string) ( (float) $delivery->getPrice()->getCosts() + (float) $completePrice );
