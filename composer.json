@@ -4,7 +4,7 @@
 	"keywords": ["aimeos", "payment", "shop", "e-commerce", "omnipay", "stripe", "mollie", "authorize", "cardsave", "sagepay"],
 	"homepage": "https://aimeos.org/",
 	"type": "aimeos-extension",
-	"license": "LGPL-3.0",
+	"license": "LGPL-3.0-or-later",
 	"support": {
 		"source": "https://github.com/aimeos/ai-payments",
 		"issues": "https://github.com/aimeos/ai-payments/issues",
