@@ -363,6 +363,8 @@ class OmniPay
 				return $provider->supportsVoid();
 			case \Aimeos\MShop\Service\Provider\Payment\Base::FEAT_REFUND:
 				return $provider->supportsRefund();
+			case \Aimeos\MShop\Service\Provider\Payment\Base::FEAT_REPAY:
+				return method_exists( $provider, 'getCard' );
 		}
 
 		return false;
@@ -423,6 +425,50 @@ class OmniPay
 			$status = \Aimeos\MShop\Order\Item\Base::PAY_REFUND;
 			$order->setPaymentStatus( $status );
 			$this->saveOrder( $order );
+		}
+	}
+
+
+	/**
+	 * Executes the payment again for the given order if supported.
+	 * This requires support of the payment gateway and token based payment
+	 *
+	 * @param \Aimeos\MShop\Order\Item\Iface $order Order invoice object
+	 * @return void
+	 */
+	public function repay( \Aimeos\MShop\Order\Item\Iface $order )
+	{
+		$base = $this->getOrderBase( $order->getBaseId() );
+
+		if( !$this->isImplemented( \Aimeos\MShop\Service\Provider\Payment\Base::FEAT_REPAY ) ) {
+			throw new \Aimeos\MShop\Service\Exception( sprintf( 'Method "%1$s" for provider not available', 'repay' ) );
+		}
+
+		if( ( $token = $this->getCustomerData( $base->getCustomerId(), 'token' ) ) != null )
+		{
+			$msg = sprintf( 'No reoccurring payment token available for customer ID "%1$S"', $base->getCustomerId() );
+			throw new \Aimeos\MShop\Service\Exception( $msg );
+		}
+
+		$data = array(
+			'transactionId' => $order->getId(),
+			'currency' => $base->getPrice()->getCurrencyId(),
+			'amount' => $this->getAmount( $base->getPrice() ),
+			'cardReference' => $token,
+			'paymentPage' => false,
+		);
+
+		$response = $this->getProvider()->purchase( $data )->send();
+
+		if( $response->isSuccessful() )
+		{
+			$this->saveTransationRef( $base, $response->getTransactionReference() );
+			$order->setPaymentStatus( \Aimeos\MShop\Order\Item\Base::PAY_RECEIVED );
+			$this->saveOrder( $order );
+		}
+		else
+		{
+			throw new \Aimeos\MShop\Service\Exception( 'Token based payment failed' );
 		}
 	}
 
@@ -499,17 +545,17 @@ class OmniPay
 	 */
 	public function updateSync( \Psr\Http\Message\ServerRequestInterface $request, \Aimeos\MShop\Order\Item\Iface $order )
 	{
-		$base = $this->getOrderBase( $order->getBaseId() );
-
-		$params['transactionId'] = $order->getId();
-		$params['transactionReference'] = $this->getTransactionReference( $base );
-		$params['amount'] = $this->getAmount( $base->getPrice() );
-		$params['currency'] = $base->getLocale()->getCurrencyId();
-
 		try
 		{
 			$provider = $this->getProvider();
+			$base = $this->getOrderBase( $order->getBaseId() );
+
 			$params = (array) $request->getAttributes() + (array) $request->getParsedBody() + (array) $request->getQueryParams();
+			$params['transactionId'] = $order->getId();
+			$params['transactionReference'] = $this->getTransactionReference( $base );
+			$params['amount'] = $this->getAmount( $base->getPrice() );
+			$params['currency'] = $base->getLocale()->getCurrencyId();
+			$params['createCard'] = true;
 
 
 			if( $this->getValue( 'authorize', false ) && $provider->supportsCompleteAuthorize() )
@@ -552,6 +598,10 @@ class OmniPay
 
 			$this->saveTransationRef( $base, $response->getTransactionReference() );
 			$this->saveOrder( $order );
+
+			if( method_exists( $response, 'getCardReference' ) && ( $token = $response->getCardReference() ) != null ) {
+				$this->setCustomerData( $base->getCustomerId(), 'token', $token );
+			}
 		}
 		catch( \Exception $e )
 		{
@@ -643,6 +693,7 @@ class OmniPay
 			'language' => $base->getAddress( \Aimeos\MShop\Order\Item\Base\Address\Base::TYPE_PAYMENT )->getLanguageId(),
 			'description' => sprintf( $this->getContext()->getI18n()->dt( 'mshop', 'Order %1$s' ), $orderid ),
 			'clientIp' => $this->getValue( 'client.ipaddress' ),
+			'createCard' => true,
 		);
 
 		if( $this->getValue( 'onsite', false ) || $this->getValue( 'address', false ) ) {
@@ -868,7 +919,7 @@ class OmniPay
 
 
 	/**
-	 * Addes the transation reference to the order service attributes.
+	 * Adds the transation reference to the order service attributes.
 	 *
 	 * @param \Aimeos\MShop\Order\Item\Base\Iface $baseItem Order base object with service items attached
 	 * @param string $ref Transaction reference from the payment gateway

@@ -30,7 +30,7 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 		$this->serviceItem->setCode( 'OGONE' );
 
 		$this->object = $this->getMockBuilder( '\\Aimeos\\MShop\\Service\\Provider\\Payment\\OmniPay' )
-			->setMethods( array( 'getOrder', 'getOrderBase', 'saveOrder', 'saveOrderBase', 'getProvider', 'saveTransationRef' ) )
+			->setMethods( ['getCustomerData', 'getOrder', 'getOrderBase', 'saveOrder', 'saveOrderBase', 'getProvider', 'saveTransationRef'] )
 			->setConstructorArgs( array( $this->context, $this->serviceItem ) )
 			->getMock();
 	}
@@ -90,6 +90,7 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 		$this->assertFalse( $object->isImplemented( \Aimeos\MShop\Service\Provider\Payment\Base::FEAT_CAPTURE ) );
 		$this->assertFalse( $object->isImplemented( \Aimeos\MShop\Service\Provider\Payment\Base::FEAT_QUERY ) );
 		$this->assertFalse( $object->isImplemented( \Aimeos\MShop\Service\Provider\Payment\Base::FEAT_REFUND ) );
+		$this->assertFalse( $object->isImplemented( \Aimeos\MShop\Service\Provider\Payment\Base::FEAT_REPAY ) );
 	}
 
 
@@ -921,6 +922,51 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 
 
 		$this->object->refund( $orderItem );
+	}
+
+
+	public function testRepay()
+	{
+		$orderItem = $this->getOrder();
+		$baseItem = $this->getOrderBase( \Aimeos\MShop\Order\Item\Base\Base::PARTS_SERVICE );
+
+
+		$provider = $this->getMockBuilder( 'Omnipay\Dummy\Gateway' )
+			->setMethods( array( 'getCard', 'purchase' ) )
+			->getMock();
+
+		$request = $this->getMockBuilder( '\Omnipay\Dummy\Message\AuthorizeRequest' )
+			->disableOriginalConstructor()
+			->setMethods( array( 'send' ) )
+			->getMock();
+
+		$response = $this->getMockBuilder( 'Omnipay\Dummy\Message\Response' )
+			->disableOriginalConstructor()
+			->setMethods( array( 'isSuccessful' ) )
+			->getMock();
+
+
+		$this->object->expects( $this->once() )->method( 'getOrderBase' )
+			->will( $this->returnValue( $baseItem ) );
+
+		$this->object->expects( $this->exactly( 2 ) )->method( 'getProvider' )
+			->will( $this->returnValue( $provider ) );
+
+		$provider->expects( $this->once() )->method( 'purchase' )
+			->will( $this->returnValue( $request ) );
+
+		$request->expects( $this->once() )->method( 'send' )
+			->will( $this->returnValue( $response ) );
+
+		$response->expects( $this->once() )->method( 'isSuccessful' )
+			->will( $this->returnValue( true ) );
+
+		$this->object->expects( $this->once() )->method( 'saveTransationRef' );
+
+		$this->object->expects( $this->once() )->method( 'saveOrder' );
+
+
+		$this->object->repay( $orderItem );
 	}
 
 
