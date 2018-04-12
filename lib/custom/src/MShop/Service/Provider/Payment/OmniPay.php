@@ -217,6 +217,20 @@ class OmniPay
 			'required'=> false,
 			'public' => false,
 		),
+
+		'paymenttoken' => array(
+			'code' => 'paymenttoken',
+			'internalcode'=> 'token',
+			'label'=> 'Authentication token',
+			'type'=> 'string',
+			'internaltype'=> 'integer',
+			'default'=> '',
+			'hidden'=>true,
+			'required'=> true,
+			'public' => false,
+		),
+
+
 	);
 
 	private $provider;
@@ -545,6 +559,13 @@ class OmniPay
 	 */
 	public function updateSync( \Psr\Http\Message\ServerRequestInterface $request, \Aimeos\MShop\Order\Item\Iface $order )
 	{
+		$base = $this->getOrderBase( $order->getBaseId() );
+
+		$params['transactionId'] = $order->getId();
+		$params['transactionReference'] = $this->getTransactionReference( $base );
+		$params['amount'] = $this->getAmount( $base->getPrice() );
+		$params['currency'] = $base->getLocale()->getCurrencyId();
+
 		try
 		{
 			$provider = $this->getProvider();
@@ -700,6 +721,11 @@ class OmniPay
 			$data['card'] = $this->getCardDetails( $base, $params );
 		}
 
+
+		if( $this->getValue( 'token', false ) && isset($params['paymenttoken']) ){
+			$data['token'] = $params['paymenttoken'];
+		}
+
 		return $data + $this->getPaymentUrls();
 	}
 
@@ -711,11 +737,17 @@ class OmniPay
 	 */
 	protected function getProvider()
 	{
+		$config = $this->getServiceItem()->getConfig();
+
+		if($this->getValue( 'apiKey', false ) != false){
+			$config['apiKey'] = $this->getValue( 'apiKey', false );
+		}
+
 		if( !isset( $this->provider ) )
 		{
 			$this->provider = OPay::create( $this->getValue( 'type' ) );
 			$this->provider->setTestMode( (bool) $this->getValue( 'testmode', false ) );
-			$this->provider->initialize( $this->getServiceItem()->getConfig() );
+			$this->provider->initialize( $config );
 		}
 
 		return $this->provider;
@@ -919,7 +951,7 @@ class OmniPay
 
 
 	/**
-	 * Adds the transation reference to the order service attributes.
+	 * Addes the transation reference to the order service attributes.
 	 *
 	 * @param \Aimeos\MShop\Order\Item\Base\Iface $baseItem Order base object with service items attached
 	 * @param string $ref Transaction reference from the payment gateway
