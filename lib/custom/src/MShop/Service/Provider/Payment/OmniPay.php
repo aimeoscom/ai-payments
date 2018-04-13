@@ -927,7 +927,7 @@ class OmniPay
 
 
 	/**
-	 * Addes the transation reference to the order service attributes.
+	 * Adds the transation reference to the order service attributes.
 	 *
 	 * @param \Aimeos\MShop\Order\Item\Base\Iface $baseItem Order base object with service items attached
 	 * @param string $ref Transaction reference from the payment gateway

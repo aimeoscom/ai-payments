@@ -24,24 +24,6 @@ class Stripe
 {
 
 	private $beConfig = array(
-		'type' => array(
-			'code' => 'type',
-			'internalcode'=> 'type',
-			'label'=> 'Payment provider type',
-			'type'=> 'string',
-			'internaltype'=> 'string',
-			'default'=> '',
-			'required'=> true,
-		),
-		'onsite' => array(
-			'code' => 'onsite',
-			'internalcode'=> 'onsite',
-			'label'=> 'Collect data locally',
-			'type'=> 'boolean',
-			'internaltype'=> 'boolean',
-			'default'=> '0',
-			'required'=> false,
-		),
 		'address' => array(
 			'code' => 'address',
 			'internalcode'=> 'address',
