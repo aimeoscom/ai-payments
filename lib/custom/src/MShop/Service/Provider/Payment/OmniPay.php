@@ -218,19 +218,6 @@ class OmniPay
 			'public' => false,
 		),
 
-		'paymenttoken' => array(
-			'code' => 'paymenttoken',
-			'internalcode'=> 'token',
-			'label'=> 'Authentication token',
-			'type'=> 'string',
-			'internaltype'=> 'integer',
-			'default'=> '',
-			'hidden'=>true,
-			'required'=> true,
-			'public' => false,
-		),
-
-
 	);
 
 	private $provider;
@@ -721,11 +708,6 @@ class OmniPay
 			$data['card'] = $this->getCardDetails( $base, $params );
 		}
 
-
-		if( $this->getValue( 'token', false ) && isset($params['paymenttoken']) ){
-			$data['token'] = $params['paymenttoken'];
-		}
-
 		return $data + $this->getPaymentUrls();
 	}
 
@@ -737,17 +719,11 @@ class OmniPay
 	 */
 	protected function getProvider()
 	{
-		$config = $this->getServiceItem()->getConfig();
-
-		if($this->getValue( 'apiKey', false ) != false){
-			$config['apiKey'] = $this->getValue( 'apiKey', false );
-		}
-
 		if( !isset( $this->provider ) )
 		{
 			$this->provider = OPay::create( $this->getValue( 'type' ) );
 			$this->provider->setTestMode( (bool) $this->getValue( 'testmode', false ) );
-			$this->provider->initialize( $config );
+			$this->provider->initialize( $this->getServiceItem()->getConfig() );
 		}
 
 		return $this->provider;

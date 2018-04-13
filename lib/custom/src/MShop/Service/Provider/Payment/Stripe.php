@@ -10,6 +10,7 @@
 
 namespace Aimeos\MShop\Service\Provider\Payment;
 
+use Omnipay\Omnipay as OPay;
 
 /**
  * Payment provider for Stripe.
@@ -114,6 +115,7 @@ class Stripe
 
 	);
 
+	private $provider;
 
 	/**
 	 * Returns the prefix for the configuration definitions
@@ -127,6 +129,26 @@ class Stripe
 
 
 	/**
+	 * Returns the Omnipay gateway provider object.
+	 *
+	 * @return \Omnipay\Common\GatewayInterface Gateway provider object
+	 */
+	protected function getProvider()
+	{
+		$config = $this->getServiceItem()->getConfig();
+		$config['apiKey'] = $this->getValue('apiKey','');
+		if( !isset( $this->provider ) )
+		{
+			$this->provider = OPay::create( 'Stripe' );
+			$this->provider->setTestMode( (bool) $this->getValue( 'testmode', false ) );
+			$this->provider->initialize( $config );
+		}
+		return $this->provider;
+	}
+
+
+
+	/**
 	 * Tries to get an authorization or captures the money immediately for the given order if capturing the money
 	 * separately isn't supported or not configured by the shop owner.
 	 *
@@ -137,7 +159,7 @@ class Stripe
 	 */
 	public function process(\Aimeos\MShop\Order\Item\Iface $order, array $params = [])
 	{
-		if( $this->getValue( 'onsite' ) == true && ( !isset( $params['paymenttoken'] )  ) ) {
+		if( !isset( $params['paymenttoken'] ) ) {
 			return $this->getPaymentForm( $order, $params );
 		}
 		return $this->processOrder($order, $params);
@@ -162,32 +184,6 @@ class Stripe
 		$url = $this->getConfigValue(array('payment.url-self'));
 		return new \Aimeos\MShop\Common\Item\Helper\Form\Standard($url, 'POST', $list, false, $this->getHTMLform());
 	}
-
-
-	/**
-	 * Returns the value for the given configuration key
-	 *
-	 * @param string $key Configuration key name
-	 * @param mixed $default Default value if no configuration is found
-	 * @return mixed Configuration value
-	 */
-	protected function getValue($key, $default = null)
-	{
-		switch ($key) {
-			case 'type':
-				return 'Stripe';
-			case 'onsite':
-				return true;
-			case 'token':
-				return true;
-			case 'apiKey':
-				return $this->getConfigValue( array( $this->getConfigPrefix() . '.apiKey' ), $default );
-		}
-
-		return parent::getValue($key, $default);
-	}
-
-
 
 
 	/**
@@ -255,49 +251,23 @@ class Stripe
 	public function getConfigFE(\Aimeos\MShop\Order\Item\Base\Iface $basket)
 	{
 		return [];
-
-
-		$list = [];
-		$feconfig = $this->feConfig;
-
-		try {
-			$code = $this->getServiceItem()->getCode();
-			$service = $basket->getService(\Aimeos\MShop\Order\Item\Base\Service\Base::TYPE_PAYMENT, $code);
-
-			foreach ($service->getAttributes() as $item) {
-				if (isset($feconfig[$item->getCode()])) {
-					if (is_array($feconfig[$item->getCode()]['default'])) {
-						$feconfig[$item->getCode()]['default'] = array_merge(array($item->getValue()), $feconfig[$item->getCode()]['default']);
-					} else {
-						$feconfig[$item->getCode()]['default'] = $item->getValue();
-					}
-				}
-			}
-		} catch (\Aimeos\MShop\Order\Exception $e) {
-			;
-		} // If payment isn't available yet
-
-
-		/*try
-		{
-			$address = $basket->getAddress( \Aimeos\MShop\Order\Item\Base\Address\Base::TYPE_PAYMENT );
-
-			if( $feconfig['novalnetcredit.holder']['default'] == ''
-				&& ( $fn = $address->getFirstname() ) !== '' && ( $ln = $address->getLastname() ) !== ''
-			) {
-				$feconfig['novalnetcredit.holder']['default'] = $fn . ' ' . $ln;
-			}
-		}
-		catch( \Aimeos\MShop\Order\Exception $e ) { ; } // If address isn't available*/
-
-
-		foreach ($feconfig as $key => $config) {
-			$list[$key] = new \Aimeos\MW\Criteria\Attribute\Standard($config);
-		}
-
-		return $list;
 	}
 
+	/**
+	 * Returns the data passed to the Omnipay library
+	 *
+	 * @param \Aimeos\MShop\Order\Item\Base\Iface $base Basket object
+	 * @param $orderid Unique order ID
+	 * @param array $params Request parameter if available
+	 */
+	protected function getData( \Aimeos\MShop\Order\Item\Base\Iface $base, $orderid, array $params )
+	{
+		$data = parent::getData($base,$orderid,$params);
+		if( isset($params['paymenttoken']) ){
+			$data['token'] = $params['paymenttoken'];
+		}
+		return $data;
+	}
 
 	/**
 	 * Checks the frontend configuration attributes for validity.
