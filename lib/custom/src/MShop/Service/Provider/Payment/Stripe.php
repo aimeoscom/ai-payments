@@ -60,9 +60,9 @@ class Stripe
 			'default'=> '',
 			'required'=> true,
 		),
-		'publishable_key' => array(
-			'code' => 'publishable_key',
-			'internalcode'=> 'publishable_key',
+		'publishableKey' => array(
+			'code' => 'publishableKey',
+			'internalcode'=> 'publishableKey',
 			'label'=> 'publishable key',
 			'type'=> 'string',
 			'internaltype'=> 'string',
@@ -118,13 +118,15 @@ class Stripe
 	protected function getProvider()
 	{
 		$config = $this->getServiceItem()->getConfig();
-		$config['apiKey'] = $this->getValue('apiKey','');
+		$config['apiKey'] = $config['stripe.apiKey'];
+
 		if( !isset( $this->provider ) )
 		{
 			$this->provider = OPay::create( 'Stripe' );
 			$this->provider->setTestMode( (bool) $this->getValue( 'testmode', false ) );
 			$this->provider->initialize( $config );
 		}
+
 		return $this->provider;
 	}
 
@@ -164,64 +166,11 @@ class Stripe
 			$list[$key] = new \Aimeos\MW\Criteria\Attribute\Standard($config);
 		}
 		$url = $this->getConfigValue(array('payment.url-self'));
-		return new \Aimeos\MShop\Common\Item\Helper\Form\Standard($url, 'POST', $list, false, $this->getHTMLform());
+		return new \Aimeos\MShop\Common\Item\Helper\Form\Standard($url, 'POST', $list, false, $this->getHtmlForm());
 	}
 
 
-	/**
-	 * Returns the configuration attribute definitions of the provider to generate a list of available fields and
-	 * rules for the value of each field in the administration interface.
-	 *
-	 * @return array List of attribute definitions implementing \Aimeos\MW\Common\Critera\Attribute\Iface
-	 */
-	public function getConfigBE()
-	{
-		$list = [];
 
-		$prefix = $this->getConfigPrefix();
-		$config = $this->beConfig;
-
-		if( $prefix !== 'omnipay' ) {
-			unset( $config['type'], $config['onsite'] );
-		}
-
-		foreach( $config as $key => $config )
-		{
-			$config['code'] = $prefix . '.' . $config['code'];
-			$list[$prefix.'.'.$key] = new \Aimeos\MW\Criteria\Attribute\Standard( $config );
-		}
-
-		return $list;
-	}
-
-
-	/**
-	 * Checks the backend configuration attributes for validity.
-	 *
-	 * @param array $attributes Attributes added by the shop owner in the administraton interface
-	 * @return array An array with the attribute keys as key and an error message as values for all attributes that are
-	 * 	known by the provider but aren't valid
-	 */
-	public function checkConfigBE( array $attributes )
-	{
-		$errors = parent::checkConfigBE( $attributes );
-
-		$prefix = $this->getConfigPrefix();
-		$config = $this->beConfig;
-		$list = [];
-
-		if( $prefix !== 'omnipay' ) {
-			unset( $config['type'], $config['onsite'] );
-		}
-
-		foreach( $config as $key => $cfg )
-		{
-			$cfg['code'] = $prefix . '.' . $cfg['code'];
-			$list[$prefix.'.'.$key] = $cfg;
-		}
-
-		return array_merge( $errors, $this->checkConfig( $list, $attributes ) );
-	}
 
 	/**
 	 * Returns the configuration attribute definitions of the provider to generate a list of available fields and
@@ -264,12 +213,12 @@ class Stripe
 		//return $this->checkConfig($this->feConfig, $attributes);
 	}
 
-	public function getHTMLform()
+	public function getHtmlForm()
 	{
 		return '<script src="https://js.stripe.com/v3/"></script>
 		<script type="text/javascript">
     	$(document).ready(function () {
-        var stripe = Stripe("'.$this->getConfigValue( array( $this->getConfigPrefix() . '.publishable_key' ), '' ).'");
+        var stripe = Stripe("'.$this->getConfigValue( array( $this->getConfigPrefix() . '.publishableKey' ), '' ).'");
         var elements = stripe.elements();
 
 
