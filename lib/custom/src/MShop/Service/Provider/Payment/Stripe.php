@@ -91,7 +91,7 @@ class Stripe
 			'type'=> 'number',
 			'internaltype'=> 'integer',
 			'default'=> '',
-			'required'=> true
+			'required'=> false
 		),
 		'payment.cvv' => array(
 			'code' => 'payment.cvv',
@@ -100,16 +100,16 @@ class Stripe
 			'type'=> 'number',
 			'internaltype'=> 'integer',
 			'default'=> '',
-			'required'=> true
+			'required'=> false
 		),
-		'payment.expiryyear' => array(
-			'code' => 'payment.expiryyear',
-			'internalcode'=> 'expiryYear',
-			'label'=> 'Expiry year',
+		'payment.expiry' => array(
+			'code' => 'payment.expiry',
+			'internalcode'=> 'expiry',
+			'label'=> 'Expiry',
 			'type'=> 'select',
 			'internaltype'=> 'integer',
 			'default'=> '',
-			'required'=> true
+			'required'=> false
 		),
 	);
 
@@ -198,47 +198,6 @@ class Stripe
 	public function getConfigFE(\Aimeos\MShop\Order\Item\Base\Iface $basket)
 	{
 		return [];
-
-		$list = [];
-		$feconfig = $this->feConfig;
-
-		try {
-			$code = $this->getServiceItem()->getCode();
-			$service = $basket->getService(\Aimeos\MShop\Order\Item\Base\Service\Base::TYPE_PAYMENT, $code);
-
-			foreach ($service->getAttributes() as $item) {
-				if (isset($feconfig[$item->getCode()])) {
-					if (is_array($feconfig[$item->getCode()]['default'])) {
-						$feconfig[$item->getCode()]['default'] = array_merge(array($item->getValue()), $feconfig[$item->getCode()]['default']);
-					} else {
-						$feconfig[$item->getCode()]['default'] = $item->getValue();
-					}
-				}
-			}
-		} catch (\Aimeos\MShop\Order\Exception $e) {
-			;
-		} // If payment isn't available yet
-
-
-		/*try
-		{
-			$address = $basket->getAddress( \Aimeos\MShop\Order\Item\Base\Address\Base::TYPE_PAYMENT );
-
-			if( $feconfig['novalnetcredit.holder']['default'] == ''
-				&& ( $fn = $address->getFirstname() ) !== '' && ( $ln = $address->getLastname() ) !== ''
-			) {
-				$feconfig['novalnetcredit.holder']['default'] = $fn . ' ' . $ln;
-			}
-		}
-		catch( \Aimeos\MShop\Order\Exception $e ) { ; } // If address isn't available*/
-
-
-		foreach ($feconfig as $key => $config) {
-			$list[$key] = new \Aimeos\MW\Criteria\Attribute\Standard($config);
-		}
-
-		return $list;
-
 	}
 
 	/**
@@ -267,85 +226,78 @@ class Stripe
 	public function checkConfigFE(array $attributes)
 	{
 		return [];
-		//return $this->checkConfig($this->feConfig, $attributes);
 	}
 
 	public function getHtmlForm()
 	{
-		return '<script src="https://js.stripe.com/v3/"></script>
+		return '
+		<script src="https://js.stripe.com/v3/"></script>		
 		<script type="text/javascript">
     	$(document).ready(function () {
-        var stripe = Stripe("'.$this->getConfigValue( array( $this->getConfigPrefix() . '.publishableKey' ), '' ).'");
-        var elements = stripe.elements();
+	// Custom JS purchase handler for Stripe PaymentProvider
+	// It is not necessary to creating. Just if current Payment Provider need so
+	AimeosPurchaseHandler.AimeosProviders.beforePurchaseStripe = function () {
+		StripeProvider.stripe.createToken(StripeProvider.token_element).then(function (result) {
+			if (result.error) {
+				$(StripeProvider.errors_selector).val(result.error.message);
+			} else {
+				StripeProvider.tokenHandler(result.token);
+			}
+		});
+	};
+	StripeProvider.init("'.$this->getConfigValue( array( $this->getConfigPrefix() . '.publishableKey' ), '' ).'",
+		[
+			{"element": "cardNumber", "selector": ".payment-cardno"},
+			{"element": "cardExpiry", "selector": ".payment-expiry"},
+			{"element": "cardCvc", "selector": ".payment-cvv"}
+		]
+	);
+});
 
+StripeProvider = {
+	stripe: "",
+	elements: "",
+	token_element: "",
+	token_selector: "input[name=paymenttoken]",
+	errors_selector: "#card-errors",
 
-        // Custom styling can be passed to options when creating an Element.
-        var classes = {
-            base: "form-item-value"
-        };
+	init: function(publishableKey,elements_array){
+		StripeProvider.stripe = Stripe(publishableKey);
+		StripeProvider.elements = StripeProvider.stripe.elements();
+		StripeProvider.createElements(elements_array);
+	},
 
-        // Create an instance of the card Element
-        var cardNumber = elements.create("cardNumber", {classes: classes});
-        // Add an instance of the card Element into the `card-element` <div>
-        cardNumber.mount("#payment-number");
-        cardNumber.addEventListener("change", function (event) {
-            var displayError = document.getElementById("card-errors");
-            if (event.error) {
-                displayError.textContent = event.error.message;
-            } else {
-                displayError.textContent = "";
-            }
-        });
-        var cardExpiry = elements.create("cardExpiry", {classes: classes});
-        // Add an instance of the card Element into the `card-element` <div>
-        cardExpiry.mount("#payment-expiryYear");
-        cardExpiry.addEventListener("change", function (event) {
-            var displayError = document.getElementById("card-errors");
-            if (event.error) {
-                displayError.textContent = event.error.message;
-            } else {
-                displayError.textContent = "";
-            }
-        });
-        var cardCvc = elements.create("cardCvc", {classes: classes});
-        // Add an instance of the card Element into the `card-element` <div>
-        cardCvc.mount("#payment-cvv");
-        cardCvc.addEventListener("change", function (event) {
-            var displayError = document.getElementById("card-errors");
-            if (event.error) {
-                displayError.textContent = event.error.message;
-            } else {
-                displayError.textContent = "";
-            }
-        });
+	handleEvent: function(event){
+		var displayError = $(StripeProvider.errors_selector);
+		if (event.error) {
+			displayError.textContent = event.error.message;
+		} else {
+			displayError.textContent = "";
+		}
+	},
 
-        // Custom JS purchase handler for PaymentProvider defined by $id
-        // It"s not necessary to creating. Just if current Payment Provider need so
-        AimeosPurchaseHandler.AimeosProviders.beforePurchaseStripe = function () {
-            // Do something specific for Stripe before submit the form
-            console.log("specific for Stripe");
-            stripe.createToken(cardNumber).then(function (result) {
-                console.log("result");
-                console.log(result);
-                if (result.error) {
-                    $("#card-errors").val(result.error.message);
-                } else {
-                    // Send the token to your server
-                    stripeTokenHandler(result.token);
-                }
-            });
-        };
+	// Creating Stripe Elements from an array
+	createElements: function (elements_array) {
+		var classes = {
+			base: "form-item-value"
+		};
+		for(var x=0; x < elements_array.length; x++){
+			var element = elements_array[x].element;
+			element = StripeProvider.elements.create(elements_array[x].element, {classes: classes});
+			element.mount(elements_array[x].selector);
+			element.addEventListener("change", function (event) {
+				StripeProvider.handleEvent(event);
+			});
+			if(elements_array[x].element === "cardNumber") StripeProvider.token_element = element;
+		}
+	},
 
-
-        function stripeTokenHandler(token) {
-            $("#payment-paymenttoken").val(token.id);			
-            $("input[name=paymenttoken]").val(token.id);
-            AimeosPurchaseHandler.submitPurchaseForm();
-        }
-
-
-    });
-
+	// Actions with recieved token
+	tokenHandler: function (token) {
+		$( StripeProvider.token_selector ).val(token.id);
+		AimeosPurchaseHandler.submitPurchaseForm();
+	}
+};
 </script>
 
 	<!-- Used to display Element errors -->
