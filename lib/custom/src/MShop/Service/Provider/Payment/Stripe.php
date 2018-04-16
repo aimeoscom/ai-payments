@@ -73,16 +73,6 @@ class Stripe
 
 	protected $feConfig = array(
 
-		'payment.firstname' => array(
-			'code' => 'payment.firstname',
-			'internalcode' => 'firstName',
-			'label' => 'First name',
-			'type' => 'string',
-			'internaltype' => 'string',
-			'default' => '',
-			'required' => false
-		),
-
 		'paymenttoken' => array(
 			'code' => 'paymenttoken',
 			'internalcode' => 'paymenttoken',
@@ -94,7 +84,33 @@ class Stripe
 			'public' => false,
 		),
 
-
+		'payment.cardno' => array(
+			'code' => 'payment.cardno',
+			'internalcode'=> 'number',
+			'label'=> 'Credit card number',
+			'type'=> 'number',
+			'internaltype'=> 'integer',
+			'default'=> '',
+			'required'=> true
+		),
+		'payment.cvv' => array(
+			'code' => 'payment.cvv',
+			'internalcode'=> 'cvv',
+			'label'=> 'Verification number',
+			'type'=> 'number',
+			'internaltype'=> 'integer',
+			'default'=> '',
+			'required'=> true
+		),
+		'payment.expiryyear' => array(
+			'code' => 'payment.expiryyear',
+			'internalcode'=> 'expiryYear',
+			'label'=> 'Expiry year',
+			'type'=> 'select',
+			'internaltype'=> 'integer',
+			'default'=> '',
+			'required'=> true
+		),
 	);
 
 	private $provider;
@@ -182,6 +198,47 @@ class Stripe
 	public function getConfigFE(\Aimeos\MShop\Order\Item\Base\Iface $basket)
 	{
 		return [];
+
+		$list = [];
+		$feconfig = $this->feConfig;
+
+		try {
+			$code = $this->getServiceItem()->getCode();
+			$service = $basket->getService(\Aimeos\MShop\Order\Item\Base\Service\Base::TYPE_PAYMENT, $code);
+
+			foreach ($service->getAttributes() as $item) {
+				if (isset($feconfig[$item->getCode()])) {
+					if (is_array($feconfig[$item->getCode()]['default'])) {
+						$feconfig[$item->getCode()]['default'] = array_merge(array($item->getValue()), $feconfig[$item->getCode()]['default']);
+					} else {
+						$feconfig[$item->getCode()]['default'] = $item->getValue();
+					}
+				}
+			}
+		} catch (\Aimeos\MShop\Order\Exception $e) {
+			;
+		} // If payment isn't available yet
+
+
+		/*try
+		{
+			$address = $basket->getAddress( \Aimeos\MShop\Order\Item\Base\Address\Base::TYPE_PAYMENT );
+
+			if( $feconfig['novalnetcredit.holder']['default'] == ''
+				&& ( $fn = $address->getFirstname() ) !== '' && ( $ln = $address->getLastname() ) !== ''
+			) {
+				$feconfig['novalnetcredit.holder']['default'] = $fn . ' ' . $ln;
+			}
+		}
+		catch( \Aimeos\MShop\Order\Exception $e ) { ; } // If address isn't available*/
+
+
+		foreach ($feconfig as $key => $config) {
+			$list[$key] = new \Aimeos\MW\Criteria\Attribute\Standard($config);
+		}
+
+		return $list;
+
 	}
 
 	/**
@@ -230,7 +287,7 @@ class Stripe
         // Create an instance of the card Element
         var cardNumber = elements.create("cardNumber", {classes: classes});
         // Add an instance of the card Element into the `card-element` <div>
-        cardNumber.mount("#card-cardNumber");
+        cardNumber.mount("#payment-number");
         cardNumber.addEventListener("change", function (event) {
             var displayError = document.getElementById("card-errors");
             if (event.error) {
@@ -241,7 +298,7 @@ class Stripe
         });
         var cardExpiry = elements.create("cardExpiry", {classes: classes});
         // Add an instance of the card Element into the `card-element` <div>
-        cardExpiry.mount("#card-cardExpiry");
+        cardExpiry.mount("#payment-expiryYear");
         cardExpiry.addEventListener("change", function (event) {
             var displayError = document.getElementById("card-errors");
             if (event.error) {
@@ -252,7 +309,7 @@ class Stripe
         });
         var cardCvc = elements.create("cardCvc", {classes: classes});
         // Add an instance of the card Element into the `card-element` <div>
-        cardCvc.mount("#card-cardCvc");
+        cardCvc.mount("#payment-cvv");
         cardCvc.addEventListener("change", function (event) {
             var displayError = document.getElementById("card-errors");
             if (event.error) {
@@ -281,19 +338,8 @@ class Stripe
 
 
         function stripeTokenHandler(token) {
-            $("#payment-paymenttoken").val(token.id);
-
-            console.log("#payment-paymenttoken");
-            console.log(token);
-            console.log(token.id);
-            //console.log( $("#payment-paymenttoken").val() ); 
-            //console.log( $("input[name=paymenttoken]").val() );
-			
+            $("#payment-paymenttoken").val(token.id);			
             $("input[name=paymenttoken]").val(token.id);
-                
-            //return null;
-            
-            
             AimeosPurchaseHandler.submitPurchaseForm();
         }
 
@@ -302,33 +348,10 @@ class Stripe
 
 </script>
 
-
-
-<div class="form-row">
-	<label for="card-element">
-		Credit or debit card
-	</label>
-
-    <div class="row">
-        <div class="col-md-5">Card number</div>
-        <div class="col-md-7"><div id="card-cardNumber"></div></div>
-    </div>
-    <div class="row">
-        <div class="col-md-5">Card expiry</div>
-        <div class="col-md-7"><div id="card-cardExpiry"></div></div>
-    </div>
-    <div class="row">
-        <div class="col-md-5">Card cvc</div>
-        <div class="col-md-7"><div id="card-cardCvc"></div></div>
-    </div>
-
-
-
-
 	<!-- Used to display Element errors -->
 	<div id="card-errors" role="alert"></div>
-	<input type="hidden" id="CurrentPaymentMethod" value="Stripe" />
-</div>';
+	<input type="hidden" id="CurrentPaymentMethod" value="Stripe" />';
+
 	}
 
 
