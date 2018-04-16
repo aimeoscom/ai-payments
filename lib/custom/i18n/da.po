@@ -3,29 +3,37 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 # 
-# Translators:
-# Simon Boye <simon@t3cms.dk>, 2017
+#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: Aimeos\n"
+"Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-10-02 17:58+0200\n"
-"PO-Revision-Date: 2017-10-02 17:58+0200\n"
+"POT-Creation-Date: 2018-04-08 18:07+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Simon Boye <simon@t3cms.dk>, 2017\n"
 "Language-Team: Danish (https://www.transifex.com/aimeos/teams/39015/da/)\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: da\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: src/MShop/Service/Provider/Payment/NovalnetSepa.php:153
-#: src/MShop/Service/Provider/Payment/OmniPay.php:621
+#: src/MShop/Service/Provider/Payment/OmniPay.php:444
+#, php-format
+msgid "Method \"%1$s\" for provider not available"
+msgstr ""
+
+#: src/MShop/Service/Provider/Payment/OmniPay.php:449
+msgid "No reoccurring payment token available for customer ID \"%1$S\""
+msgstr ""
+
+#: src/MShop/Service/Provider/Payment/NovalnetSepa.php:154
+#: src/MShop/Service/Provider/Payment/OmniPay.php:694
 #, php-format
 msgid "Order %1$s"
 msgstr "Ordre %1$s"
 
-#: src/MShop/Service/Provider/Payment/OmniPay.php:523
+#: src/MShop/Service/Provider/Payment/OmniPay.php:591
 #, php-format
 msgid "Unexpected redirect: %1$s"
 msgstr "Uforudset redirect: %1$s"

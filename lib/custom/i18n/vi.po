@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ai-payments\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-10-02 17:31+0200\n"
+"POT-Creation-Date: 2018-04-08 18:07+0200\n"
 "PO-Revision-Date: 2015-07-20 09:55+0000\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Vietnamese (http://www.transifex.com/aimeos/ai-payments/language/vi/)\n"
@@ -17,13 +17,22 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: src/MShop/Service/Provider/Payment/NovalnetSepa.php:153
-#: src/MShop/Service/Provider/Payment/OmniPay.php:621
+#: src/MShop/Service/Provider/Payment/OmniPay.php:444
+#, php-format
+msgid "Method \"%1$s\" for provider not available"
+msgstr ""
+
+#: src/MShop/Service/Provider/Payment/OmniPay.php:449
+msgid "No reoccurring payment token available for customer ID \"%1$S\""
+msgstr ""
+
+#: src/MShop/Service/Provider/Payment/NovalnetSepa.php:154
+#: src/MShop/Service/Provider/Payment/OmniPay.php:694
 #, php-format
 msgid "Order %1$s"
 msgstr ""
 
-#: src/MShop/Service/Provider/Payment/OmniPay.php:523
+#: src/MShop/Service/Provider/Payment/OmniPay.php:591
 #, php-format
 msgid "Unexpected redirect: %1$s"
 msgstr ""
