@@ -93,20 +93,20 @@ class Stripe
 			'default'=> '',
 			'required'=> false
 		),
-		'payment.cvv' => array(
-			'code' => 'payment.cvv',
-			'internalcode'=> 'cvv',
-			'label'=> 'Verification number',
-			'type'=> 'number',
-			'internaltype'=> 'integer',
-			'default'=> '',
-			'required'=> false
-		),
 		'payment.expiry' => array(
 			'code' => 'payment.expiry',
 			'internalcode'=> 'expiry',
 			'label'=> 'Expiry',
 			'type'=> 'select',
+			'internaltype'=> 'integer',
+			'default'=> '',
+			'required'=> false
+		),
+		'payment.cvv' => array(
+			'code' => 'payment.cvv',
+			'internalcode'=> 'cvv',
+			'label'=> 'Verification number',
+			'type'=> 'number',
 			'internaltype'=> 'integer',
 			'default'=> '',
 			'required'=> false
@@ -233,42 +233,37 @@ class Stripe
 		return '
 		<script src="https://js.stripe.com/v3/"></script>		
 		<script type="text/javascript">
-    	$(document).ready(function () {
-	// Custom JS purchase handler for Stripe PaymentProvider
-	// It is not necessary to creating. Just if current Payment Provider need so
-	AimeosPurchaseHandler.AimeosProviders.beforePurchaseStripe = function () {
-		StripeProvider.stripe.createToken(StripeProvider.token_element).then(function (result) {
-			if (result.error) {
-				$(StripeProvider.errors_selector).val(result.error.message);
-			} else {
-				StripeProvider.tokenHandler(result.token);
-			}
-		});
-	};
-	StripeProvider.init("'.$this->getConfigValue( array( $this->getConfigPrefix() . '.publishableKey' ), '' ).'",
-		[
-			{"element": "cardNumber", "selector": ".payment-cardno"},
-			{"element": "cardExpiry", "selector": ".payment-expiry"},
-			{"element": "cardCvc", "selector": ".payment-cvv"}
-		]
-	);
-});
-
-StripeProvider = {
+		
+		StripeProvider = {
 	stripe: "",
 	elements: "",
 	token_element: "",
 	token_selector: "input[name=paymenttoken]",
-	errors_selector: "#card-errors",
+	errors_selector: "card-errors",
+	form_selector: ".checkout-standard form",
+	payment_button_id: "payment-button",
 
 	init: function(publishableKey,elements_array){
 		StripeProvider.stripe = Stripe(publishableKey);
 		StripeProvider.elements = StripeProvider.stripe.elements();
 		StripeProvider.createElements(elements_array);
+
+		var button = document.getElementById(StripeProvider.payment_button_id);
+		button.addEventListener("click", function (event) {
+			event.preventDefault();
+			StripeProvider.stripe.createToken(StripeProvider.token_element).then(function (result) {
+				if (result.error) {
+					document.querySelectorAll( StripeProvider.errors_selector ).value = result.error.message;
+				} else {
+					StripeProvider.tokenHandler(result.token);
+				}
+			});
+		});
+
 	},
 
 	handleEvent: function(event){
-		var displayError = $(StripeProvider.errors_selector);
+		var displayError = document.getElementById(StripeProvider.errors_selector);
 		if (event.error) {
 			displayError.textContent = event.error.message;
 		} else {
@@ -294,15 +289,32 @@ StripeProvider = {
 
 	// Actions with recieved token
 	tokenHandler: function (token) {
-		$( StripeProvider.token_selector ).val(token.id);
-		AimeosPurchaseHandler.submitPurchaseForm();
+		var input = document.querySelectorAll( StripeProvider.token_selector);
+		input[0].value= token.id;
+		this.submitPurchaseForm();
+	},
+
+	submitPurchaseForm: function () {
+		var form = document.querySelectorAll(StripeProvider.form_selector);
+		form[0].submit();
 	}
 };
+		
+document.addEventListener("DOMContentLoaded", function(event) {
+	StripeProvider.init("'.$this->getConfigValue( array( $this->getConfigPrefix() . '.publishableKey' ), '' ).'",
+		[
+			{"element": "cardNumber", "selector": ".payment-cardno"},
+			{"element": "cardExpiry", "selector": ".payment-expiry"},
+			{"element": "cardCvc", "selector": ".payment-cvv"}
+		]
+	);
+	
+});
+
 </script>
 
 	<!-- Used to display Element errors -->
-	<div id="card-errors" role="alert"></div>
-	<input type="hidden" id="CurrentPaymentMethod" value="Stripe" />';
+	<div id="card-errors" role="alert"></div>';
 
 	}
 
