@@ -300,15 +300,14 @@ class Stripe
 	}
 };
 		
-document.addEventListener("DOMContentLoaded", function(event) {
-	StripeProvider.init("'.$this->getConfigValue( array( $this->getConfigPrefix() . '.publishableKey' ), '' ).'",
+document.addEventListener("DOMContentLoaded", function() {
+	StripeProvider.init("'.$this->getConfigValue( array( 'stripe.publishableKey' ), '' ).'",
 		[
 			{"element": "cardNumber", "selector": ".payment-cardno"},
 			{"element": "cardExpiry", "selector": ".payment-expiry"},
 			{"element": "cardCvc", "selector": ".payment-cvv"}
 		]
-	);
-	
+	);	
 });
 
 </script>
