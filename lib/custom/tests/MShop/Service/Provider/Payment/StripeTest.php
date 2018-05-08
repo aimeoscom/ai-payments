@@ -63,19 +63,6 @@ class StripeTest extends \PHPUnit\Framework\TestCase
 		$this->assertArrayNotHasKey( 'omnipay.type', $result );
 	}
 
-
-	public function testGetValueType()
-	{
-		$this->assertEquals( 'Stripe', $this->object->getValuePublic( 'type' ) );
-	}
-
-
-	public function testGetValueOnsite()
-	{
-		$this->assertTrue( $this->object->getValuePublic( 'onsite' ) );
-	}
-
-
 	public function testGetValueTestmode()
 	{
 		$this->assertTrue( $this->object->getValuePublic( 'testmode' ) );
