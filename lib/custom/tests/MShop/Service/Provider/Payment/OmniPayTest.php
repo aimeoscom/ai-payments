@@ -29,9 +29,14 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 		$this->serviceItem->setConfig( array( 'omnipay.type' => 'Dummy' ) );
 		$this->serviceItem->setCode( 'OGONE' );
 
+		$methods = [
+			'getCustomerData', 'getOrder', 'getOrderBase', 'getTransactionReference',
+			'saveOrder', 'saveOrderBase', 'getProvider', 'saveTransationRef'
+		];
+
 		$this->object = $this->getMockBuilder( '\\Aimeos\\MShop\\Service\\Provider\\Payment\\OmniPay' )
-			->setMethods( ['getCustomerData', 'getOrder', 'getOrderBase', 'saveOrder', 'saveOrderBase', 'getProvider', 'saveTransationRef'] )
 			->setConstructorArgs( array( $this->context, $this->serviceItem ) )
+			->setMethods( $methods )
 			->getMock();
 	}
 
@@ -86,10 +91,10 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 	{
 		$object = new \Aimeos\MShop\Service\Provider\Payment\OmniPay( $this->context, $this->serviceItem );
 
-		$this->assertFalse( $object->isImplemented( \Aimeos\MShop\Service\Provider\Payment\Base::FEAT_CANCEL ) );
-		$this->assertFalse( $object->isImplemented( \Aimeos\MShop\Service\Provider\Payment\Base::FEAT_CAPTURE ) );
+		$this->assertTrue( $object->isImplemented( \Aimeos\MShop\Service\Provider\Payment\Base::FEAT_CANCEL ) );
+		$this->assertTrue( $object->isImplemented( \Aimeos\MShop\Service\Provider\Payment\Base::FEAT_CAPTURE ) );
+		$this->assertTrue( $object->isImplemented( \Aimeos\MShop\Service\Provider\Payment\Base::FEAT_REFUND ) );
 		$this->assertFalse( $object->isImplemented( \Aimeos\MShop\Service\Provider\Payment\Base::FEAT_QUERY ) );
-		$this->assertFalse( $object->isImplemented( \Aimeos\MShop\Service\Provider\Payment\Base::FEAT_REFUND ) );
 		$this->assertFalse( $object->isImplemented( \Aimeos\MShop\Service\Provider\Payment\Base::FEAT_REPAY ) );
 	}
 
@@ -246,7 +251,7 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 		$baseItem = $this->getOrderBase( $parts );
 
 		$provider = $this->getMockBuilder( 'Omnipay\Dummy\Gateway' )
-			->setMethods( array( 'authorize' ) )
+			->setMethods( array( 'purchase' ) )
 			->getMock();
 
 		$request = $this->getMockBuilder( '\Omnipay\Dummy\Message\AuthorizeRequest' )
@@ -268,7 +273,7 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 
 		$this->object->expects( $this->once() )->method( 'saveTransationRef' );
 
-		$provider->expects( $this->once() )->method( 'authorize' )
+		$provider->expects( $this->once() )->method( 'purchase' )
 			->will( $this->returnValue( $request ) );
 
 		$request->expects( $this->once() )->method( 'send' )
@@ -306,6 +311,9 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 
 		$this->object->expects( $this->once() )->method( 'getProvider' )
 			->will( $this->returnValue( $provider ) );
+
+		$this->object->expects( $this->once() )->method( 'getTransactionReference' )
+			->will( $this->returnValue( '123' ) );
 
 
 		$result = $this->object->updateSync( $psr7request, $this->getOrder() );
