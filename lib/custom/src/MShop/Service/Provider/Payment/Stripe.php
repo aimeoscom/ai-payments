@@ -63,7 +63,7 @@ class Stripe
 		'publishableKey' => array(
 			'code' => 'publishableKey',
 			'internalcode'=> 'publishableKey',
-			'label'=> 'publishable key',
+			'label'=> 'Publishable key',
 			'type'=> 'string',
 			'internaltype'=> 'string',
 			'default'=> '',
@@ -114,6 +114,7 @@ class Stripe
 	);
 
 	private $provider;
+
 
 	/**
 	 * Returns the prefix for the configuration definitions
@@ -178,11 +179,12 @@ class Stripe
 		$list = [];
 		$feConfig = $this->feConfig;
 
-		foreach ($feConfig as $key => $config) {
-			$list[$key] = new \Aimeos\MW\Criteria\Attribute\Standard($config);
+		foreach( $feConfig as $key => $config ) {
+			$list[$key] = new \Aimeos\MW\Criteria\Attribute\Standard( $config );
 		}
-		$url = $this->getConfigValue(array('payment.url-self'));
-		return new \Aimeos\MShop\Common\Item\Helper\Form\Standard($url, 'POST', $list, false, $this->getHtmlForm());
+
+		$url = $this->getConfigValue( 'payment.url-self' );
+		return new \Aimeos\MShop\Common\Item\Helper\Form\Standard( $url, 'POST', $list, false, $this->getHtmlForm() );
 	}
 
 
@@ -200,6 +202,7 @@ class Stripe
 		return [];
 	}
 
+
 	/**
 	 * Returns the data passed to the Omnipay library
 	 *
@@ -209,12 +212,15 @@ class Stripe
 	 */
 	protected function getData( \Aimeos\MShop\Order\Item\Base\Iface $base, $orderid, array $params )
 	{
-		$data = parent::getData($base,$orderid,$params);
-		if( isset($params['paymenttoken']) ){
+		$data = parent::getData( $base, $orderid, $params );
+
+		if( isset( $params['paymenttoken'] ) ) {
 			$data['token'] = $params['paymenttoken'];
 		}
+
 		return $data;
 	}
+
 
 	/**
 	 * Checks the frontend configuration attributes for validity.
@@ -228,13 +234,14 @@ class Stripe
 		return [];
 	}
 
+
 	public function getHtmlForm()
 	{
 		return '
-		<script src="https://js.stripe.com/v3/"></script>		
-		<script type="text/javascript">
-		
-		StripeProvider = {
+<script src="https://js.stripe.com/v3/"></script>
+<script type="text/javascript">
+
+StripeProvider = {
 	stripe: "",
 	elements: "",
 	token_element: "",
@@ -299,23 +306,20 @@ class Stripe
 		form[0].submit();
 	}
 };
-		
+
 document.addEventListener("DOMContentLoaded", function() {
-	StripeProvider.init("'.$this->getConfigValue( array( 'stripe.publishableKey' ), '' ).'",
+	StripeProvider.init("' . $this->getConfigValue( 'stripe.publishableKey', '' ) . '",
 		[
 			{"element": "cardNumber", "selector": ".payment-cardno"},
 			{"element": "cardExpiry", "selector": ".payment-expiry"},
 			{"element": "cardCvc", "selector": ".payment-cvv"}
 		]
-	);	
+	);
 });
 
 </script>
 
-	<!-- Used to display Element errors -->
-	<div id="card-errors" role="alert"></div>';
-
+<!-- Used to display Element errors -->
+<div id="card-errors" role="alert"></div>';
 	}
-
-
 }
