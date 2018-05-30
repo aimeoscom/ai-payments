@@ -17,6 +17,10 @@ class SagePayTest extends \PHPUnit\Framework\TestCase
 
 	protected function setUp()
 	{
+		if( !class_exists( 'Omnipay\Omnipay' ) ) {
+			$this->markTestSkipped( 'Omnipay library not available' );
+		}
+
 		$this->context = \TestHelper::getContext();
 
 		$serviceManager = \Aimeos\MShop\Service\Manager\Factory::createManager( $this->context );

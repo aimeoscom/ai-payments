@@ -16,6 +16,10 @@ class AuthorizeAimTest extends \PHPUnit\Framework\TestCase
 
 	protected function setUp()
 	{
+		if( !class_exists( 'Omnipay\Omnipay' ) ) {
+			$this->markTestSkipped( 'Omnipay library not available' );
+		}
+
 		$context = \TestHelper::getContext();
 
 		$serviceManager = \Aimeos\MShop\Service\Manager\Factory::createManager( $context );

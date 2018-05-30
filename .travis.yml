@@ -7,16 +7,22 @@ php:
   - 7.0
   - 5.6
   - 5.5
-  - 5.4
+
+env:
+  - OMNIPAY_VERSION=~2.0
+  - OMNIPAY_VERSION=~3.0
 
 matrix:
   fast_finish: true
+  exclude:
+    - php: 5.5
+      env: "OMNIPAY_VERSION=~3.0"
 
 before_script:
   - git clone --depth=50 --branch=2018.04 git://github.com/aimeos/aimeos-core.git ../aimeos-core
   - cd ../aimeos-core
   - mv ../ai-payments ext/
-  - composer require "omnipay/omnipay:2.3.x-dev"
+  - travis_retry composer require "php-http/guzzle6-adapter" "php-http/httplug" "omnipay/common:${OMNIPAY_VERSION}" "omnipay/dummy:${OMNIPAY_VERSION}"
   - mysql -e 'create database aimeos;'
   - echo "<?php return array( 'db' => array( 'adapter' => 'mysql', 'host' => '127.0.0.1', 'database' => 'aimeos', 'username' => 'root', 'password' => '', 'limit' => 2, 'opt-persistent' => false, 'stmt' => array( \"SET SESSIOn sort_buffer_size=2097144; SET NAMES 'utf8'; SET SESSION sql_mode='ANSI'\" ) ), 'mq' => array( 'adapter' => 'Standard', 'db' => 'db' ) );" > config/resource.php
 
