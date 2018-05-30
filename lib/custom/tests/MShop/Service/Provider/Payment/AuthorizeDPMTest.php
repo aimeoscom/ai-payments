@@ -17,6 +17,10 @@ class AuthorizeDpmTest extends \PHPUnit\Framework\TestCase
 
 	protected function setUp()
 	{
+		if( !class_exists( '\Omnipay\AuthorizeNet\DPMGateway' ) ) {
+			$this->markTestSkipped( '\Omnipay\AuthorizeNet\DPMGateway gateway required' );
+		}
+
 		$this->context = \TestHelper::getContext();
 
 		$conf = array(

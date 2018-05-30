@@ -17,8 +17,8 @@ class MollieTest extends \PHPUnit\Framework\TestCase
 
 	protected function setUp()
 	{
-		if( !class_exists( 'Omnipay\Omnipay' ) ) {
-			$this->markTestSkipped( 'Omnipay library not available' );
+		if( !class_exists( '\Omnipay\Mollie\Gateway' ) ) {
+			$this->markTestSkipped( '\Omnipay\Mollie\Gateway gateway required' );
 		}
 
 		$this->context = \TestHelper::getContext();

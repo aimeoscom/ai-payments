@@ -18,8 +18,8 @@ class AuthorizeSimTest extends \PHPUnit\Framework\TestCase
 
 	protected function setUp()
 	{
-		if( !class_exists( 'Omnipay\Omnipay' ) ) {
-			$this->markTestSkipped( 'Omnipay library not available' );
+		if( !class_exists( '\Omnipay\AuthorizeNet\SIMGateway' ) ) {
+			$this->markTestSkipped( '\Omnipay\AuthorizeNet\SIMGateway gateway required' );
 		}
 
 		$this->context = \TestHelper::getContext();

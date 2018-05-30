@@ -17,6 +17,10 @@ class SagePayTest extends \PHPUnit\Framework\TestCase
 
 	protected function setUp()
 	{
+		if( !class_exists( '\Omnipay\SagePay\Gateway' ) ) {
+			$this->markTestSkipped( '\Omnipay\SagePay\Gateway gateway required' );
+		}
+
 		$this->context = \TestHelper::getContext();
 
 		$serviceManager = \Aimeos\MShop\Service\Manager\Factory::createManager( $this->context );

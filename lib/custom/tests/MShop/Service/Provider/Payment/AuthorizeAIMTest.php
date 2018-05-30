@@ -16,6 +16,10 @@ class AuthorizeAimTest extends \PHPUnit\Framework\TestCase
 
 	protected function setUp()
 	{
+		if( !class_exists( '\Omnipay\AuthorizeNet\AIMGateway' ) ) {
+			$this->markTestSkipped( '\Omnipay\AuthorizeNet\AIMGateway gateway required' );
+		}
+
 		$context = \TestHelper::getContext();
 
 		$serviceManager = \Aimeos\MShop\Service\Manager\Factory::createManager( $context );

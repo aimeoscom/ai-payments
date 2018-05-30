@@ -16,6 +16,10 @@ class StripeTest extends \PHPUnit\Framework\TestCase
 
 	protected function setUp()
 	{
+		if( !class_exists( '\Omnipay\Stripe\Gateway' ) ) {
+			$this->markTestSkipped( '\Omnipay\Stripe\Gateway gateway required' );
+		}
+
 		$context = \TestHelper::getContext();
 
 		$serviceManager = \Aimeos\MShop\Service\Manager\Factory::createManager( $context );
