@@ -22,11 +22,7 @@
 		"php-http/httplug": "~1.0"
 	},
 	"require-dev": {
-		"omnipay/dummy": "~2.0||~3.0",
-		"omnipay/authorizenet": "~2.0||~3.0.x-dev",
-		"omnipay/mollie": "~3.0||~4.0",
-		"omnipay/sagepay": "~2.0||~3.0",
-		"omnipay/stripe": "~2.0||~3.0"
+		"omnipay/dummy": "~2.0||~3.0"
 	},
 	"autoload": {
 		"psr-4": {
