@@ -9,7 +9,7 @@ php:
   - 5.5
 
 env:
-  - OMNIPAY_VERSION=2.3x-dev
+  - OMNIPAY_VERSION=2.3.x-dev
   - OMNIPAY_VERSION=~3.0
 
 matrix:
