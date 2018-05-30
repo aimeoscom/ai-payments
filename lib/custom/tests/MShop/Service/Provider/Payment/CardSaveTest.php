@@ -17,8 +17,8 @@ class CardSaveTest extends \PHPUnit\Framework\TestCase
 
 	protected function setUp()
 	{
-		if( !class_exists( '\Omnipay\CardSave\Gateway' ) ) {
-			$this->markTestSkipped( '\Omnipay\CardSave\Gateway gateway required' );
+		if( !class_exists( 'Omnipay\Omnipay' ) ) {
+			$this->markTestSkipped( 'Omnipay library not available' );
 		}
 
 		$this->context = \TestHelper::getContext();
