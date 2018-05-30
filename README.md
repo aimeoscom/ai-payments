@@ -5,10 +5,10 @@
 Aimeos payment extension
 ========================
 
-[![Build Status](https://travis-ci.org/aimeos/ai-payments.svg?branch=master)](https://travis-ci.org/aimeos/ai-payments)
-[![Coverage Status](https://coveralls.io/repos/aimeos/ai-payments/badge.svg?branch=master&service=github)](https://coveralls.io/github/aimeos/ai-payments?branch=master)
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/aimeos/ai-payments/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/aimeos/ai-payments/?branch=master)
-[![License](https://poser.pugx.org/aimeos/ai-payments/license.svg)](https://packagist.org/packages/aimeos/ai-payments)
+[![Build Status](https://travis-ci.org/aimeoscom/ai-payments.svg?branch=master)](https://travis-ci.org/aimeoscom/ai-payments)
+[![Coverage Status](https://coveralls.io/repos/aimeoscom/ai-payments/badge.svg?branch=master&service=github)](https://coveralls.io/github/aimeos/ai-payments?branch=master)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/aimeoscom/ai-payments/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/aimeos/ai-payments/?branch=master)
+[![License](https://poser.pugx.org/aimeos/ai-payments/license.svg)](https://packagist.org/packages/aimeoscom/ai-payments)
 
 Aimeos extension for additional payment methods and their service provider.
 Some of them may have beta quality and improvements or contributions are always welcome!
@@ -69,5 +69,5 @@ The Aimeos payments extension is licensed under the terms of the LGPLv3 Open Sou
 * [Web site](https://aimeos.org/)
 * [Documentation](https://aimeos.org/docs)
 * [Help](https://aimeos.org/help)
-* [Issue tracker](https://github.com/aimeos/ai-payments/issues)
-* [Source code](https://github.com/aimeos/ai-payments)
+* [Issue tracker](https://github.com/aimeoscom/ai-payments/issues)
+* [Source code](https://github.com/aimeoscom/ai-payments)
