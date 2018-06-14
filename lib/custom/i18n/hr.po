@@ -1,0 +1,39 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# 
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2018-04-08 18:07+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: Miro Sertić <miro.sertic0606@gmail.com>, 2018\n"
+"Language-Team: Croatian (https://www.transifex.com/aimeos/teams/39015/hr/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: hr\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+
+#: src/MShop/Service/Provider/Payment/OmniPay.php:444
+#, php-format
+msgid "Method \"%1$s\" for provider not available"
+msgstr "Metoda \"%1$s\" za davatelja usluga nije dostupna"
+
+#: src/MShop/Service/Provider/Payment/OmniPay.php:449
+msgid "No reoccurring payment token available for customer ID \"%1$S\""
+msgstr "Nema dostupnog tokena za ponovno plaćanje za korisnički ID \"%1$S\""
+
+#: src/MShop/Service/Provider/Payment/NovalnetSepa.php:154
+#: src/MShop/Service/Provider/Payment/OmniPay.php:694
+#, php-format
+msgid "Order %1$s"
+msgstr "Narudžba %1$s"
+
+#: src/MShop/Service/Provider/Payment/OmniPay.php:591
+#, php-format
+msgid "Unexpected redirect: %1$s"
+msgstr "Neočekivano preusmjeravanje: %1$s"
