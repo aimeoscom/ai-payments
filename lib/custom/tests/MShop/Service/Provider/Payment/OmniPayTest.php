@@ -31,7 +31,7 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 
 		$methods = [
 			'getCustomerData', 'getOrder', 'getOrderBase', 'getTransactionReference',
-			'saveOrder', 'saveOrderBase', 'getProvider', 'saveTransationRef'
+			'saveOrder', 'saveOrderBase', 'getProvider', 'saveTransationRef', 'setCustomerData'
 		];
 
 		$this->object = $this->getMockBuilder( '\\Aimeos\\MShop\\Service\\Provider\\Payment\\OmniPay' )
