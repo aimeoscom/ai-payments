@@ -446,7 +446,7 @@ class OmniPay
 
 		if( ( $token = $this->getCustomerData( $base->getCustomerId(), 'token' ) ) != null )
 		{
-			$msg = sprintf( 'No reoccurring payment token available for customer ID "%1$S"', $base->getCustomerId() );
+			$msg = sprintf( 'No reoccurring payment token available for customer ID "%1$s"', $base->getCustomerId() );
 			throw new \Aimeos\MShop\Service\Exception( $msg );
 		}
 
