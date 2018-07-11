@@ -26,7 +26,7 @@ msgstr "Sağlayıcı için yöntem \"%1$s\" mevcut değil"
 #: src/MShop/Service/Provider/Payment/OmniPay.php:449
 #, php-format
 msgid "No reoccurring payment token available for customer ID \"%1$s\""
-msgstr ""
+msgstr "\"%1$s\" müşteri kimliği için yinelenen ödeme jetonu mevcut değil"
 
 #: src/MShop/Service/Provider/Payment/NovalnetSepa.php:154
 #: src/MShop/Service/Provider/Payment/OmniPay.php:694
