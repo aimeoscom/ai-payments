@@ -364,7 +364,7 @@ class OmniPay
 			case \Aimeos\MShop\Service\Provider\Payment\Base::FEAT_REFUND:
 				return $provider->supportsRefund();
 			case \Aimeos\MShop\Service\Provider\Payment\Base::FEAT_REPAY:
-				return method_exists( $provider, 'getCard' );
+				return method_exists( $provider, 'createCard' );
 		}
 
 		return false;
