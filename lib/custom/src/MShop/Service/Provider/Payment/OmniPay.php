@@ -468,7 +468,8 @@ class OmniPay
 		}
 		else
 		{
-			throw new \Aimeos\MShop\Service\Exception( 'Token based payment failed' );
+			$msg = ( method_exists( $response, 'getMessage' ) ? $response->getMessage() : '' );
+			throw new \Aimeos\MShop\Service\Exception( sprintf( 'Token based payment failed: %1$s', $msg ) );
 		}
 	}
 
