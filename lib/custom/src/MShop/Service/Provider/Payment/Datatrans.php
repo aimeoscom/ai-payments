@@ -64,4 +64,21 @@ class Datatrans
 			throw new \Aimeos\MShop\Service\Exception( sprintf( 'Token based payment failed: %1$s', $msg ) );
 		}
 	}
+
+
+	/**
+	 * Returns the value for the given configuration key
+	 *
+	 * @param string $key Configuration key name
+	 * @param mixed $default Default value if no configuration is found
+	 * @return mixed Configuration value
+	 */
+	protected function getValue( $key, $default = null )
+	{
+		switch( $key ) {
+			case 'type': return 'Datatrans';
+		}
+
+		return parent::getValue( $key, $default );
+	}
 }
