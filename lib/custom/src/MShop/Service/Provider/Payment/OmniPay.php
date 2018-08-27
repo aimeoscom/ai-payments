@@ -600,8 +600,22 @@ class OmniPay
 			$this->saveTransationRef( $base, $response->getTransactionReference() );
 			$this->saveOrder( $order );
 
-			if( method_exists( $response, 'getCardReference' ) && ( $token = $response->getCardReference() ) != null ) {
-				$this->setCustomerData( $base->getCustomerId(), 'token', $token );
+			$data = [];
+
+			if( method_exists( $response, 'getCardReference' ) ) {
+				$data['token'] = $response->getCardReference();
+			}
+
+			if( method_exists( $response, 'getExpiryMonth' ) ) {
+				$data['token'] = $response->getExpiryMonth();
+			}
+
+			if( method_exists( $response, 'getExpiryYear' ) ) {
+				$data['token'] = $response->getExpiryYear();
+			}
+
+			if( $data !== [] ) {
+				$this->setCustomerData( $base->getCustomerId(), 'repay', $data );
 			}
 		}
 		catch( \Exception $e )
