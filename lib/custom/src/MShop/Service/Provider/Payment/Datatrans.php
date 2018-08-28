@@ -35,7 +35,7 @@ class Datatrans
 	{
 		$base = $this->getOrderBase( $order->getBaseId() );
 
-		if( ( $token = $this->getCustomerData( $base->getCustomerId(), 'token' ) ) != null )
+		if( ( $cfg = $this->getCustomerData( $base->getCustomerId(), 'repay' ) ) == null )
 		{
 			$msg = sprintf( 'No reoccurring payment token available for customer ID "%1$s"', $base->getCustomerId() );
 			throw new \Aimeos\MShop\Service\Exception( $msg );
@@ -49,7 +49,15 @@ class Datatrans
 			'paymentPage' => false,
 		);
 
-		$provider = Opay::create('Datatrans\Xml');
+		if( isset( $cfg['month'] ) && isset( $cfg['year'] ) )
+		{
+			$data['card'] = new \Omnipay\Common\CreditCard( [
+				'expiryMonth' => $cfg['month'],
+				'expiryYear' => $cfg['year'],
+			] );
+		}
+
+		$provider = OPay::create('Datatrans\Xml');
 		$response = $provider->purchase( $data )->send();
 
 		if( $response->isSuccessful() )
