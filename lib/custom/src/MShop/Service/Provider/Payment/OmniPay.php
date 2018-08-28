@@ -444,9 +444,15 @@ class OmniPay
 			throw new \Aimeos\MShop\Service\Exception( sprintf( 'Method "%1$s" for provider not available', 'repay' ) );
 		}
 
-		if( ( $token = $this->getCustomerData( $base->getCustomerId(), 'token' ) ) != null )
+		if( ( $cfg = $this->getCustomerData( $base->getCustomerId(), 'repay' ) ) == null )
 		{
-			$msg = sprintf( 'No reoccurring payment token available for customer ID "%1$s"', $base->getCustomerId() );
+			$msg = sprintf( 'No reoccurring payment data available for customer ID "%1$s"', $base->getCustomerId() );
+			throw new \Aimeos\MShop\Service\Exception( $msg );
+		}
+
+		if( !isset( $cfg['token'] ) )
+		{
+			$msg = sprintf( 'No payment token available for customer ID "%1$s"', $base->getCustomerId() );
 			throw new \Aimeos\MShop\Service\Exception( $msg );
 		}
 
@@ -454,9 +460,17 @@ class OmniPay
 			'transactionId' => $order->getId(),
 			'currency' => $base->getPrice()->getCurrencyId(),
 			'amount' => $this->getAmount( $base->getPrice() ),
-			'cardReference' => $token,
+			'cardReference' => $cfg['token'],
 			'paymentPage' => false,
 		);
+
+		if( isset( $cfg['month'] ) && isset( $cfg['year'] ) )
+		{
+			$data['card'] = new \Omnipay\Common\CreditCard( [
+				'expiryMonth' => $cfg['month'],
+				'expiryYear' => $cfg['year'],
+			] );
+		}
 
 		$response = $this->getProvider()->purchase( $data )->send();
 
@@ -600,8 +614,22 @@ class OmniPay
 			$this->saveTransationRef( $base, $response->getTransactionReference() );
 			$this->saveOrder( $order );
 
-			if( method_exists( $response, 'getCardReference' ) && ( $token = $response->getCardReference() ) != null ) {
-				$this->setCustomerData( $base->getCustomerId(), 'token', $token );
+			$data = [];
+
+			if( method_exists( $response, 'getCardReference' ) ) {
+				$data['token'] = $response->getCardReference();
+			}
+
+			if( method_exists( $response, 'getExpiryMonth' ) ) {
+				$data['month'] = $response->getExpiryMonth();
+			}
+
+			if( method_exists( $response, 'getExpiryYear' ) ) {
+				$data['year'] = $response->getExpiryYear();
+			}
+
+			if( $data !== [] ) {
+				$this->setCustomerData( $base->getCustomerId(), 'repay', $data );
 			}
 		}
 		catch( \Exception $e )
