@@ -444,7 +444,7 @@ class OmniPay
 			throw new \Aimeos\MShop\Service\Exception( sprintf( 'Method "%1$s" for provider not available', 'repay' ) );
 		}
 
-		if( ( $cfg = $this->getCustomerData( $base->getCustomerId(), 'repay' ) ) == null )
+		if( ( $cfg = $this->getCustomerData( $base->getCustomerId(), 'repay' ) ) === null )
 		{
 			$msg = sprintf( 'No reoccurring payment data available for customer ID "%1$s"', $base->getCustomerId() );
 			throw new \Aimeos\MShop\Service\Exception( $msg );
@@ -537,6 +537,7 @@ class OmniPay
 
 			$base = $this->getOrderBase( $order->getBaseId() );
 			$this->saveTransationRef( $base, $omniResponse->getTransactionReference() );
+			$this->saveRepayData( $omniResponse, $base->getCustomerId() );
 			$this->saveOrder( $order );
 
 			$response->withStatus( 200 );
@@ -612,25 +613,8 @@ class OmniPay
 			}
 
 			$this->saveTransationRef( $base, $response->getTransactionReference() );
+			$this->saveRepayData( $response, $base->getCustomerId() );
 			$this->saveOrder( $order );
-
-			$data = [];
-
-			if( method_exists( $response, 'getCardReference' ) ) {
-				$data['token'] = $response->getCardReference();
-			}
-
-			if( method_exists( $response, 'getExpiryMonth' ) ) {
-				$data['month'] = $response->getExpiryMonth();
-			}
-
-			if( method_exists( $response, 'getExpiryYear' ) ) {
-				$data['year'] = $response->getExpiryYear();
-			}
-
-			if( $data !== [] ) {
-				$this->setCustomerData( $base->getCustomerId(), 'repay', $data );
-			}
 		}
 		catch( \Exception $e )
 		{
@@ -944,6 +928,34 @@ class OmniPay
 		}
 
 		return new \Aimeos\MShop\Common\Item\Helper\Form\Standard( $urls['returnUrl'], 'POST', [] );
+	}
+
+
+	/**
+	 * Saves the required data for recurring payments in the customer profile
+	 *
+	 * @param \Omnipay\Common\Message\ResponseInterface $response Omnipay response object
+	 * @param string $customerId Unique customer ID
+	 */
+	protected function saveRepayData( \Omnipay\Common\Message\ResponseInterface $response, $customerId )
+	{
+		$data = [];
+
+		if( method_exists( $response, 'getCardReference' ) ) {
+			$data['token'] = $response->getCardReference();
+		}
+
+		if( method_exists( $response, 'getExpiryMonth' ) ) {
+			$data['month'] = $response->getExpiryMonth();
+		}
+
+		if( method_exists( $response, 'getExpiryYear' ) ) {
+			$data['year'] = $response->getExpiryYear();
+		}
+
+		if( !empty( $data ) ) {
+			$this->setCustomerData( $customerId, 'repay', $data );
+		}
 	}
 
 
