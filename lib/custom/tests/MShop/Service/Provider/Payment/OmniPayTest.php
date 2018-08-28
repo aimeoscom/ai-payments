@@ -30,7 +30,7 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 		$this->serviceItem->setCode( 'OGONE' );
 
 		$methods = [
-			'getCustomerData', 'getOrder', 'getOrderBase', 'getTransactionReference',
+			'getCustomerData', 'getOrder', 'getOrderBase', 'getTransactionReference', 'isImplemented',
 			'saveOrder', 'saveOrderBase', 'getProvider', 'saveTransationRef', 'setCustomerData'
 		];
 
@@ -957,8 +957,14 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 		$this->object->expects( $this->once() )->method( 'getOrderBase' )
 			->will( $this->returnValue( $baseItem ) );
 
-		$this->object->expects( $this->exactly( 2 ) )->method( 'getProvider' )
+		$this->object->expects( $this->once() )->method( 'isImplemented' )
+			->will( $this->returnValue( true ) );
+
+		$this->object->expects( $this->once() )->method( 'getProvider' )
 			->will( $this->returnValue( $provider ) );
+
+		$this->object->expects( $this->once() )->method( 'getCustomerData' )
+			->will( $this->returnValue( ['token' => '123', 'month' => '01', 'year' => '99'] ) );
 
 		$provider->expects( $this->once() )->method( 'purchase' )
 			->will( $this->returnValue( $request ) );
