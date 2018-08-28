@@ -35,7 +35,7 @@ class Datatrans
 	{
 		$base = $this->getOrderBase( $order->getBaseId() );
 
-		if( ( $cfg = $this->getCustomerData( $base->getCustomerId(), 'repay' ) ) == null )
+		if( ( $cfg = $this->getCustomerData( $base->getCustomerId(), 'repay' ) ) === null )
 		{
 			$msg = sprintf( 'No reoccurring payment data available for customer ID "%1$s"', $base->getCustomerId() );
 			throw new \Aimeos\MShop\Service\Exception( $msg );
