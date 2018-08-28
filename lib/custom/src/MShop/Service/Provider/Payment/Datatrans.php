@@ -64,6 +64,7 @@ class Datatrans
 		}
 
 		$provider = OPay::create('Datatrans\Xml');
+		$provider->initialize( $this->getServiceItem()->getConfig() );
 		$response = $provider->purchase( $data )->send();
 
 		if( $response->isSuccessful() )
