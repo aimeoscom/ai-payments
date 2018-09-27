@@ -3,17 +3,19 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 # 
-#, fuzzy
+# Translators:
+# Aimeos, 2017
+# Metal <meteoramic@yahoo.com>, 2018
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: aimeos\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-07-03 21:45+0200\n"
+"POT-Creation-Date: 2018-09-27 08:31+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Metal <meteoramic@yahoo.com>, 2018\n"
 "Language-Team: Turkish (https://www.transifex.com/aimeos/teams/39015/tr/)\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: tr\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
@@ -23,18 +25,31 @@ msgstr ""
 msgid "Method \"%1$s\" for provider not available"
 msgstr "Sağlayıcı için yöntem \"%1$s\" mevcut değil"
 
-#: src/MShop/Service/Provider/Payment/OmniPay.php:449
+#: src/MShop/Service/Provider/Payment/OmniPay.php:455
+#: src/MShop/Service/Provider/Payment/Datatrans.php:46
 #, php-format
-msgid "No reoccurring payment token available for customer ID \"%1$s\""
-msgstr "\"%1$s\" müşteri kimliği için yinelenen ödeme jetonu mevcut değil"
+msgid "No payment token available for customer ID \"%1$s\""
+msgstr ""
+
+#: src/MShop/Service/Provider/Payment/OmniPay.php:449
+#: src/MShop/Service/Provider/Payment/Datatrans.php:40
+#, php-format
+msgid "No reoccurring payment data available for customer ID \"%1$s\""
+msgstr ""
 
 #: src/MShop/Service/Provider/Payment/NovalnetSepa.php:154
-#: src/MShop/Service/Provider/Payment/OmniPay.php:694
+#: src/MShop/Service/Provider/Payment/OmniPay.php:707
 #, php-format
 msgid "Order %1$s"
 msgstr "Sipariş %1$s"
 
-#: src/MShop/Service/Provider/Payment/OmniPay.php:591
+#: src/MShop/Service/Provider/Payment/OmniPay.php:486
+#: src/MShop/Service/Provider/Payment/Datatrans.php:79
+#, php-format
+msgid "Token based payment failed: %1$s"
+msgstr ""
+
+#: src/MShop/Service/Provider/Payment/OmniPay.php:607
 #, php-format
 msgid "Unexpected redirect: %1$s"
 msgstr "Beklenmeyen yönlendirme: %1$s"
