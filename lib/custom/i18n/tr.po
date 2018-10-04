@@ -29,13 +29,13 @@ msgstr "Sağlayıcı için yöntem \"%1$s\" mevcut değil"
 #: src/MShop/Service/Provider/Payment/Datatrans.php:46
 #, php-format
 msgid "No payment token available for customer ID \"%1$s\""
-msgstr ""
+msgstr "\"%1$s\" müşteri kimliği için herhangi bir ödeme belirteci yok"
 
 #: src/MShop/Service/Provider/Payment/OmniPay.php:449
 #: src/MShop/Service/Provider/Payment/Datatrans.php:40
 #, php-format
 msgid "No reoccurring payment data available for customer ID \"%1$s\""
-msgstr ""
+msgstr "\"%1$s\" müşteri kimliği için herhangi bir yinelenen ödeme verisi yok"
 
 #: src/MShop/Service/Provider/Payment/NovalnetSepa.php:154
 #: src/MShop/Service/Provider/Payment/OmniPay.php:707
@@ -47,7 +47,7 @@ msgstr "Sipariş %1$s"
 #: src/MShop/Service/Provider/Payment/Datatrans.php:79
 #, php-format
 msgid "Token based payment failed: %1$s"
-msgstr ""
+msgstr "Token-bazlı ödeme başarısız oldu: %1$s"
 
 #: src/MShop/Service/Provider/Payment/OmniPay.php:607
 #, php-format
