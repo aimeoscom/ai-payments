@@ -52,6 +52,7 @@ class AuthorizeSimTest extends \PHPUnit\Framework\TestCase
 		$this->assertArrayHasKey( 'authorizenet.address', $result );
 		$this->assertArrayHasKey( 'authorizenet.authorize', $result );
 		$this->assertArrayHasKey( 'authorizenet.testmode', $result );
+		$this->assertArrayHasKey( 'authorizenet.createtoken', $result );
 		$this->assertArrayHasKey( 'payment.url-success', $result );
 	}
 
@@ -64,10 +65,11 @@ class AuthorizeSimTest extends \PHPUnit\Framework\TestCase
 
 		$result = $object->checkConfigBE( $attributes );
 
-		$this->assertEquals( 4, count( $result ) );
+		$this->assertEquals( 5, count( $result ) );
 		$this->assertEquals( null, $result['authorizenet.address'] );
 		$this->assertEquals( null, $result['authorizenet.authorize'] );
 		$this->assertEquals( null, $result['authorizenet.testmode'] );
+		$this->assertEquals( null, $result['authorizenet.createtoken'] );
 		$this->assertEquals( null, $result['payment.url-success'] );
 	}
 

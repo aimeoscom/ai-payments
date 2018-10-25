@@ -60,6 +60,7 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 		$this->assertArrayHasKey( 'omnipay.address', $result );
 		$this->assertArrayHasKey( 'omnipay.authorize', $result );
 		$this->assertArrayHasKey( 'omnipay.onsite', $result );
+		$this->assertArrayHasKey( 'omnipay.createtoken', $result );
 		$this->assertArrayHasKey( 'omnipay.testmode', $result );
 	}
 
@@ -73,16 +74,18 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 			'omnipay.address' => '0',
 			'omnipay.authorize' => '1',
 			'omnipay.onsite' => '0',
+			'omnipay.createtoken' => '1',
 			'omnipay.testmode' => '1',
 		);
 
 		$result = $object->checkConfigBE( $attributes );
 
-		$this->assertEquals( 5, count( $result ) );
+		$this->assertEquals( 6, count( $result ) );
 		$this->assertEquals( null, $result['omnipay.type'] );
 		$this->assertEquals( null, $result['omnipay.address'] );
 		$this->assertEquals( null, $result['omnipay.authorize'] );
 		$this->assertEquals( null, $result['omnipay.onsite'] );
+		$this->assertEquals( null, $result['omnipay.createtoken'] );
 		$this->assertEquals( null, $result['omnipay.testmode'] );
 	}
 
