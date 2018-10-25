@@ -61,6 +61,15 @@ class OmniPay
 			'default'=> '0',
 			'required'=> false,
 		),
+		'createtoken' => array(
+			'code' => 'createtoken',
+			'internalcode'=> 'createtoken',
+			'label'=> 'Request token for recurring payments',
+			'type'=> 'boolean',
+			'internaltype'=> 'boolean',
+			'default'=> '1',
+			'required'=> false,
+		),
 		'testmode' => array(
 			'code' => 'testmode',
 			'internalcode'=> 'testmode',
@@ -706,8 +715,11 @@ class OmniPay
 			'language' => $base->getAddress( \Aimeos\MShop\Order\Item\Base\Address\Base::TYPE_PAYMENT )->getLanguageId(),
 			'description' => sprintf( $this->getContext()->getI18n()->dt( 'mshop', 'Order %1$s' ), $orderid ),
 			'clientIp' => $this->getValue( 'client.ipaddress' ),
-			'createCard' => true,
 		);
+
+		if( $this->getValue( 'createtoken', false ) ) {
+			$data['createCard'] = true;
+		}
 
 		if( $this->getValue( 'onsite', false ) || $this->getValue( 'address', false ) ) {
 			$data['card'] = $this->getCardDetails( $base, $params );

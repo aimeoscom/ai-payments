@@ -44,6 +44,7 @@ class StripeTest extends \PHPUnit\Framework\TestCase
 		$this->assertArrayHasKey( 'stripe.address', $result );
 		$this->assertArrayHasKey( 'stripe.authorize', $result );
 		$this->assertArrayHasKey( 'stripe.testmode', $result );
+		$this->assertArrayHasKey( 'stripe.createtoken', $result );
 		$this->assertArrayNotHasKey( 'stripe.type', $result );
 		$this->assertArrayNotHasKey( 'omnipay.type', $result );
 	}
@@ -59,9 +60,10 @@ class StripeTest extends \PHPUnit\Framework\TestCase
 
 		$result = $this->object->checkConfigBE( $attributes );
 
-		$this->assertEquals( 3, count( $result ) );
+		$this->assertEquals( 4, count( $result ) );
 		$this->assertEquals( null, $result['stripe.address'] );
 		$this->assertEquals( null, $result['stripe.authorize'] );
+		$this->assertEquals( null, $result['stripe.createtoken'] );
 		$this->assertEquals( null, $result['stripe.testmode'] );
 		$this->assertArrayNotHasKey( 'stripe.type', $result );
 		$this->assertArrayNotHasKey( 'omnipay.type', $result );
