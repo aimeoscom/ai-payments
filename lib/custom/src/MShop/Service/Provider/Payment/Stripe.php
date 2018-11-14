@@ -84,7 +84,7 @@ class Stripe
 			'public' => false,
 		),
 
-		'payment.cardno' => array(
+		'payment-cardno' => array(
 			'code' => 'payment.cardno',
 			'internalcode'=> 'number',
 			'label'=> 'Credit card number',
@@ -93,7 +93,7 @@ class Stripe
 			'default'=> '',
 			'required'=> false
 		),
-		'payment.expiry' => array(
+		'payment-expiry' => array(
 			'code' => 'payment.expiry',
 			'internalcode'=> 'expiry',
 			'label'=> 'Expiry',
@@ -102,7 +102,7 @@ class Stripe
 			'default'=> '',
 			'required'=> false
 		),
-		'payment.cvv' => array(
+		'payment-cvv' => array(
 			'code' => 'payment.cvv',
 			'internalcode'=> 'cvv',
 			'label'=> 'Verification number',
