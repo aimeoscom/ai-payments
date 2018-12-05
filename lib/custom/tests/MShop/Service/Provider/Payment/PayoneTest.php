@@ -39,9 +39,9 @@ class PayoneTest extends \PHPUnit\Framework\TestCase
 
 	public function testUpdatePush()
 	{
-		$psr7stream = $this->getMockBuilder( '\Psr\Http\Message\StreamInterface' )->getMock();
-		$psr7request = $this->getMockBuilder( '\Psr\Http\Message\ServerRequestInterface' )->getMock();
-		$psr7response = $this->getMockBuilder( '\Aimeos\MW\View\Helper\Response\Iface' )->getMock();
+		$psr7stream = $this->getMockBuilder( \Psr\Http\Message\StreamInterface::class )->getMock();
+		$psr7request = $this->getMockBuilder( \Psr\Http\Message\ServerRequestInterface::class )->getMock();
+		$psr7response = $this->getMockBuilder( \Aimeos\MW\View\Helper\Response\Iface::class )->getMock();
 
 		$psr7request->expects( $this->once() )->method( 'getAttributes' )
 			->will( $this->returnValue( ['reference' => 1] ) );
@@ -54,6 +54,6 @@ class PayoneTest extends \PHPUnit\Framework\TestCase
 
 		$result = $this->object->updatePush( $psr7request, $psr7response );
 
-		$this->assertInstanceOf( '\Psr\Http\Message\ResponseInterface', $result );
+		$this->assertInstanceOf( \Psr\Http\Message\ResponseInterface::class, $result );
 	}
 }

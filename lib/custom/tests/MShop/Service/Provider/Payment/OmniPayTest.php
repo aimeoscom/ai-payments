@@ -224,7 +224,7 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 
 	public function testProcessOffsiteAuthorizeFailure()
 	{
-		$provider = $this->getMockBuilder( '\Omnipay\Dummy\Gateway' )
+		$provider = $this->getMockBuilder( \Omnipay\Dummy\Gateway::class )
 			->setMethods( array( 'authorize' ) )
 			->disableOriginalConstructor()
 			->getMock();
@@ -257,7 +257,7 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 			->setMethods( array( 'purchase' ) )
 			->getMock();
 
-		$request = $this->getMockBuilder( '\Omnipay\Dummy\Message\AuthorizeRequest' )
+		$request = $this->getMockBuilder( \Omnipay\Dummy\Message\AuthorizeRequest::class )
 			->disableOriginalConstructor()
 			->setMethods( array( 'send' ) )
 			->getMock();
@@ -303,7 +303,7 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 	{
 		$baseItem = $this->getOrderBase( \Aimeos\MShop\Order\Item\Base\Base::PARTS_SERVICE );
 
-		$psr7request = $this->getMockBuilder( '\Psr\Http\Message\ServerRequestInterface' )->getMock();
+		$psr7request = $this->getMockBuilder( \Psr\Http\Message\ServerRequestInterface::class )->getMock();
 
 		$provider = $this->getMockBuilder( 'Omnipay\Dummy\Gateway' )
 			->setMethods( array( 'authorize' ) )
@@ -334,7 +334,7 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 			->setMethods( array( 'supportsCompletePurchase', 'completePurchase' ) )
 			->getMock();
 
-		$psr7request = $this->getMockBuilder( '\Psr\Http\Message\ServerRequestInterface' )->getMock();
+		$psr7request = $this->getMockBuilder( \Psr\Http\Message\ServerRequestInterface::class )->getMock();
 
 		$this->object->expects( $this->once() )->method( 'getOrderBase' )
 			->will( $this->returnValue( $baseItem ) );
@@ -358,7 +358,7 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 			->setMethods( array( 'supportsCompletePurchase', 'completePurchase' ) )
 			->getMock();
 
-		$request = $this->getMockBuilder( '\Omnipay\Dummy\Message\AuthorizeRequest' )
+		$request = $this->getMockBuilder( \Omnipay\Dummy\Message\AuthorizeRequest::class )
 			->disableOriginalConstructor()
 			->setMethods( array( 'send' ) )
 			->getMock();
@@ -368,7 +368,7 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 			->setMethods( array( 'isSuccessful' ) )
 			->getMock();
 
-		$psr7request = $this->getMockBuilder( '\Psr\Http\Message\ServerRequestInterface' )->getMock();
+		$psr7request = $this->getMockBuilder( \Psr\Http\Message\ServerRequestInterface::class )->getMock();
 
 
 		$this->object->expects( $this->once() )->method( 'getOrderBase' )
@@ -406,7 +406,7 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 			->setMethods( array( 'supportsAcceptNotification', 'acceptNotification', 'saveOrder' ) )
 			->getMock();
 
-		$request = $this->getMockBuilder( '\Omnipay\Dummy\Message\AuthorizeRequest' )
+		$request = $this->getMockBuilder( \Omnipay\Dummy\Message\AuthorizeRequest::class )
 			->disableOriginalConstructor()
 			->setMethods( array( 'getTransactionStatus', 'send' ) )
 			->getMock();
@@ -416,8 +416,8 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 			->setMethods( array( 'isSuccessful' ) )
 			->getMock();
 
-		$psr7request = $this->getMockBuilder( '\Psr\Http\Message\ServerRequestInterface' )->getMock();
-		$psr7response = $this->getMockBuilder( '\Psr\Http\Message\ResponseInterface' )->getMock();
+		$psr7request = $this->getMockBuilder( \Psr\Http\Message\ServerRequestInterface::class )->getMock();
+		$psr7response = $this->getMockBuilder( \Psr\Http\Message\ResponseInterface::class )->getMock();
 
 		$psr7request->expects( $this->once() )->method( 'getQueryParams' )->will( $this->returnValue( ['orderid' => '1'] ) );
 		$psr7response->expects( $this->once() )->method( 'withStatus' )
@@ -458,7 +458,7 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 
 		$result = $this->object->updatePush( $psr7request, $psr7response );
 
-		$this->assertInstanceOf( '\Psr\Http\Message\ResponseInterface', $result );
+		$this->assertInstanceOf( \Psr\Http\Message\ResponseInterface::class, $result );
 	}
 
 
@@ -472,7 +472,7 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 			->setMethods( array( 'supportsAcceptNotification', 'acceptNotification', 'saveOrder' ) )
 			->getMock();
 
-		$request = $this->getMockBuilder( '\Omnipay\Dummy\Message\AuthorizeRequest' )
+		$request = $this->getMockBuilder( \Omnipay\Dummy\Message\AuthorizeRequest::class )
 			->disableOriginalConstructor()
 			->setMethods( array( 'getTransactionStatus', 'send' ) )
 			->getMock();
@@ -482,8 +482,8 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 			->setMethods( array( 'isPending' ) )
 			->getMock();
 
-		$psr7request = $this->getMockBuilder( '\Psr\Http\Message\ServerRequestInterface' )->getMock();
-		$psr7response = $this->getMockBuilder( '\Psr\Http\Message\ResponseInterface' )->getMock();
+		$psr7request = $this->getMockBuilder( \Psr\Http\Message\ServerRequestInterface::class )->getMock();
+		$psr7response = $this->getMockBuilder( \Psr\Http\Message\ResponseInterface::class )->getMock();
 
 		$psr7request->expects( $this->once() )->method( 'getQueryParams' )->will( $this->returnValue( ['orderid' => '1'] ) );
 		$psr7response->expects( $this->once() )->method( 'withStatus' )
@@ -521,7 +521,7 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 
 		$result = $this->object->updatePush( $psr7request, $psr7response );
 
-		$this->assertInstanceOf( '\Psr\Http\Message\ResponseInterface', $result );
+		$this->assertInstanceOf( \Psr\Http\Message\ResponseInterface::class, $result );
 	}
 
 
@@ -535,7 +535,7 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 			->setMethods( array( 'supportsAcceptNotification', 'acceptNotification' ) )
 			->getMock();
 
-		$request = $this->getMockBuilder( '\Omnipay\Dummy\Message\AuthorizeRequest' )
+		$request = $this->getMockBuilder( \Omnipay\Dummy\Message\AuthorizeRequest::class )
 			->disableOriginalConstructor()
 			->setMethods( array( 'getTransactionStatus', 'send' ) )
 			->getMock();
@@ -545,8 +545,8 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 			->setMethods( array( 'isCancelled' ) )
 			->getMock();
 
-		$psr7request = $this->getMockBuilder( '\Psr\Http\Message\ServerRequestInterface' )->getMock();
-		$psr7response = $this->getMockBuilder( '\Psr\Http\Message\ResponseInterface' )->getMock();
+		$psr7request = $this->getMockBuilder( \Psr\Http\Message\ServerRequestInterface::class )->getMock();
+		$psr7response = $this->getMockBuilder( \Psr\Http\Message\ResponseInterface::class )->getMock();
 
 		$psr7request->expects( $this->once() )->method( 'getQueryParams' )->will( $this->returnValue( ['orderid' => '1'] ) );
 		$psr7response->expects( $this->once() )->method( 'withStatus' )
@@ -584,7 +584,7 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 
 		$result = $this->object->updatePush( $psr7request, $psr7response );
 
-		$this->assertInstanceOf( '\Psr\Http\Message\ResponseInterface', $result );
+		$this->assertInstanceOf( \Psr\Http\Message\ResponseInterface::class, $result );
 	}
 
 
@@ -598,7 +598,7 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 			->setMethods( array( 'supportsAcceptNotification', 'acceptNotification' ) )
 			->getMock();
 
-		$request = $this->getMockBuilder( '\Omnipay\Dummy\Message\AuthorizeRequest' )
+		$request = $this->getMockBuilder( \Omnipay\Dummy\Message\AuthorizeRequest::class )
 			->disableOriginalConstructor()
 			->setMethods( array( 'getTransactionStatus', 'send' ) )
 			->getMock();
@@ -607,8 +607,8 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 			->disableOriginalConstructor()
 			->getMock();
 
-		$psr7request = $this->getMockBuilder( '\Psr\Http\Message\ServerRequestInterface' )->getMock();
-		$psr7response = $this->getMockBuilder( '\Psr\Http\Message\ResponseInterface' )->getMock();
+		$psr7request = $this->getMockBuilder( \Psr\Http\Message\ServerRequestInterface::class )->getMock();
+		$psr7response = $this->getMockBuilder( \Psr\Http\Message\ResponseInterface::class )->getMock();
 
 		$psr7request->expects( $this->once() )->method( 'getQueryParams' )->will( $this->returnValue( ['orderid' => '1'] ) );
 		$psr7response->expects( $this->once() )->method( 'withStatus' )
@@ -640,7 +640,7 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 
 		$result = $this->object->updatePush( $psr7request, $psr7response );
 
-		$this->assertInstanceOf( '\Psr\Http\Message\ResponseInterface', $result );
+		$this->assertInstanceOf( \Psr\Http\Message\ResponseInterface::class, $result );
 	}
 
 
@@ -654,7 +654,7 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 			->setMethods( array( 'supportsCompleteAuthorize', 'completeAuthorize' ) )
 			->getMock();
 
-		$request = $this->getMockBuilder( '\Omnipay\Dummy\Message\AuthorizeRequest' )
+		$request = $this->getMockBuilder( \Omnipay\Dummy\Message\AuthorizeRequest::class )
 			->setMethods( array( 'send' ) )
 			->disableOriginalConstructor()
 			->getMock();
@@ -664,7 +664,7 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 			->disableOriginalConstructor()
 			->getMock();
 
-		$psr7request = $this->getMockBuilder( '\Psr\Http\Message\ServerRequestInterface' )->getMock();
+		$psr7request = $this->getMockBuilder( \Psr\Http\Message\ServerRequestInterface::class )->getMock();
 
 
 		$psr7request->expects( $this->once() )->method( 'getAttributes' )
@@ -703,7 +703,7 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 			->setMethods( array( 'supportsCompletePurchase', 'completePurchase' ) )
 			->getMock();
 
-		$request = $this->getMockBuilder( '\Omnipay\Dummy\Message\AuthorizeRequest' )
+		$request = $this->getMockBuilder( \Omnipay\Dummy\Message\AuthorizeRequest::class )
 			->setMethods( array( 'send' ) )
 			->disableOriginalConstructor()
 			->getMock();
@@ -713,7 +713,7 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 			->disableOriginalConstructor()
 			->getMock();
 
-		$psr7request = $this->getMockBuilder( '\Psr\Http\Message\ServerRequestInterface' )->getMock();
+		$psr7request = $this->getMockBuilder( \Psr\Http\Message\ServerRequestInterface::class )->getMock();
 
 
 		$psr7request->expects( $this->once() )->method( 'getAttributes' )
@@ -753,7 +753,7 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 			->setMethods( array( 'supportsVoid', 'void' ) )
 			->getMock();
 
-		$request = $this->getMockBuilder( '\Omnipay\Dummy\Message\AuthorizeRequest' )
+		$request = $this->getMockBuilder( \Omnipay\Dummy\Message\AuthorizeRequest::class )
 			->disableOriginalConstructor()
 			->setMethods( array( 'send' ) )
 			->getMock();
@@ -818,7 +818,7 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 			->setMethods( array( 'supportsCapture', 'capture' ) )
 			->getMock();
 
-		$request = $this->getMockBuilder( '\Omnipay\Dummy\Message\AuthorizeRequest' )
+		$request = $this->getMockBuilder( \Omnipay\Dummy\Message\AuthorizeRequest::class )
 			->disableOriginalConstructor()
 			->setMethods( array( 'send' ) )
 			->getMock();
@@ -882,7 +882,7 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 			->setMethods( array( 'supportsRefund', 'refund' ) )
 			->getMock();
 
-		$request = $this->getMockBuilder( '\Omnipay\Dummy\Message\AuthorizeRequest' )
+		$request = $this->getMockBuilder( \Omnipay\Dummy\Message\AuthorizeRequest::class )
 			->disableOriginalConstructor()
 			->setMethods( array( 'send' ) )
 			->getMock();
@@ -946,7 +946,7 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 			->setMethods( array( 'getCard', 'purchase' ) )
 			->getMock();
 
-		$request = $this->getMockBuilder( '\Omnipay\Dummy\Message\AuthorizeRequest' )
+		$request = $this->getMockBuilder( \Omnipay\Dummy\Message\AuthorizeRequest::class )
 			->disableOriginalConstructor()
 			->setMethods( array( 'send' ) )
 			->getMock();

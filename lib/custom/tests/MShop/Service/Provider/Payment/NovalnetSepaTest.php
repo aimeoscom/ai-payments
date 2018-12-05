@@ -119,7 +119,7 @@ class NovalnetSepaTest extends \PHPUnit\Framework\TestCase
 			->setMethods( array( 'purchase' ) )
 			->getMock();
 
-		$request = $this->getMockBuilder( '\Omnipay\Dummy\Message\AuthorizeRequest' )
+		$request = $this->getMockBuilder( \Omnipay\Dummy\Message\AuthorizeRequest::class )
 			->setMethods( array( 'send' ) )
 			->disableOriginalConstructor()
 			->getMock();
