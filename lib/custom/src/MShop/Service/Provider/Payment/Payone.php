@@ -46,9 +46,9 @@ class Payone
 				'vat' => (int) $product->getPrice()->getTaxRate(),
 			]);
 		}
-		
-		foreach( $delivery = $base->getService('delivery') as $delivery )
-		{	
+
+		foreach( $base->getService( 'delivery' ) as $delivery )
+		{
 			if( $delivery->getPrice()->getCosts() != '0.00' )
 			{
 				$lines[] = new \Omnipay\Payone\Extend\Item([
@@ -62,6 +62,10 @@ class Payone
 
 				$completePrice = (string) ( (float) $delivery->getPrice()->getCosts() + (float) $completePrice );
 			}
+		}
+
+		foreach( $base->getService( 'payment' ) as $payment ) {
+			$completePrice = (string) ( (float) $payment->getPrice()->getCosts() + (float) $completePrice );
 		}
 
 		return array_merge(
