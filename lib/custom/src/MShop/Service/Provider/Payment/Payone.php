@@ -31,7 +31,6 @@ class Payone
 	protected function getData( \Aimeos\MShop\Order\Item\Base\Iface $base, $orderid, array $params )
 	{
 		$lines = [];
-		$delivery = $base->getService('delivery');
 		$completePrice = $base->getPrice()->getValue();
 
 		foreach( $base->getProducts() as $product )
@@ -47,19 +46,22 @@ class Payone
 				'vat' => (int) $product->getPrice()->getTaxRate(),
 			]);
 		}
+		
+		foreach( $delivery = $base->getService('delivery') as $delivery ) {
+			
+			if( $delivery->getPrice()->getCosts() != '0.00' )
+			{
+				$lines[] = new \Omnipay\Payone\Extend\Item([
+					'id' => $delivery->getId(),
+					'name' => $delivery->getName(),
+					'itemType' => 'shipment',
+					'quantity' => 1,
+					'price' => $delivery->getPrice()->getCosts(),
+					'vat' => (int) $delivery->getPrice()->getTaxRate(),
+				]);
 
-		if( $delivery->getPrice()->getCosts() != '0.00' )
-		{
-			$lines[] = new \Omnipay\Payone\Extend\Item([
-				'id' => $delivery->getId(),
-				'name' => $delivery->getName(),
-				'itemType' => 'shipment',
-				'quantity' => 1,
-				'price' => $delivery->getPrice()->getCosts(),
-				'vat' => (int) $delivery->getPrice()->getTaxRate(),
-			]);
-
-			$completePrice = (string) ( (float) $delivery->getPrice()->getCosts() + (float) $completePrice );
+				$completePrice = (string) ( (float) $delivery->getPrice()->getCosts() + (float) $completePrice );
+			}
 		}
 
 		return array_merge(
