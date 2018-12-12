@@ -31,7 +31,6 @@ class Payone
 	protected function getData( \Aimeos\MShop\Order\Item\Base\Iface $base, $orderid, array $params )
 	{
 		$lines = [];
-		$completePrice = $base->getPrice()->getValue();
 
 		foreach( $base->getProducts() as $product )
 		{
@@ -59,23 +58,14 @@ class Payone
 					'price' => $delivery->getPrice()->getCosts(),
 					'vat' => (int) $delivery->getPrice()->getTaxRate(),
 				]);
-
-				$completePrice = (string) ( (float) $delivery->getPrice()->getCosts() + (float) $completePrice );
 			}
 		}
 
-		foreach( $base->getService( 'payment' ) as $payment ) {
-			$completePrice = (string) ( (float) $payment->getPrice()->getCosts() + (float) $completePrice );
-		}
+		$data = parent::getData( $base, $orderid, $params );
+		$data['items'] = new \Omnipay\Common\ItemBag( $lines );
+		$data['accessMethod'] = 'classic';
 
-		return array_merge(
-			parent::getData( $base, $orderid, $params ),
-			array(
-				'amount' => $completePrice,
-				'accessMethod' => 'classic',
-				'items' => new \Omnipay\Common\ItemBag( $lines ),
-			)
-		);
+		return $data;
 	}
 
 
