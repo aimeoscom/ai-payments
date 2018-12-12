@@ -47,8 +47,8 @@ class Payone
 			]);
 		}
 		
-		foreach( $delivery = $base->getService('delivery') as $delivery ) {
-			
+		foreach( $delivery = $base->getService('delivery') as $delivery )
+		{	
 			if( $delivery->getPrice()->getCosts() != '0.00' )
 			{
 				$lines[] = new \Omnipay\Payone\Extend\Item([
