@@ -22,7 +22,7 @@ class StripeTest extends \PHPUnit\Framework\TestCase
 
 		$context = \TestHelper::getContext();
 
-		$serviceManager = \Aimeos\MShop\Service\Manager\Factory::createManager( $context );
+		$serviceManager = \Aimeos\MShop\Service\Manager\Factory::create( $context );
 		$item = $serviceManager->createItem();
 		$item->setConfig( array( 'stripe.testmode' => true ) );
 

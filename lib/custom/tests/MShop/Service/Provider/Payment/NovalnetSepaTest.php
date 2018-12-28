@@ -25,13 +25,13 @@ class NovalnetSepaTest extends \PHPUnit\Framework\TestCase
 
 		$this->context = \TestHelper::getContext();
 
-		$serviceManager = \Aimeos\MShop\Service\Manager\Factory::createManager( $this->context );
+		$serviceManager = \Aimeos\MShop\Service\Manager\Factory::create( $this->context );
 		$this->serviceItem = $serviceManager->createItem();
 		$this->serviceItem->setConfig( array( 'omnipay.type' => 'Dummy' ) );
 		$this->serviceItem->setCode( 'OGONE' );
 
-		$this->ordServItem = \Aimeos\MShop\Factory::createManager( $this->context, 'order/base/service' )->createItem();
-		$serviceItem = \Aimeos\MShop\Factory::createManager( $this->context, 'service' )->createItem();
+		$this->ordServItem = \Aimeos\MShop::create( $this->context, 'order/base/service' )->createItem();
+		$serviceItem = \Aimeos\MShop::create( $this->context, 'service' )->createItem();
 		$serviceItem->setCode( 'OGONE' );
 
 		$this->object = $this->getMockBuilder( '\\Aimeos\\MShop\\Service\\Provider\\Payment\\NovalnetSepa' )
@@ -49,7 +49,7 @@ class NovalnetSepaTest extends \PHPUnit\Framework\TestCase
 
 	public function testGetConfigFE()
 	{
-		$orderManager = \Aimeos\MShop\Order\Manager\Factory::createManager( $this->context );
+		$orderManager = \Aimeos\MShop\Order\Manager\Factory::create( $this->context );
 		$orderBaseManager = $orderManager->getSubManager( 'base' );
 		$search = $orderManager->createSearch();
 		$expr = array(
@@ -153,7 +153,7 @@ class NovalnetSepaTest extends \PHPUnit\Framework\TestCase
 
 	protected function getOrder()
 	{
-		$manager = \Aimeos\MShop\Order\Manager\Factory::createManager( $this->context );
+		$manager = \Aimeos\MShop\Order\Manager\Factory::create( $this->context );
 
 		$search = $manager->createSearch();
 		$search->setConditions( $search->compare( '==', 'order.datepayment', '2008-02-15 12:34:56' ) );
@@ -174,7 +174,7 @@ class NovalnetSepaTest extends \PHPUnit\Framework\TestCase
 			$parts = \Aimeos\MShop\Order\Item\Base\Base::PARTS_ADDRESS | \Aimeos\MShop\Order\Item\Base\Base::PARTS_SERVICE;
 		}
 
-		$manager = \Aimeos\MShop\Order\Manager\Factory::createManager( $this->context )->getSubmanager( 'base' );
+		$manager = \Aimeos\MShop\Order\Manager\Factory::create( $this->context )->getSubmanager( 'base' );
 
 		return $manager->load( $this->getOrder()->getBaseId(), $parts );
 	}

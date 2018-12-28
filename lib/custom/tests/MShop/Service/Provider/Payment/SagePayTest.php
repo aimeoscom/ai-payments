@@ -23,7 +23,7 @@ class SagePayTest extends \PHPUnit\Framework\TestCase
 
 		$this->context = \TestHelper::getContext();
 
-		$serviceManager = \Aimeos\MShop\Service\Manager\Factory::createManager( $this->context );
+		$serviceManager = \Aimeos\MShop\Service\Manager\Factory::create( $this->context );
 		$item = $serviceManager->createItem();
 		$item->setConfig( array( 'sagepay.testmode' => true ) );
 
