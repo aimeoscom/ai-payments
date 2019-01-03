@@ -97,8 +97,8 @@ class Stripe
 			'code' => 'payment.expiry',
 			'internalcode'=> 'expiry',
 			'label'=> 'Expiry',
-			'type'=> 'select',
-			'internaltype'=> 'integer',
+			'type'=> 'string',
+			'internaltype'=> 'string',
 			'default'=> '',
 			'required'=> false
 		),
