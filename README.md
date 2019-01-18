@@ -29,7 +29,7 @@ As every Aimeos extension, the easiest way is to install it via [composer](https
 php -r "readfile('https://getcomposer.org/installer');" | php -- --filename=composer
 ```
 
-Add the cache extension name to the "require" section of your ```composer.json``` (or your ```composer.aimeos.json```, depending on what is available) file:
+Add the cache extension name to the "require" section of your ```composer.json``` file:
 ```
 "require": [
     "aimeos/ai-payments": "dev-master",
@@ -41,11 +41,6 @@ You should use a stable release if you don't want to add code or improve the imp
 Afterwards you only need to execute the composer update command on the command line:
 ```
 composer update
-```
-
-If your composer file is named "composer.aimeos.json", you must use this:
-```
-COMPOSER=composer.aimeos.json composer update
 ```
 
 These commands will install the Aimeos extension into the extension directory and it will be available immediately.
