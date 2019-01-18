@@ -81,7 +81,7 @@ class NovalnetCredit
 		parent::__construct( $context, $serviceItem );
 
 		$year = date( 'Y' );
-		$this->feConfig['novalnetcredit.year']['default'] = array( $year, $year+1, $year+2, $year+3, $year+4, $year+5, $year+6, $year+7 );
+		$this->feConfig['novalnetcredit.year']['default'] = array( $year, $year + 1, $year + 2, $year + 3, $year + 4, $year + 5, $year + 6, $year + 7 );
 	}
 
 
@@ -114,7 +114,7 @@ class NovalnetCredit
 				}
 			}
 		}
-		catch( \Aimeos\MShop\Order\Exception $e ) { ; } // If payment isn't available yet
+		catch( \Aimeos\MShop\Order\Exception $e ) {; } // If payment isn't available yet
 
 
 		try
@@ -127,7 +127,7 @@ class NovalnetCredit
 				$feconfig['novalnetcredit.holder']['default'] = $fn . ' ' . $ln;
 			}
 		}
-		catch( \Aimeos\MShop\Order\Exception $e ) { ; } // If address isn't available
+		catch( \Aimeos\MShop\Order\Exception $e ) {; } // If address isn't available
 
 
 		foreach( $feconfig as $key => $config ) {

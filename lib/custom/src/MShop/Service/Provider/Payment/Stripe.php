@@ -158,12 +158,12 @@ class Stripe
 	 * @return \Aimeos\MShop\Common\Helper\Form\Standard Form object with URL, action and parameters to redirect to
 	 *    (e.g. to an external server of the payment provider or to a local success page)
 	 */
-	public function process(\Aimeos\MShop\Order\Item\Iface $order, array $params = [])
+	public function process( \Aimeos\MShop\Order\Item\Iface $order, array $params = [] )
 	{
 		if( !isset( $params['paymenttoken'] ) ) {
 			return $this->getPaymentForm( $order, $params );
 		}
-		return $this->processOrder($order, $params);
+		return $this->processOrder( $order, $params );
 	}
 
 
@@ -174,7 +174,7 @@ class Stripe
 	 * @param array $params Request parameter if available
 	 * @return \Aimeos\MShop\Common\Helper\Form\Iface Form helper object
 	 */
-	protected function getPaymentForm(\Aimeos\MShop\Order\Item\Iface $order, array $params)
+	protected function getPaymentForm( \Aimeos\MShop\Order\Item\Iface $order, array $params )
 	{
 		$list = [];
 		$feConfig = $this->feConfig;
@@ -197,7 +197,7 @@ class Stripe
 	 * @param \Aimeos\MShop\Order\Item\Base\Iface $basket Basket object
 	 * @return array List of attribute definitions implementing \Aimeos\MW\Common\Critera\Attribute\Iface
 	 */
-	public function getConfigFE(\Aimeos\MShop\Order\Item\Base\Iface $basket)
+	public function getConfigFE( \Aimeos\MShop\Order\Item\Base\Iface $basket )
 	{
 		return [];
 	}
@@ -229,7 +229,7 @@ class Stripe
 	 * @return array An array with the attribute keys as key and an error message as values for all attributes that are
 	 *    known by the provider but aren't valid resp. null for attributes whose values are OK
 	 */
-	public function checkConfigFE(array $attributes)
+	public function checkConfigFE( array $attributes )
 	{
 		return [];
 	}

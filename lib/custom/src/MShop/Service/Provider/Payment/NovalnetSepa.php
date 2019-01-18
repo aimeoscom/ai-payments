@@ -76,7 +76,7 @@ class NovalnetSepa
 				}
 			}
 		}
-		catch( \Aimeos\MShop\Order\Exception $e ) { ; } // If payment isn't available yet
+		catch( \Aimeos\MShop\Order\Exception $e ) {; } // If payment isn't available yet
 
 
 		try
@@ -89,7 +89,7 @@ class NovalnetSepa
 				$feconfig['novalnetsepa.holder']['default'] = $fn . ' ' . $ln;
 			}
 		}
-		catch( \Aimeos\MShop\Order\Exception $e ) { ; } // If address isn't available
+		catch( \Aimeos\MShop\Order\Exception $e ) {; } // If address isn't available
 
 
 		foreach( $feconfig as $key => $config ) {
