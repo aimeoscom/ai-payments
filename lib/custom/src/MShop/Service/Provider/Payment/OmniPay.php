@@ -251,7 +251,7 @@ class OmniPay
 		foreach( $config as $key => $config )
 		{
 			$config['code'] = $prefix . '.' . $config['code'];
-			$list[$prefix.'.'.$key] = new \Aimeos\MW\Criteria\Attribute\Standard( $config );
+			$list[$prefix . '.' . $key] = new \Aimeos\MW\Criteria\Attribute\Standard( $config );
 		}
 
 		return $list;
@@ -280,7 +280,7 @@ class OmniPay
 		foreach( $config as $key => $cfg )
 		{
 			$cfg['code'] = $prefix . '.' . $cfg['code'];
-			$list[$prefix.'.'.$key] = $cfg;
+			$list[$prefix . '.' . $key] = $cfg;
 		}
 
 		return array_merge( $errors, $this->checkConfig( $list, $attributes ) );
@@ -647,7 +647,7 @@ class OmniPay
 		{
 			$addresses = $base->getAddresses();
 
-			if( isset( $addresses[\Aimeos\MShop\Order\Item\Base\Address\Base::TYPE_PAYMENT ] ) )
+			if( isset( $addresses[\Aimeos\MShop\Order\Item\Base\Address\Base::TYPE_PAYMENT] ) )
 			{
 				$addr = $addresses[\Aimeos\MShop\Order\Item\Base\Address\Base::TYPE_PAYMENT];
 
@@ -665,7 +665,7 @@ class OmniPay
 				$params['billingFax'] = $addr->getTelefax();
 				$params['email'] = $addr->getEmail();
 
-				if( isset( $addresses[\Aimeos\MShop\Order\Item\Base\Address\Base::TYPE_DELIVERY ] ) ) {
+				if( isset( $addresses[\Aimeos\MShop\Order\Item\Base\Address\Base::TYPE_DELIVERY] ) ) {
 					$addr = $addresses[\Aimeos\MShop\Order\Item\Base\Address\Base::TYPE_DELIVERY];
 				}
 
@@ -792,14 +792,14 @@ class OmniPay
 		{
 			$address = $baseItem->getAddress( \Aimeos\MShop\Order\Item\Base\Address\Base::TYPE_PAYMENT );
 
-			if( !isset( $params[ $feConfig['payment.firstname']['internalcode'] ] )
-				|| $params[ $feConfig['payment.firstname']['internalcode'] ] == ''
+			if( !isset( $params[$feConfig['payment.firstname']['internalcode']] )
+				|| $params[$feConfig['payment.firstname']['internalcode']] == ''
 			) {
 				$feConfig['payment.firstname']['default'] = $address->getFirstname();
 			}
 
-			if( !isset( $params[ $feConfig['payment.lastname']['internalcode'] ] )
-				|| $params[ $feConfig['payment.lastname']['internalcode'] ] == ''
+			if( !isset( $params[$feConfig['payment.lastname']['internalcode']] )
+				|| $params[$feConfig['payment.lastname']['internalcode']] == ''
 			) {
 				$feConfig['payment.lastname']['default'] = $address->getLastname();
 			}
@@ -817,11 +817,11 @@ class OmniPay
 				$feConfig['payment.email']['default'] = $address->getEmail();
 			}
 		}
-		catch( \Aimeos\MShop\Order\Exception $e ) { ; } // If address isn't available
+		catch( \Aimeos\MShop\Order\Exception $e ) {; } // If address isn't available
 
 		$year = date( 'Y' );
 		$feConfig['payment.expirymonth']['default'] = array( 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 );
-		$feConfig['payment.expiryyear']['default'] = array( $year, $year+1, $year+2, $year+3, $year+4, $year+5, $year+6, $year+7 );
+		$feConfig['payment.expiryyear']['default'] = array( $year, $year + 1, $year + 2, $year + 3, $year + 4, $year + 5, $year + 6, $year + 7 );
 
 		foreach( $feConfig as $key => $config ) {
 			$list[$key] = new \Aimeos\MW\Criteria\Attribute\Standard( $config );
