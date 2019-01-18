@@ -157,14 +157,14 @@ class AuthorizeDPM
 		{
 			$address = $baseItem->getAddress( \Aimeos\MShop\Order\Item\Base\Address\Base::TYPE_PAYMENT );
 
-			if( !isset( $params[ $feConfig['payment.firstname']['internalcode'] ] )
-				|| $params[ $feConfig['payment.firstname']['internalcode'] ] == ''
+			if( !isset( $params[$feConfig['payment.firstname']['internalcode']] )
+				|| $params[$feConfig['payment.firstname']['internalcode']] == ''
 			) {
 				$feConfig['payment.firstname']['default'] = $address->getFirstname();
 			}
 
-			if( !isset( $params[ $feConfig['payment.lastname']['internalcode'] ] )
-				|| $params[ $feConfig['payment.lastname']['internalcode'] ] == ''
+			if( !isset( $params[$feConfig['payment.lastname']['internalcode']] )
+				|| $params[$feConfig['payment.lastname']['internalcode']] == ''
 			) {
 				$feConfig['payment.lastname']['default'] = $address->getLastname();
 			}
@@ -180,7 +180,7 @@ class AuthorizeDPM
 				$feConfig['payment.email']['default'] = $address->getEmail();
 			}
 		}
-		catch( \Aimeos\MShop\Order\Exception $e ) { ; } // If address isn't available
+		catch( \Aimeos\MShop\Order\Exception $e ) {; } // If address isn't available
 
 		foreach( $feConfig as $key => $config ) {
 			$list[$key] = new \Aimeos\MW\Criteria\Attribute\Standard( $config );
