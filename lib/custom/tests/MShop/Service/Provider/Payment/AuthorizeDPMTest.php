@@ -72,7 +72,7 @@ class AuthorizeDpmTest extends \PHPUnit\Framework\TestCase
 
 		$result = $this->object->process( $this->getOrder(), [] );
 
-		$this->assertInstanceOf( '\\Aimeos\\MShop\\Common\\Item\\Helper\\Form\\Iface', $result );
+		$this->assertInstanceOf( \Aimeos\MShop\Common\Item\Helper\Form\Iface::class, $result );
 	}
 
 

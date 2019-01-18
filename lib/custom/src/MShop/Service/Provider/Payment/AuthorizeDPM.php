@@ -145,7 +145,7 @@ class AuthorizeDPM
 	 *
 	 * @param \Aimeos\MShop\Order\Item\Iface $order Order object
 	 * @param array $params Request parameter if available
-	 * @return \Aimeos\MShop\Common\Item\Helper\Form\Iface Form helper object
+	 * @return \Aimeos\MShop\Common\Helper\Form\Iface Form helper object
 	 */
 	protected function getPaymentForm( \Aimeos\MShop\Order\Item\Iface $order, array $params )
 	{
@@ -187,7 +187,7 @@ class AuthorizeDPM
 		}
 
 		$url = $this->getConfigValue( array( 'payment.url-self' ) );
-		return new \Aimeos\MShop\Common\Item\Helper\Form\Standard( $url, 'POST', $list, false );
+		return new \Aimeos\MShop\Common\Helper\Form\Standard( $url, 'POST', $list, false );
 	}
 
 

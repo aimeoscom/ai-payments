@@ -386,7 +386,7 @@ class OmniPay
 	 *
 	 * @param \Aimeos\MShop\Order\Item\Iface $order Order invoice object
 	 * @param array $params Request parameter if available
-	 * @return \Aimeos\MShop\Common\Item\Helper\Form\Standard Form object with URL, action and parameters to redirect to
+	 * @return \Aimeos\MShop\Common\Helper\Form\Standard Form object with URL, action and parameters to redirect to
 	 * 	(e.g. to an external server of the payment provider or to a local success page)
 	 */
 	public function process( \Aimeos\MShop\Order\Item\Iface $order, array $params = [] )
@@ -780,7 +780,7 @@ class OmniPay
 	 *
 	 * @param \Aimeos\MShop\Order\Item\Iface $order Order object
 	 * @param array $params Request parameter if available
-	 * @return \Aimeos\MShop\Common\Item\Helper\Form\Iface Form helper object
+	 * @return \Aimeos\MShop\Common\Helper\Form\Iface Form helper object
 	 */
 	protected function getPaymentForm( \Aimeos\MShop\Order\Item\Iface $order, array $params )
 	{
@@ -828,7 +828,7 @@ class OmniPay
 		}
 
 		$url = $this->getConfigValue( array( 'payment.url-self' ) );
-		return new \Aimeos\MShop\Common\Item\Helper\Form\Standard( $url, 'POST', $list, false );
+		return new \Aimeos\MShop\Common\Helper\Form\Standard( $url, 'POST', $list, false );
 	}
 
 
@@ -836,7 +836,7 @@ class OmniPay
 	 * Returns the form for redirecting customers to the payment gateway.
 	 *
 	 * @param \Omnipay\Common\Message\RedirectResponseInterface $response Omnipay response object
-	 * @return \Aimeos\MShop\Common\Item\Helper\Form\Iface Form helper object
+	 * @return \Aimeos\MShop\Common\Helper\Form\Iface Form helper object
 	 */
 	protected function getRedirectForm( \Omnipay\Common\Message\RedirectResponseInterface $response )
 	{
@@ -858,7 +858,7 @@ class OmniPay
 		$url = $response->getRedirectUrl();
 		$method = $response->getRedirectMethod();
 
-		return new \Aimeos\MShop\Common\Item\Helper\Form\Standard( $url, $method, $list );
+		return new \Aimeos\MShop\Common\Helper\Form\Standard( $url, $method, $list );
 	}
 
 
@@ -883,7 +883,7 @@ class OmniPay
 	 *
 	 * @param \Aimeos\MShop\Order\Item\Iface $order Order invoice object
 	 * @param array $params Request parameter if available
-	 * @return \Aimeos\MShop\Common\Item\Helper\Form\Standard Form object with URL, action and parameters to redirect to
+	 * @return \Aimeos\MShop\Common\Helper\Form\Standard Form object with URL, action and parameters to redirect to
 	 * 	(e.g. to an external server of the payment provider or to a local success page)
 	 */
 	protected function processOrder( \Aimeos\MShop\Order\Item\Iface $order, array $params = [] )
@@ -939,7 +939,7 @@ class OmniPay
 			throw new \Aimeos\MShop\Service\Exception( $e->getMessage() );
 		}
 
-		return new \Aimeos\MShop\Common\Item\Helper\Form\Standard( $urls['returnUrl'], 'POST', [] );
+		return new \Aimeos\MShop\Common\Helper\Form\Standard( $urls['returnUrl'], 'POST', [] );
 	}
 
 
