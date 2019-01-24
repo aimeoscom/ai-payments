@@ -301,7 +301,6 @@ class OmniPay
 		}
 
 		$base = $this->getOrderBase( $order->getBaseId() );
-		$service = $base->getService( \Aimeos\MShop\Order\Item\Base\Service\Base::TYPE_PAYMENT );
 
 		$data = array(
 			'transactionReference' => $this->getTransactionReference( $base ),
@@ -335,7 +334,6 @@ class OmniPay
 		}
 
 		$base = $this->getOrderBase( $order->getBaseId() );
-		$service = $base->getService( \Aimeos\MShop\Order\Item\Base\Service\Base::TYPE_PAYMENT );
 
 		$data = array(
 			'transactionReference' => $this->getTransactionReference( $base ),
