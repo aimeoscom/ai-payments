@@ -706,11 +706,19 @@ class OmniPay
 	 */
 	protected function getData( \Aimeos\MShop\Order\Item\Base\Iface $base, $orderid, array $params )
 	{
+		$addresses = $base->getAddress( \Aimeos\MShop\Order\Item\Base\Address\Base::TYPE_PAYMENT );
+
+		if( ( $address = current( $addresses ) ) !== false ) {
+			$langid = $address->getLanguageId();
+		} else {
+			$langid = $context->getLocale()->getLanguageId();
+		}
+
 		$data = array(
+			'language' => $langid,
 			'transactionId' => $orderid,
 			'amount' => $this->getAmount( $base->getPrice() ),
 			'currency' => $base->getLocale()->getCurrencyId(),
-			'language' => $base->getAddress( \Aimeos\MShop\Order\Item\Base\Address\Base::TYPE_PAYMENT )->getLanguageId(),
 			'description' => sprintf( $this->getContext()->getI18n()->dt( 'mshop', 'Order %1$s' ), $orderid ),
 			'clientIp' => $this->getValue( 'client.ipaddress' ),
 		);
@@ -785,11 +793,10 @@ class OmniPay
 		$list = [];
 		$feConfig = $this->feConfig;
 		$baseItem = $this->getOrderBase( $order->getBaseId(), \Aimeos\MShop\Order\Item\Base\Base::PARTS_ADDRESS );
+		$addresses = $baseItem->getAddress( \Aimeos\MShop\Order\Item\Base\Address\Base::TYPE_PAYMENT );
 
-		try
+		if( ( $address = current( $addresses ) ) !== false )
 		{
-			$address = $baseItem->getAddress( \Aimeos\MShop\Order\Item\Base\Address\Base::TYPE_PAYMENT );
-
 			if( !isset( $params[$feConfig['payment.firstname']['internalcode']] )
 				|| $params[$feConfig['payment.firstname']['internalcode']] == ''
 			) {
@@ -815,7 +822,6 @@ class OmniPay
 				$feConfig['payment.email']['default'] = $address->getEmail();
 			}
 		}
-		catch( \Aimeos\MShop\Order\Exception $e ) {; } // If address isn't available
 
 		$year = date( 'Y' );
 		$feConfig['payment.expirymonth']['default'] = array( 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 );

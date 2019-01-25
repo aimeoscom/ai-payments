@@ -152,15 +152,22 @@ class NovalnetSepa
 		$urls = $this->getPaymentUrls();
 		$card = $this->getCardDetails( $base, $params );
 		$desc = $this->getContext()->getI18n()->dt( 'mshop', 'Order %1$s' );
+		$addresses = $base->getAddress( \Aimeos\MShop\Order\Item\Base\Address\Base::TYPE_PAYMENT );
+
+		if( ( $address = current( $addresses ) ) !== false ) {
+			$langid = $address->getLanguageId();
+		} else {
+			$langid = $context->getLocale()->getLanguageId();
+		}
 
 		$data = array(
 			'token' => '',
 			'card' => $card,
+			'language' => $langid,
 			'transactionId' => $orderid,
 			'description' => sprintf( $desc, $orderid ),
 			'amount' => $this->getAmount( $base->getPrice() ),
 			'currency' => $base->getLocale()->getCurrencyId(),
-			'language' => $base->getAddress( \Aimeos\MShop\Order\Item\Base\Address\Base::TYPE_PAYMENT )->getLanguageId(),
 			'clientIp' => $this->getValue( 'client.ipaddress' ),
 			'bic' => ( isset( $params['novalnetsepa.bic'] ) ? $params['novalnetsepa.bic'] : '' ),
 			'iban' => ( isset( $params['novalnetsepa.iban'] ) ? $params['novalnetsepa.iban'] : '' ),
