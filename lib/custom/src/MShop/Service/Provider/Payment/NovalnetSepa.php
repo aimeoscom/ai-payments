@@ -79,17 +79,16 @@ class NovalnetSepa
 		catch( \Aimeos\MShop\Order\Exception $e ) {; } // If payment isn't available yet
 
 
-		try
-		{
-			$address = $basket->getAddress( \Aimeos\MShop\Order\Item\Base\Address\Base::TYPE_PAYMENT );
+		$addresses = $basket->getAddress( \Aimeos\MShop\Order\Item\Base\Address\Base::TYPE_PAYMENT );
 
+		if( ( $address = current( $addresses ) ) !== false )
+		{
 			if( $feconfig['novalnetsepa.holder']['default'] == ''
 				&& ( $fn = $address->getFirstname() ) !== '' && ( $ln = $address->getLastname() ) !== ''
 			) {
 				$feconfig['novalnetsepa.holder']['default'] = $fn . ' ' . $ln;
 			}
 		}
-		catch( \Aimeos\MShop\Order\Exception $e ) {; } // If address isn't available
 
 
 		foreach( $feconfig as $key => $config ) {
