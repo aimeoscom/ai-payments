@@ -63,9 +63,7 @@ class Datatrans
 			] );
 		}
 
-		$provider = OPay::create('Datatrans\Xml');
-		$provider->initialize( $this->getServiceItem()->getConfig() );
-		$response = $provider->purchase( $data )->send();
+		$response = $this->getXmlProvider()->purchase( $data )->send();
 
 		if( $response->isSuccessful() )
 		{
@@ -95,5 +93,19 @@ class Datatrans
 		}
 
 		return parent::getValue( $key, $default );
+	}
+
+
+	/**
+	 * Returns the Datatrans XML payment provider
+	 *
+	 * @return \Omnipay\Common\GatewayInterface Gateway provider object
+	 */
+	protected function getXmlProvider()
+	{
+		$provider = OPay::create('Datatrans\Xml');
+		$provider->initialize( $this->getServiceItem()->getConfig() );
+
+		return $provider;
 	}
 }

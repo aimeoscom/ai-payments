@@ -31,10 +31,10 @@ class DatatransTest extends \PHPUnit\Framework\TestCase
 
 		$methods = [
 			'getCustomerData', 'getOrder', 'getOrderBase', 'getTransactionReference', 'isImplemented',
-			'saveOrder', 'saveOrderBase', 'getProvider', 'saveTransationRef', 'setCustomerData'
+			'saveOrder', 'saveOrderBase', 'getXmlProvider', 'saveTransationRef', 'setCustomerData'
 		];
 
-		$this->object = $this->getMockBuilder( '\\Aimeos\\MShop\\Service\\Provider\\Payment\\OmniPay' )
+		$this->object = $this->getMockBuilder( \Aimeos\MShop\Service\Provider\Payment\Datatrans::class )
 			->setConstructorArgs( array( $this->context, $this->serviceItem ) )
 			->setMethods( $methods )
 			->getMock();
@@ -43,9 +43,7 @@ class DatatransTest extends \PHPUnit\Framework\TestCase
 
 	protected function tearDown()
 	{
-		unset( $this->object );
-		unset( $this->context );
-		unset( $this->serviceItem );
+		unset( $this->object, $this->serviceItem, $this->context );
 	}
 
 
@@ -73,10 +71,7 @@ class DatatransTest extends \PHPUnit\Framework\TestCase
 		$this->object->expects( $this->once() )->method( 'getOrderBase' )
 			->will( $this->returnValue( $baseItem ) );
 
-		$this->object->expects( $this->once() )->method( 'isImplemented' )
-			->will( $this->returnValue( true ) );
-
-		$this->object->expects( $this->once() )->method( 'getProvider' )
+		$this->object->expects( $this->once() )->method( 'getXmlProvider' )
 			->will( $this->returnValue( $provider ) );
 
 		$this->object->expects( $this->once() )->method( 'getCustomerData' )
