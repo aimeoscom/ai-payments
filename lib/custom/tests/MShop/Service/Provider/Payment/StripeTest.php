@@ -11,6 +11,7 @@ namespace Aimeos\MShop\Service\Provider\Payment;
 
 class StripeTest extends \PHPUnit\Framework\TestCase
 {
+	private $context;
 	private $object;
 
 
@@ -20,19 +21,16 @@ class StripeTest extends \PHPUnit\Framework\TestCase
 			$this->markTestSkipped( 'Omnipay library not available' );
 		}
 
-		$context = \TestHelper::getContext();
+		$this->context = \TestHelper::getContext();
+		$item = \Aimeos\MShop::create( $this->context, 'service' )->createItem()->setConfig( ['stripe.testmode' => true] );
 
-		$serviceManager = \Aimeos\MShop\Service\Manager\Factory::create( $context );
-		$item = $serviceManager->createItem();
-		$item->setConfig( array( 'stripe.testmode' => true ) );
-
-		$this->object = new StripePublic( $context, $item );
+		$this->object = new Stripe( $this->context, $item );
 	}
 
 
 	protected function tearDown()
 	{
-		unset( $this->object );
+		unset( $this->object, $this->context );
 	}
 
 
@@ -69,17 +67,48 @@ class StripeTest extends \PHPUnit\Framework\TestCase
 		$this->assertArrayNotHasKey( 'omnipay.type', $result );
 	}
 
+
+	public function testGetProvider()
+	{
+		$result = $this->access( 'getProvider' )->invokeArgs( $this->object, [] );
+		$this->assertInstanceOf( \Omnipay\Common\GatewayInterface::class, $result );
+	}
+
+
 	public function testGetValueTestmode()
 	{
-		$this->assertTrue( $this->object->getValuePublic( 'testmode' ) );
+		$this->assertTrue( $this->access( 'getValue' )->invokeArgs( $this->object, ['testmode'] ) );
 	}
-}
 
 
-class StripePublic extends \Aimeos\MShop\Service\Provider\Payment\Stripe
-{
-	public function getValuePublic( $name, $default = null )
+	public function testCheckConfigFE()
 	{
-		return $this->getValue( $name, $default );
+		$this->assertEquals( [], $this->object->checkConfigFE( [] ) );
+	}
+
+
+	public function testGetConfigFE()
+	{
+		$basket = \Aimeos\MShop::create( $this->context, 'order/base' )->createItem();
+		$this->assertEquals( [], $this->object->getConfigFE( $basket ) );
+	}
+
+
+	public function testProcess()
+	{
+		$iface = \Aimeos\MShop\Common\Helper\Form\Iface::class;
+		$order = \Aimeos\MShop::create( $this->context, 'order' )->createItem();
+
+		$this->assertInstanceOf( $iface, $this->object->process( $order ) );
+	}
+
+
+	protected function access( $name )
+	{
+		$class = new \ReflectionClass( \Aimeos\MShop\Service\Provider\Payment\Stripe::class );
+		$method = $class->getMethod( $name );
+		$method->setAccessible( true );
+
+		return $method;
 	}
 }

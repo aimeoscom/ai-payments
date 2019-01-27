@@ -135,7 +135,7 @@ class Stripe
 	protected function getProvider()
 	{
 		$config = $this->getServiceItem()->getConfig();
-		$config['apiKey'] = $config['stripe.apiKey'];
+		$config['apiKey'] = $this->getServiceItem()->getConfigValue( 'stripe.apiKey' );
 
 		if( !isset( $this->provider ) )
 		{
