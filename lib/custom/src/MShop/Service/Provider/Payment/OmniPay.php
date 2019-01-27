@@ -498,7 +498,8 @@ class OmniPay
 	/**
 	 * Updates the order status sent by payment gateway notifications
 	 *
-	 * @param \Psr\Http\Message\ServerRequestInterface Request object
+	 * @param \Psr\Http\Message\ServerRequestInterface $request Request object
+	 * @param \Psr\Http\Message\ResponseInterface $response Response object
 	 * @return \Psr\Http\Message\ResponseInterface Response object
 	 */
 	public function updatePush( \Psr\Http\Message\ServerRequestInterface $request, \Psr\Http\Message\ResponseInterface $response )
@@ -662,7 +663,7 @@ class OmniPay
 				$params['email'] = $addr->getEmail();
 
 				$type = \Aimeos\MShop\Order\Item\Base\Address\Base::TYPE_DELIVERY;
-				$addr = current( $base->getAddress( $type ) ) ?: addr;
+				$addr = current( $base->getAddress( $type ) ) ?: $addr;
 
 				$params['shippingName'] = $addr->getFirstname() . ' ' . $addr->getLastname();
 				$params['shippingFirstName'] = $addr->getFirstname();
@@ -698,17 +699,17 @@ class OmniPay
 	 * Returns the data passed to the Omnipay library
 	 *
 	 * @param \Aimeos\MShop\Order\Item\Base\Iface $base Basket object
-	 * @param $orderid Unique order ID
+	 * @param $orderid string Unique order ID
 	 * @param array $params Request parameter if available
 	 */
 	protected function getData( \Aimeos\MShop\Order\Item\Base\Iface $base, $orderid, array $params )
 	{
 		$addresses = $base->getAddress( \Aimeos\MShop\Order\Item\Base\Address\Base::TYPE_PAYMENT );
 
-		if( ( $address = current( $addresses ) ) !== false ) {
-			$langid = $address->getLanguageId();
+		if( ( $address = current( $addresses ) ) === false ) {
+			$langid = $this->getContext()->getLocale()->getLanguageId();
 		} else {
-			$langid = $context->getLocale()->getLanguageId();
+			$langid = $address->getLanguageId();
 		}
 
 		$data = array(
