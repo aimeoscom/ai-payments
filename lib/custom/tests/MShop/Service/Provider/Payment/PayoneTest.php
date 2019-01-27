@@ -47,8 +47,12 @@ class PayoneTest extends \PHPUnit\Framework\TestCase
 
 		$this->serviceItem->setConfig( array( 'omnipay.type' => 'Dummy', 'omnipay.address' => '1' ) );
 
+		$parts = \Aimeos\MShop\Order\Item\Base\Base::PARTS_ADDRESS
+			| \Aimeos\MShop\Order\Item\Base\Base::PARTS_SERVICE
+			| \Aimeos\MShop\Order\Item\Base\Base::PARTS_PRODUCT;
+
 		$this->object->expects( $this->once() )->method( 'getOrderBase' )
-			->will( $this->returnValue( $this->getOrderBase() ) );
+			->will( $this->returnValue( $this->getOrderBase( $parts ) ) );
 
 		$params = array(
 			'number' => '4929000000006',

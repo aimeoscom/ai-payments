@@ -186,10 +186,10 @@ class NovalnetCredit
 	 */
 	protected function getCardDetails( \Aimeos\MShop\Order\Item\Base\Iface $base, array $params )
 	{
-		if( $this->getValue( 'address' ) )
-		{
-			$addr = $base->getAddress( \Aimeos\MShop\Order\Item\Base\Address\Base::TYPE_PAYMENT );
+		$addresses = $base->getAddress( \Aimeos\MShop\Order\Item\Base\Address\Base::TYPE_PAYMENT );
 
+		if( $this->getValue( 'address' ) && ( $addr = current( $addresses ) ) !== false )
+		{
 			$params['billingName'] = $addr->getFirstname() . ' ' . $addr->getLastname();
 			$params['billingFirstName'] = $addr->getFirstname();
 			$params['billingLastName'] = $addr->getLastname();

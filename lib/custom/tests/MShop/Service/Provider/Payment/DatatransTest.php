@@ -91,7 +91,55 @@ class DatatransTest extends \PHPUnit\Framework\TestCase
 		$this->object->expects( $this->once() )->method( 'saveOrder' );
 
 
-		$this->object->repay( $orderItem );
+		$this->object->repay( $this->getOrder() );
+	}
+
+
+	public function testRepayMissingData()
+	{
+		$baseItem = $this->getOrderBase( \Aimeos\MShop\Order\Item\Base\Base::PARTS_SERVICE );
+
+
+		$this->object->expects( $this->once() )->method( 'getOrderBase' )
+			->will( $this->returnValue( $baseItem ) );
+
+		$this->object->expects( $this->once() )->method( 'getCustomerData' )
+			->will( $this->returnValue( null ) );
+
+
+		$this->setExpectedException( \Aimeos\MShop\Service\Exception::class );
+		$this->object->repay( $this->getOrder() );
+	}
+
+
+	public function testRepayMissingToken()
+	{
+		$baseItem = $this->getOrderBase( \Aimeos\MShop\Order\Item\Base\Base::PARTS_SERVICE );
+
+
+		$this->object->expects( $this->once() )->method( 'getOrderBase' )
+			->will( $this->returnValue( $baseItem ) );
+
+		$this->object->expects( $this->once() )->method( 'getCustomerData' )
+			->will( $this->returnValue( [] ) );
+
+
+		$this->setExpectedException( \Aimeos\MShop\Service\Exception::class );
+		$this->object->repay( $this->getOrder() );
+	}
+
+
+	public function testGetValue()
+	{
+		$this->assertEquals( 'Datatrans', $this->access( 'getValue' )->invokeArgs( $this->object, ['type'] ) );
+		$this->assertEquals( null, $this->access( 'getValue' )->invokeArgs( $this->object, ['test'] ) );
+	}
+
+
+	public function testGetXmlProvider()
+	{
+		$result = $this->access( 'getXmlProvider' )->invokeArgs( $this->object, [] );
+		$this->assertInstanceOf( \Omnipay\Common\GatewayInterface::class, $result );
 	}
 
 
@@ -121,5 +169,15 @@ class DatatransTest extends \PHPUnit\Framework\TestCase
 		$manager = \Aimeos\MShop\Order\Manager\Factory::create( $this->context )->getSubmanager( 'base' );
 
 		return $manager->load( $this->getOrder()->getBaseId(), $parts );
+	}
+
+
+	protected function access( $name )
+	{
+		$class = new \ReflectionClass( \Aimeos\MShop\Service\Provider\Payment\Datatrans::class );
+		$method = $class->getMethod( $name );
+		$method->setAccessible( true );
+
+		return $method;
 	}
 }

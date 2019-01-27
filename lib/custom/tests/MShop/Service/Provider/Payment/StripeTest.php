@@ -68,6 +68,26 @@ class StripeTest extends \PHPUnit\Framework\TestCase
 	}
 
 
+	public function testGetData()
+	{
+		$basket = $this->getOrderBase();
+		$orderId = $this->getOrder()->getId();
+
+		$result = $this->access( 'getData' )->invokeArgs( $this->object, [$basket, $orderId, []] );
+		$this->assertArrayNotHasKey( 'token', $result );
+	}
+
+
+	public function testGetDataToken()
+	{
+		$basket = $this->getOrderBase();
+		$orderId = $this->getOrder()->getId();
+
+		$result = $this->access( 'getData' )->invokeArgs( $this->object, [$basket, $orderId, ['paymenttoken' => 'abc']] );
+		$this->assertArrayHasKey( 'token', $result );
+	}
+
+
 	public function testGetProvider()
 	{
 		$result = $this->access( 'getProvider' )->invokeArgs( $this->object, [] );
@@ -100,6 +120,35 @@ class StripeTest extends \PHPUnit\Framework\TestCase
 		$order = \Aimeos\MShop::create( $this->context, 'order' )->createItem();
 
 		$this->assertInstanceOf( $iface, $this->object->process( $order ) );
+	}
+
+
+	protected function getOrder()
+	{
+		$manager = \Aimeos\MShop\Order\Manager\Factory::create( $this->context );
+
+		$search = $manager->createSearch();
+		$search->setConditions( $search->compare( '==', 'order.datepayment', '2008-02-15 12:34:56' ) );
+
+		$result = $manager->searchItems( $search );
+
+		if( ( $item = reset( $result ) ) === false ) {
+			throw new \RuntimeException( 'No order found' );
+		}
+
+		return $item;
+	}
+
+
+	protected function getOrderBase( $parts = null )
+	{
+		if( $parts === null ) {
+			$parts = \Aimeos\MShop\Order\Item\Base\Base::PARTS_ADDRESS | \Aimeos\MShop\Order\Item\Base\Base::PARTS_SERVICE;
+		}
+
+		$manager = \Aimeos\MShop\Order\Manager\Factory::create( $this->context )->getSubmanager( 'base' );
+
+		return $manager->load( $this->getOrder()->getBaseId(), $parts );
 	}
 
 

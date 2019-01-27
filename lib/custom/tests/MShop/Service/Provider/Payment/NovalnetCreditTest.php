@@ -35,7 +35,7 @@ class NovalnetCreditTest extends \PHPUnit\Framework\TestCase
 		$serviceItem->setCode( 'OGONE' );
 
 		$this->object = $this->getMockBuilder( '\\Aimeos\\MShop\\Service\\Provider\\Payment\\NovalnetCredit' )
-			->setMethods( array( 'getOrder', 'getOrderBase', 'saveOrder', 'saveOrderBase', 'getProvider' ) )
+			->setMethods( array( 'getOrder', 'getOrderBase', 'saveOrder', 'saveOrderBase', 'getProvider', 'getValue' ) )
 			->setConstructorArgs( array( $this->context, $serviceItem ) )
 			->getMock();
 	}
@@ -153,6 +153,16 @@ class NovalnetCreditTest extends \PHPUnit\Framework\TestCase
 	}
 
 
+	public function testGetCardDetails()
+	{
+		$this->object->expects( $this->once() )->method( 'getValue' )
+			->will( $this->returnValue( true ) );
+
+		$result = $this->access( 'getCardDetails' )->invokeArgs( $this->object, [$this->getOrderBase(), []] );
+		$this->assertInstanceOf( \Omnipay\Common\CreditCard::class, $result );
+	}
+
+
 	protected function getOrder()
 	{
 		$manager = \Aimeos\MShop\Order\Manager\Factory::create( $this->context );
@@ -179,5 +189,15 @@ class NovalnetCreditTest extends \PHPUnit\Framework\TestCase
 		$manager = \Aimeos\MShop\Order\Manager\Factory::create( $this->context )->getSubmanager( 'base' );
 
 		return $manager->load( $this->getOrder()->getBaseId(), $parts );
+	}
+
+
+	protected function access( $name )
+	{
+		$class = new \ReflectionClass( \Aimeos\MShop\Service\Provider\Payment\NovalnetCredit::class );
+		$method = $class->getMethod( $name );
+		$method->setAccessible( true );
+
+		return $method;
 	}
 }
