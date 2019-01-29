@@ -5,12 +5,13 @@
 # 
 # Translators:
 # Miro Sertić <miro.sertic0606@gmail.com>, 2018
+# 
 msgid ""
 msgstr ""
 "Project-Id-Version: aimeos\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-09-27 08:31+0200\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: 2017-09-14 09:25+0000\n"
 "Last-Translator: Miro Sertić <miro.sertic0606@gmail.com>, 2018\n"
 "Language-Team: Croatian (https://www.transifex.com/aimeos/teams/39015/hr/)\n"
 "MIME-Version: 1.0\n"
@@ -28,13 +29,15 @@ msgstr "Metoda \"%1$s\" za davatelja usluga nije dostupna"
 #: src/MShop/Service/Provider/Payment/Datatrans.php:46
 #, php-format
 msgid "No payment token available for customer ID \"%1$s\""
-msgstr ""
+msgstr "Nije dostupan token za plaćanje za korisnički ID \"%1$s\""
 
 #: src/MShop/Service/Provider/Payment/OmniPay.php:449
 #: src/MShop/Service/Provider/Payment/Datatrans.php:40
 #, php-format
 msgid "No reoccurring payment data available for customer ID \"%1$s\""
 msgstr ""
+"Nema podataka o ponovnom pojavljivanju podataka o plaćanju za korisnički ID "
+"\"%1$s\""
 
 #: src/MShop/Service/Provider/Payment/NovalnetSepa.php:154
 #: src/MShop/Service/Provider/Payment/OmniPay.php:707
@@ -46,7 +49,7 @@ msgstr "Narudžba %1$s"
 #: src/MShop/Service/Provider/Payment/Datatrans.php:79
 #, php-format
 msgid "Token based payment failed: %1$s"
-msgstr ""
+msgstr "Plaćanje na temelju tokena nije uspjelo:%1$s"
 
 #: src/MShop/Service/Provider/Payment/OmniPay.php:607
 #, php-format
