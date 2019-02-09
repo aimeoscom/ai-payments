@@ -597,6 +597,10 @@ class OmniPay
 				return $order;
 			}
 
+			if( $response->getTransactionId() != $order->getId() ) {
+				return $order;
+			}
+
 			if( method_exists( $response, 'isSuccessful' ) && $response->isSuccessful() )
 			{
 				$order->setPaymentStatus( $status );
