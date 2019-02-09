@@ -190,17 +190,6 @@ class AuthorizeDPM
 
 
 	/**
-	 * Returns the prefix for the configuration definitions
-	 *
-	 * @return string Prefix without dot
-	 */
-	protected function getConfigPrefix()
-	{
-		return 'authorizenet';
-	}
-
-
-	/**
 	 * Returns the value for the given configuration key
 	 *
 	 * @param string $key Configuration key name

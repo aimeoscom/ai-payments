@@ -20,7 +20,7 @@ class PayoneTest extends \PHPUnit\Framework\TestCase
 
 		$serviceManager = \Aimeos\MShop\Service\Manager\Factory::create( $this->context );
 		$this->serviceItem = $serviceManager->createItem();
-		$this->serviceItem->setConfig( array( 'omnipay.type' => 'Dummy' ) );
+		$this->serviceItem->setConfig( array( 'type' => 'Dummy' ) );
 		$this->serviceItem->setCode( 'OGONE' );
 
 		$this->object = $this->getMockBuilder( \Aimeos\MShop\Service\Provider\Payment\Payone::class )
@@ -45,7 +45,7 @@ class PayoneTest extends \PHPUnit\Framework\TestCase
 		$this->object->expects( $this->once() )->method( 'getProvider' )
 			->will( $this->returnValue( $provider ) );
 
-		$this->serviceItem->setConfig( array( 'omnipay.type' => 'Dummy', 'omnipay.address' => '1' ) );
+		$this->serviceItem->setConfig( array( 'type' => 'Dummy', 'address' => '1' ) );
 
 		$parts = \Aimeos\MShop\Order\Item\Base\Base::PARTS_ADDRESS
 			| \Aimeos\MShop\Order\Item\Base\Base::PARTS_SERVICE

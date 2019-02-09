@@ -39,32 +39,33 @@ class StripeTest extends \PHPUnit\Framework\TestCase
 		$result = $this->object->getConfigBE();
 
 		$this->assertInternalType( 'array', $result );
-		$this->assertArrayHasKey( 'stripe.address', $result );
-		$this->assertArrayHasKey( 'stripe.authorize', $result );
-		$this->assertArrayHasKey( 'stripe.testmode', $result );
-		$this->assertArrayHasKey( 'stripe.createtoken', $result );
-		$this->assertArrayNotHasKey( 'stripe.type', $result );
-		$this->assertArrayNotHasKey( 'omnipay.type', $result );
+		$this->assertArrayHasKey( 'address', $result );
+		$this->assertArrayHasKey( 'authorize', $result );
+		$this->assertArrayHasKey( 'testmode', $result );
+		$this->assertArrayHasKey( 'createtoken', $result );
+		$this->assertArrayHasKey( 'onsite', $result );
+		$this->assertArrayHasKey( 'type', $result );
 	}
 
 
 	public function testCheckConfigBE()
 	{
 		$attributes = array(
-			'stripe.address' => '0',
-			'stripe.authorize' => '1',
-			'stripe.testmode' => '1',
+			'address' => '0',
+			'authorize' => '1',
+			'testmode' => '1',
+			'type' => 'Stripe'
 		);
 
 		$result = $this->object->checkConfigBE( $attributes );
 
-		$this->assertEquals( 4, count( $result ) );
-		$this->assertEquals( null, $result['stripe.address'] );
-		$this->assertEquals( null, $result['stripe.authorize'] );
-		$this->assertEquals( null, $result['stripe.createtoken'] );
-		$this->assertEquals( null, $result['stripe.testmode'] );
-		$this->assertArrayNotHasKey( 'stripe.type', $result );
-		$this->assertArrayNotHasKey( 'omnipay.type', $result );
+		$this->assertEquals( 6, count( $result ) );
+		$this->assertEquals( null, $result['address'] );
+		$this->assertEquals( null, $result['authorize'] );
+		$this->assertEquals( null, $result['createtoken'] );
+		$this->assertEquals( null, $result['testmode'] );
+		$this->assertEquals( null, $result['onsite'] );
+		$this->assertEquals( null, $result['type'] );
 	}
 
 
@@ -92,12 +93,6 @@ class StripeTest extends \PHPUnit\Framework\TestCase
 	{
 		$result = $this->access( 'getProvider' )->invokeArgs( $this->object, [] );
 		$this->assertInstanceOf( \Omnipay\Common\GatewayInterface::class, $result );
-	}
-
-
-	public function testGetValueTestmode()
-	{
-		$this->assertTrue( $this->access( 'getValue' )->invokeArgs( $this->object, ['testmode'] ) );
 	}
 
 

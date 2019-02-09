@@ -24,9 +24,9 @@ class AuthorizeDpmTest extends \PHPUnit\Framework\TestCase
 		$this->context = \TestHelper::getContext();
 
 		$conf = array(
-			'authorizenet.address' => '1',
-			'authorizenet.onsite' => '1',
-			'authorizenet.testmode' => true,
+			'address' => '1',
+			'onsite' => '1',
+			'testmode' => true,
 		);
 
 		$serviceManager = \Aimeos\MShop\Service\Manager\Factory::create( $this->context );
@@ -34,7 +34,7 @@ class AuthorizeDpmTest extends \PHPUnit\Framework\TestCase
 		$item->setCode( 'omnipaytest' );
 		$item->setConfig( $conf );
 
-		$this->object = $this->getMockBuilder( 'Aimeos\MShop\Service\Provider\Payment\AuthorizeDPMPublic' )
+		$this->object = $this->getMockBuilder( 'Aimeos\MShop\Service\Provider\Payment\AuthorizeDPM' )
 			->setMethods( array( 'getOrder', 'getOrderBase', 'saveOrder', 'saveOrderBase', 'getProvider' ) )
 			->setConstructorArgs( array( $this->context, $item ) )
 			->getMock();
@@ -49,19 +49,19 @@ class AuthorizeDpmTest extends \PHPUnit\Framework\TestCase
 
 	public function testGetValueType()
 	{
-		$this->assertEquals( 'AuthorizeNet_DPM', $this->object->getValuePublic( 'type' ) );
+		$this->assertEquals( 'AuthorizeNet_DPM', $this->access( 'getValue' )->invokeArgs( $this->object, ['type'] ) );
 	}
 
 
 	public function testGetValueOnsite()
 	{
-		$this->assertTrue( $this->object->getValuePublic( 'onsite' ) );
+		$this->assertTrue( $this->access( 'getValue' )->invokeArgs( $this->object, ['onsite'] ) );
 	}
 
 
 	public function testGetValueTestmode()
 	{
-		$this->assertTrue( $this->object->getValuePublic( 'testmode' ) );
+		$this->assertTrue( $this->access( 'getValue' )->invokeArgs( $this->object, ['testmode'] ) );
 	}
 
 
@@ -73,6 +73,16 @@ class AuthorizeDpmTest extends \PHPUnit\Framework\TestCase
 		$result = $this->object->process( $this->getOrder(), [] );
 
 		$this->assertInstanceOf( \Aimeos\MShop\Common\Helper\Form\Iface::class, $result );
+	}
+
+
+	protected function access( $name )
+	{
+		$class = new \ReflectionClass( \Aimeos\MShop\Service\Provider\Payment\AuthorizeDPM::class );
+		$method = $class->getMethod( $name );
+		$method->setAccessible( true );
+
+		return $method;
 	}
 
 
@@ -102,14 +112,5 @@ class AuthorizeDpmTest extends \PHPUnit\Framework\TestCase
 		$manager = \Aimeos\MShop\Order\Manager\Factory::create( $this->context )->getSubmanager( 'base' );
 
 		return $manager->load( $this->getOrder()->getBaseId(), $parts );
-	}
-}
-
-
-class AuthorizeDPMPublic extends \Aimeos\MShop\Service\Provider\Payment\AuthorizeDPM
-{
-	public function getValuePublic( $name, $default = null )
-	{
-		return $this->getValue( $name, $default );
 	}
 }

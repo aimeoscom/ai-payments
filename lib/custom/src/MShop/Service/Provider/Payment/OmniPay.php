@@ -241,17 +241,8 @@ class OmniPay
 	{
 		$list = [];
 
-		$prefix = $this->getConfigPrefix();
-		$config = $this->beConfig;
-
-		if( $prefix !== 'omnipay' ) {
-			unset( $config['type'], $config['onsite'] );
-		}
-
-		foreach( $config as $key => $config )
-		{
-			$config['code'] = $prefix . '.' . $config['code'];
-			$list[$prefix . '.' . $key] = new \Aimeos\MW\Criteria\Attribute\Standard( $config );
+		foreach( $this->beConfig as $key => $config ) {
+			$list[$key] = new \Aimeos\MW\Criteria\Attribute\Standard( $config );
 		}
 
 		return $list;
@@ -267,23 +258,7 @@ class OmniPay
 	 */
 	public function checkConfigBE( array $attributes )
 	{
-		$errors = parent::checkConfigBE( $attributes );
-
-		$prefix = $this->getConfigPrefix();
-		$config = $this->beConfig;
-		$list = [];
-
-		if( $prefix !== 'omnipay' ) {
-			unset( $config['type'], $config['onsite'] );
-		}
-
-		foreach( $config as $key => $cfg )
-		{
-			$cfg['code'] = $prefix . '.' . $cfg['code'];
-			$list[$prefix . '.' . $key] = $cfg;
-		}
-
-		return array_merge( $errors, $this->checkConfig( $list, $attributes ) );
+		return array_merge( parent::checkConfigBE( $attributes ), $this->checkConfig( $this->beConfig, $attributes ) );
 	}
 
 
@@ -513,10 +488,8 @@ class OmniPay
 				throw new \Aimeos\MShop\Service\Exception( 'No order ID available' );
 			}
 
-			if( !method_exists( $provider, 'supportsAcceptNotification' ) || !$provider->supportsAcceptNotification() )
-			{
-				// call updateOrderSync()
-				return;
+			if( !method_exists( $provider, 'supportsAcceptNotification' ) || !$provider->supportsAcceptNotification() ) {
+				return; // call updateOrderSync()
 			}
 
 			$order = $this->getOrder( $params['orderid'] );
@@ -689,17 +662,6 @@ class OmniPay
 
 
 	/**
-	 * Returns the prefix for the configuration definitions
-	 *
-	 * @return string Prefix without dot
-	 */
-	protected function getConfigPrefix()
-	{
-		return 'omnipay';
-	}
-
-
-	/**
 	 * Returns the data passed to the Omnipay library
 	 *
 	 * @param \Aimeos\MShop\Order\Item\Base\Iface $base Basket object
@@ -779,7 +741,7 @@ class OmniPay
 	 */
 	protected function getValue( $key, $default = null )
 	{
-		return $this->getConfigValue( array( $this->getConfigPrefix() . '.' . $key ), $default );
+		return $this->getConfigValue( $key, $default );
 	}
 
 

@@ -26,7 +26,7 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 
 		$serviceManager = \Aimeos\MShop\Service\Manager\Factory::create( $this->context );
 		$this->serviceItem = $serviceManager->createItem();
-		$this->serviceItem->setConfig( array( 'omnipay.type' => 'Dummy' ) );
+		$this->serviceItem->setConfig( array( 'type' => 'Dummy' ) );
 		$this->serviceItem->setCode( 'OGONE' );
 
 		$methods = [
@@ -56,12 +56,12 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 		$result = $object->getConfigBE();
 
 		$this->assertInternalType( 'array', $result );
-		$this->assertArrayHasKey( 'omnipay.type', $result );
-		$this->assertArrayHasKey( 'omnipay.address', $result );
-		$this->assertArrayHasKey( 'omnipay.authorize', $result );
-		$this->assertArrayHasKey( 'omnipay.onsite', $result );
-		$this->assertArrayHasKey( 'omnipay.createtoken', $result );
-		$this->assertArrayHasKey( 'omnipay.testmode', $result );
+		$this->assertArrayHasKey( 'type', $result );
+		$this->assertArrayHasKey( 'address', $result );
+		$this->assertArrayHasKey( 'authorize', $result );
+		$this->assertArrayHasKey( 'onsite', $result );
+		$this->assertArrayHasKey( 'createtoken', $result );
+		$this->assertArrayHasKey( 'testmode', $result );
 	}
 
 
@@ -70,23 +70,23 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 		$object = new \Aimeos\MShop\Service\Provider\Payment\OmniPay( $this->context, $this->serviceItem );
 
 		$attributes = array(
-			'omnipay.type' => 'manual',
-			'omnipay.address' => '0',
-			'omnipay.authorize' => '1',
-			'omnipay.onsite' => '0',
-			'omnipay.createtoken' => '1',
-			'omnipay.testmode' => '1',
+			'type' => 'manual',
+			'address' => '0',
+			'authorize' => '1',
+			'onsite' => '0',
+			'createtoken' => '1',
+			'testmode' => '1',
 		);
 
 		$result = $object->checkConfigBE( $attributes );
 
 		$this->assertEquals( 6, count( $result ) );
-		$this->assertEquals( null, $result['omnipay.type'] );
-		$this->assertEquals( null, $result['omnipay.address'] );
-		$this->assertEquals( null, $result['omnipay.authorize'] );
-		$this->assertEquals( null, $result['omnipay.onsite'] );
-		$this->assertEquals( null, $result['omnipay.createtoken'] );
-		$this->assertEquals( null, $result['omnipay.testmode'] );
+		$this->assertEquals( null, $result['type'] );
+		$this->assertEquals( null, $result['address'] );
+		$this->assertEquals( null, $result['authorize'] );
+		$this->assertEquals( null, $result['onsite'] );
+		$this->assertEquals( null, $result['createtoken'] );
+		$this->assertEquals( null, $result['testmode'] );
 	}
 
 
@@ -105,9 +105,9 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 	public function testProcessOnsiteAddress()
 	{
 		$conf = array(
-			'omnipay.type' => 'Dummy',
-			'omnipay.onsite' => '1',
-			'omnipay.address' => '1',
+			'type' => 'Dummy',
+			'onsite' => '1',
+			'address' => '1',
 		);
 		$this->serviceItem->setConfig( $conf );
 
@@ -128,8 +128,8 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 		$baseItem = $this->getOrderBase( \Aimeos\MShop\Order\Item\Base\Base::PARTS_NONE );
 
 		$conf = array(
-				'omnipay.type' => 'Dummy',
-				'omnipay.onsite' => '1',
+				'type' => 'Dummy',
+				'onsite' => '1',
 		);
 		$this->serviceItem->setConfig( $conf );
 
@@ -152,7 +152,7 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 		$parts = \Aimeos\MShop\Order\Item\Base\Base::PARTS_ADDRESS | \Aimeos\MShop\Order\Item\Base\Base::PARTS_SERVICE;
 		$baseItem = $this->getOrderBase( $parts );
 
-		$this->serviceItem->setConfig( array( 'omnipay.type' => 'Dummy', 'omnipay.address' => '1' ) );
+		$this->serviceItem->setConfig( array( 'type' => 'Dummy', 'address' => '1' ) );
 
 		$this->object->expects( $this->once() )->method( 'getOrderBase' )
 			->will( $this->returnValue( $baseItem ) );
@@ -178,7 +178,7 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 		$parts = \Aimeos\MShop\Order\Item\Base\Base::PARTS_ADDRESS | \Aimeos\MShop\Order\Item\Base\Base::PARTS_SERVICE;
 		$baseItem = $this->getOrderBase( $parts );
 
-		$this->serviceItem->setConfig( array( 'omnipay.type' => 'Dummy' ) );
+		$this->serviceItem->setConfig( array( 'type' => 'Dummy' ) );
 
 		$this->object->expects( $this->once() )->method( 'getOrderBase' )
 		->will( $this->returnValue( $baseItem ) );
@@ -204,7 +204,7 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 		$parts = \Aimeos\MShop\Order\Item\Base\Base::PARTS_ADDRESS | \Aimeos\MShop\Order\Item\Base\Base::PARTS_SERVICE;
 		$baseItem = $this->getOrderBase( $parts );
 
-		$this->serviceItem->setConfig( array( 'omnipay.type' => 'Dummy', 'omnipay.authorize' => '1', 'omnipay.onsite' => 1 ) );
+		$this->serviceItem->setConfig( array( 'type' => 'Dummy', 'authorize' => '1', 'onsite' => 1 ) );
 
 		$this->object->expects( $this->once() )->method( 'getOrderBase' )
 			->will( $this->returnValue( $baseItem ) );
@@ -238,7 +238,7 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 		$parts = \Aimeos\MShop\Order\Item\Base\Base::PARTS_ADDRESS | \Aimeos\MShop\Order\Item\Base\Base::PARTS_SERVICE;
 		$baseItem = $this->getOrderBase( $parts );
 
-		$this->serviceItem->setConfig( array( 'omnipay.type' => 'Dummy', 'omnipay.authorize' => '1' ) );
+		$this->serviceItem->setConfig( array( 'type' => 'Dummy', 'authorize' => '1' ) );
 
 		$this->object->expects( $this->once() )->method( 'getOrderBase' )
 			->will( $this->returnValue( $baseItem ) );
@@ -652,7 +652,7 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 	{
 		$order = $this->getOrder();
 		$baseItem = $this->getOrderBase( \Aimeos\MShop\Order\Item\Base\Base::PARTS_SERVICE );
-		$this->serviceItem->setConfig( array( 'omnipay.type' => 'Dummy', 'omnipay.authorize' => '1' ) );
+		$this->serviceItem->setConfig( array( 'type' => 'Dummy', 'authorize' => '1' ) );
 
 
 		$provider = $this->getMockBuilder( 'Omnipay\Dummy\Gateway' )

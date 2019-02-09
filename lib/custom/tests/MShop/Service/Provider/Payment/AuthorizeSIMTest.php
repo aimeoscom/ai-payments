@@ -29,7 +29,7 @@ class AuthorizeSimTest extends \PHPUnit\Framework\TestCase
 		$this->serviceItem->setConfig( array( 'authorizenet.testmode' => true ) );
 		$this->serviceItem->setCode( 'OGONE' );
 
-		$this->object = $this->getMockBuilder( 'Aimeos\MShop\Service\Provider\Payment\AuthorizeSIMPublic' )
+		$this->object = $this->getMockBuilder( 'Aimeos\MShop\Service\Provider\Payment\AuthorizeSIM' )
 			->setMethods( array( 'getOrder', 'getOrderBase', 'saveOrder', 'saveOrderBase', 'getProvider' ) )
 			->setConstructorArgs( array( $this->context, $this->serviceItem ) )
 			->getMock();
@@ -49,10 +49,12 @@ class AuthorizeSimTest extends \PHPUnit\Framework\TestCase
 		$result = $object->getConfigBE();
 
 		$this->assertInternalType( 'array', $result );
-		$this->assertArrayHasKey( 'authorizenet.address', $result );
-		$this->assertArrayHasKey( 'authorizenet.authorize', $result );
-		$this->assertArrayHasKey( 'authorizenet.testmode', $result );
-		$this->assertArrayHasKey( 'authorizenet.createtoken', $result );
+		$this->assertArrayHasKey( 'address', $result );
+		$this->assertArrayHasKey( 'authorize', $result );
+		$this->assertArrayHasKey( 'testmode', $result );
+		$this->assertArrayHasKey( 'createtoken', $result );
+		$this->assertArrayHasKey( 'onsite', $result );
+		$this->assertArrayHasKey( 'type', $result );
 		$this->assertArrayHasKey( 'payment.url-success', $result );
 	}
 
@@ -61,28 +63,24 @@ class AuthorizeSimTest extends \PHPUnit\Framework\TestCase
 	{
 		$object = new \Aimeos\MShop\Service\Provider\Payment\AuthorizeSIM( $this->context, $this->serviceItem );
 
-		$attributes = array( 'payment.url-success' => 'https://localhost' );
+		$attributes = array( 'payment.url-success' => 'https://localhost', 'type' => 'AuthorizeNet_SIM' );
 
 		$result = $object->checkConfigBE( $attributes );
 
-		$this->assertEquals( 5, count( $result ) );
-		$this->assertEquals( null, $result['authorizenet.address'] );
-		$this->assertEquals( null, $result['authorizenet.authorize'] );
-		$this->assertEquals( null, $result['authorizenet.testmode'] );
-		$this->assertEquals( null, $result['authorizenet.createtoken'] );
+		$this->assertEquals( 7, count( $result ) );
+		$this->assertEquals( null, $result['address'] );
+		$this->assertEquals( null, $result['authorize'] );
+		$this->assertEquals( null, $result['testmode'] );
+		$this->assertEquals( null, $result['createtoken'] );
+		$this->assertEquals( null, $result['onsite'] );
+		$this->assertEquals( null, $result['type'] );
 		$this->assertEquals( null, $result['payment.url-success'] );
 	}
 
 
 	public function testGetValueType()
 	{
-		$this->assertEquals( 'AuthorizeNet_SIM', $this->object->getValuePublic( 'type' ) );
-	}
-
-
-	public function testGetValueTestmode()
-	{
-		$this->assertTrue( $this->object->getValuePublic( 'testmode' ) );
+		$this->assertEquals( 'AuthorizeNet_SIM', $this->access( 'getValue' )->invokeArgs( $this->object, ['type'] ) );
 	}
 
 
@@ -108,13 +106,14 @@ class AuthorizeSimTest extends \PHPUnit\Framework\TestCase
 
 		$this->assertInstanceOf( \Psr\Http\Message\ResponseInterface::class, $result );
 	}
-}
 
 
-class AuthorizeSIMPublic extends \Aimeos\MShop\Service\Provider\Payment\AuthorizeSIM
-{
-	public function getValuePublic( $name, $default = null )
+	protected function access( $name )
 	{
-		return $this->getValue( $name, $default );
+		$class = new \ReflectionClass( \Aimeos\MShop\Service\Provider\Payment\AuthorizeSIM::class );
+		$method = $class->getMethod( $name );
+		$method->setAccessible( true );
+
+		return $method;
 	}
 }
