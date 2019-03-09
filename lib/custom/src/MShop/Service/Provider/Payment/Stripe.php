@@ -245,7 +245,7 @@ StripeProvider = {
 	stripe: "",
 	elements: "",
 	token_element: "",
-	token_selector: "input[name=paymenttoken]",
+	token_selector: "#process-paymenttoken",
 	errors_selector: "card-errors",
 	form_selector: ".checkout-standard form",
 	payment_button_id: "payment-button",
