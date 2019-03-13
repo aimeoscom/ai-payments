@@ -88,7 +88,7 @@ class Stripe
 			'code' => 'payment.cardno',
 			'internalcode'=> 'number',
 			'label'=> 'Credit card number',
-			'type'=> 'div',
+			'type'=> 'container',
 			'internaltype'=> 'integer',
 			'default'=> '',
 			'required'=> false
@@ -97,7 +97,7 @@ class Stripe
 			'code' => 'payment.expiry',
 			'internalcode'=> 'expiry',
 			'label'=> 'Expiry',
-			'type'=> 'div',
+			'type'=> 'container',
 			'internaltype'=> 'string',
 			'default'=> '',
 			'required'=> false
@@ -106,7 +106,7 @@ class Stripe
 			'code' => 'payment.cvv',
 			'internalcode'=> 'cvv',
 			'label'=> 'Verification number',
-			'type'=> 'div',
+			'type'=> 'container',
 			'internaltype'=> 'integer',
 			'default'=> '',
 			'required'=> false
