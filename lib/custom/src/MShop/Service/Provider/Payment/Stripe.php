@@ -83,33 +83,32 @@ class Stripe
 			'required' => true,
 			'public' => false,
 		),
-
-		'payment-cardno' => array(
+		'payment.cardno' => array(
 			'code' => 'payment.cardno',
-			'internalcode'=> 'number',
-			'label'=> 'Credit card number',
-			'type'=> 'number',
-			'internaltype'=> 'integer',
-			'default'=> '',
+			'internalcode' => 'number',
+			'label' => 'Credit card number',
+			'type' => 'container',
+			'internaltype' => 'integer',
+			'default' => '',
 			'required'=> false
 		),
-		'payment-expiry' => array(
+		'payment.expiry' => array(
 			'code' => 'payment.expiry',
-			'internalcode'=> 'expiry',
-			'label'=> 'Expiry',
-			'type'=> 'select',
-			'internaltype'=> 'integer',
-			'default'=> '',
-			'required'=> false
+			'internalcode' => 'expiry',
+			'label' => 'Expiry',
+			'type' => 'container',
+			'internaltype' => 'string',
+			'default' => '',
+			'required' => false
 		),
-		'payment-cvv' => array(
+		'payment.cvv' => array(
 			'code' => 'payment.cvv',
-			'internalcode'=> 'cvv',
-			'label'=> 'Verification number',
-			'type'=> 'number',
-			'internaltype'=> 'integer',
-			'default'=> '',
-			'required'=> false
+			'internalcode' => 'cvv',
+			'label' => 'Verification number',
+			'type' => 'container',
+			'internaltype' => 'integer',
+			'default' => '',
+			'required' => false
 		),
 	);
 
@@ -310,9 +309,9 @@ StripeProvider = {
 document.addEventListener("DOMContentLoaded", function() {
 	StripeProvider.init("' . $this->getConfigValue( 'stripe.publishableKey', '' ) . '",
 		[
-			{"element": "cardNumber", "selector": ".payment-cardno"},
-			{"element": "cardExpiry", "selector": ".payment-expiry"},
-			{"element": "cardCvc", "selector": ".payment-cvv"}
+			{"element": "cardNumber", "selector": "div[id=\"process-payment.cardno\"]"},
+			{"element": "cardExpiry", "selector": "div[id=\"process-payment.expiry\"]"},
+			{"element": "cardCvc", "selector": "div[id=\"process-payment.cvv\"]"}
 		]
 	);
 });
