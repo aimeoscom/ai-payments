@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ai-payments\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-09-27 08:31+0200\n"
+"POT-Creation-Date: 2019-03-13 10:02+0100\n"
 "PO-Revision-Date: 2015-07-20 09:55+0000\n"
 "Last-Translator: Aimeos <aimeos@aimeos.org>\n"
 "Language-Team: Norwegian (http://www.transifex.com/aimeos/ai-payments/language/no/)\n"
@@ -17,36 +17,36 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: src/MShop/Service/Provider/Payment/OmniPay.php:444
+#: src/MShop/Service/Provider/Payment/OmniPay.php:453
 #, php-format
 msgid "Method \"%1$s\" for provider not available"
 msgstr ""
 
-#: src/MShop/Service/Provider/Payment/OmniPay.php:455
+#: src/MShop/Service/Provider/Payment/OmniPay.php:464
 #: src/MShop/Service/Provider/Payment/Datatrans.php:46
 #, php-format
 msgid "No payment token available for customer ID \"%1$s\""
 msgstr ""
 
-#: src/MShop/Service/Provider/Payment/OmniPay.php:449
+#: src/MShop/Service/Provider/Payment/OmniPay.php:458
 #: src/MShop/Service/Provider/Payment/Datatrans.php:40
 #, php-format
 msgid "No reoccurring payment data available for customer ID \"%1$s\""
 msgstr ""
 
 #: src/MShop/Service/Provider/Payment/NovalnetSepa.php:154
-#: src/MShop/Service/Provider/Payment/OmniPay.php:707
+#: src/MShop/Service/Provider/Payment/OmniPay.php:716
 #, php-format
 msgid "Order %1$s"
 msgstr ""
 
-#: src/MShop/Service/Provider/Payment/OmniPay.php:486
+#: src/MShop/Service/Provider/Payment/OmniPay.php:495
 #: src/MShop/Service/Provider/Payment/Datatrans.php:79
 #, php-format
 msgid "Token based payment failed: %1$s"
 msgstr ""
 
-#: src/MShop/Service/Provider/Payment/OmniPay.php:607
+#: src/MShop/Service/Provider/Payment/OmniPay.php:616
 #, php-format
 msgid "Unexpected redirect: %1$s"
 msgstr ""

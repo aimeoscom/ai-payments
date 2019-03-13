@@ -6,11 +6,12 @@
 # Translators:
 # Miro Sertić <miro.sertic0606@gmail.com>, 2018
 # 
+#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: aimeos\n"
+"Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-09-27 08:31+0200\n"
+"POT-Creation-Date: 2019-03-13 10:02+0100\n"
 "PO-Revision-Date: 2017-09-14 09:25+0000\n"
 "Last-Translator: Miro Sertić <miro.sertic0606@gmail.com>, 2018\n"
 "Language-Team: Croatian (https://www.transifex.com/aimeos/teams/39015/hr/)\n"
@@ -20,18 +21,18 @@ msgstr ""
 "Language: hr\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
 
-#: src/MShop/Service/Provider/Payment/OmniPay.php:444
+#: src/MShop/Service/Provider/Payment/OmniPay.php:453
 #, php-format
 msgid "Method \"%1$s\" for provider not available"
 msgstr "Metoda \"%1$s\" za davatelja usluga nije dostupna"
 
-#: src/MShop/Service/Provider/Payment/OmniPay.php:455
+#: src/MShop/Service/Provider/Payment/OmniPay.php:464
 #: src/MShop/Service/Provider/Payment/Datatrans.php:46
 #, php-format
 msgid "No payment token available for customer ID \"%1$s\""
 msgstr "Nije dostupan token za plaćanje za korisnički ID \"%1$s\""
 
-#: src/MShop/Service/Provider/Payment/OmniPay.php:449
+#: src/MShop/Service/Provider/Payment/OmniPay.php:458
 #: src/MShop/Service/Provider/Payment/Datatrans.php:40
 #, php-format
 msgid "No reoccurring payment data available for customer ID \"%1$s\""
@@ -40,18 +41,18 @@ msgstr ""
 "\"%1$s\""
 
 #: src/MShop/Service/Provider/Payment/NovalnetSepa.php:154
-#: src/MShop/Service/Provider/Payment/OmniPay.php:707
+#: src/MShop/Service/Provider/Payment/OmniPay.php:716
 #, php-format
 msgid "Order %1$s"
 msgstr "Narudžba %1$s"
 
-#: src/MShop/Service/Provider/Payment/OmniPay.php:486
+#: src/MShop/Service/Provider/Payment/OmniPay.php:495
 #: src/MShop/Service/Provider/Payment/Datatrans.php:79
 #, php-format
 msgid "Token based payment failed: %1$s"
 msgstr "Plaćanje na temelju tokena nije uspjelo:%1$s"
 
-#: src/MShop/Service/Provider/Payment/OmniPay.php:607
+#: src/MShop/Service/Provider/Payment/OmniPay.php:616
 #, php-format
 msgid "Unexpected redirect: %1$s"
 msgstr "Neočekivano preusmjeravanje: %1$s"
