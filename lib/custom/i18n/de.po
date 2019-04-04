@@ -6,11 +6,12 @@
 # Translators:
 # Aimeos, 2018
 # 
+#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: aimeos\n"
+"Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-09-27 08:31+0200\n"
+"POT-Creation-Date: 2019-04-02 15:11+0200\n"
 "PO-Revision-Date: 2017-09-14 09:25+0000\n"
 "Last-Translator: Aimeos, 2018\n"
 "Language-Team: German (https://www.transifex.com/aimeos/teams/39015/de/)\n"
@@ -20,36 +21,36 @@ msgstr ""
 "Language: de\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: src/MShop/Service/Provider/Payment/OmniPay.php:444
+#: src/MShop/Service/Provider/Payment/OmniPay.php:426
 #, php-format
 msgid "Method \"%1$s\" for provider not available"
 msgstr "Methode \"%1$s\" ist nicht verfügbar"
 
-#: src/MShop/Service/Provider/Payment/OmniPay.php:455
+#: src/MShop/Service/Provider/Payment/OmniPay.php:437
 #: src/MShop/Service/Provider/Payment/Datatrans.php:46
 #, php-format
 msgid "No payment token available for customer ID \"%1$s\""
 msgstr "Kein Zahlungstoken für den Kunden mit der ID \"%1$s\" verfügbar"
 
-#: src/MShop/Service/Provider/Payment/OmniPay.php:449
+#: src/MShop/Service/Provider/Payment/OmniPay.php:431
 #: src/MShop/Service/Provider/Payment/Datatrans.php:40
 #, php-format
 msgid "No reoccurring payment data available for customer ID \"%1$s\""
 msgstr "Keine Zahlungsreferenz für den Kunden mit der ID \"%1$s\" verfügbar"
 
-#: src/MShop/Service/Provider/Payment/NovalnetSepa.php:154
-#: src/MShop/Service/Provider/Payment/OmniPay.php:707
+#: src/MShop/Service/Provider/Payment/NovalnetSepa.php:153
+#: src/MShop/Service/Provider/Payment/OmniPay.php:686
 #, php-format
 msgid "Order %1$s"
 msgstr "Bestellung %1$s"
 
-#: src/MShop/Service/Provider/Payment/OmniPay.php:486
-#: src/MShop/Service/Provider/Payment/Datatrans.php:79
+#: src/MShop/Service/Provider/Payment/OmniPay.php:468
+#: src/MShop/Service/Provider/Payment/Datatrans.php:77
 #, php-format
 msgid "Token based payment failed: %1$s"
 msgstr "Token-basierte Zahlung ist fehlgeschlagen: %1$s"
 
-#: src/MShop/Service/Provider/Payment/OmniPay.php:607
+#: src/MShop/Service/Provider/Payment/OmniPay.php:592
 #, php-format
 msgid "Unexpected redirect: %1$s"
 msgstr "Unerwartete Weiterleitung: %1$s"
