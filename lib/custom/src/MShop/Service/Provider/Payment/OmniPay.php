@@ -385,9 +385,9 @@ class OmniPay
 			return;
 		}
 
-		$code = $this->getServiceItem()->getCode();
 		$base = $this->getOrderBase( $order->getBaseId() );
-		$service = $base->getService( \Aimeos\MShop\Order\Item\Base\Service\Base::TYPE_PAYMENT, $code );
+		$type = \Aimeos\MShop\Order\Item\Base\Service\Base::TYPE_PAYMENT;
+		$service = $this->getBasketService( $base, $type, $this->getServiceItem()->getCode() );
 
 		$data = array(
 			'transactionReference' => $this->getTransactionReference( $base ),
@@ -947,8 +947,8 @@ class OmniPay
 	 */
 	protected function saveTransationRef( \Aimeos\MShop\Order\Item\Base\Iface $baseItem, $ref )
 	{
-		$code = $this->getServiceItem()->getCode();
-		$serviceItem = $baseItem->getService( \Aimeos\MShop\Order\Item\Base\Service\Base::TYPE_PAYMENT, $code );
+		$type = \Aimeos\MShop\Order\Item\Base\Service\Base::TYPE_PAYMENT;
+		$serviceItem = $this->getBasketService( $baseItem, $type, $this->getServiceItem()->getCode() );
 
 		$attr = array( 'TRANSACTIONID' => $ref );
 		$this->setAttributes( $serviceItem, $attr, 'payment/omnipay' );
