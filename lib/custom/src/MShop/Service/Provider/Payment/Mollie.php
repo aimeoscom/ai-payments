@@ -185,7 +185,6 @@ class Mollie
 	 */
 	protected function processOrder( \Aimeos\MShop\Order\Item\Iface $order, array $params = [] )
 	{
-		error_log('## AIPAY:MOLLIE customProcessOrder ##');
 		$parts = \Aimeos\MShop\Order\Item\Base\Base::PARTS_SERVICE
 			| \Aimeos\MShop\Order\Item\Base\Base::PARTS_PRODUCT
 			| \Aimeos\MShop\Order\Item\Base\Base::PARTS_ADDRESS;
