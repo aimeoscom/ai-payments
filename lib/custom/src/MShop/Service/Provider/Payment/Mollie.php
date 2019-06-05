@@ -57,9 +57,12 @@ class Mollie
 	 */
 	protected function getItems( \Aimeos\MShop\Order\Item\Base\Iface $base, array $params )
 	{
+		$i18n = $this->getContext()->getI18n();
 		$items = array();
+
 		foreach( $base->getProducts() as $product ) {
 			$price = $product->getPrice();
+			$unitTax = $price->getValue() - $price->getValue() / ( ( floatval( $price->getTaxRate() ) + 100 ) / 100 );
 			$items[] = array(
 				'sku' => $product->getProductCode(),
 				'name' => $product->getName(),
@@ -67,9 +70,54 @@ class Mollie
 				'vatRate' => $price->getTaxRate(),
 				'unitPrice' => round( $price->getValue(), 2),
 				'totalAmount' => round( $price->getValue() * $product->getQuantity(), 2),
-				'vatAmount' => round( $price->getTaxValue() * $product->getQuantity(), 2),
+				'vatAmount' => round( $unitTax, 2),
+			);
+
+			$itemShippingCosts = floatval( $price->getCosts() * $product->getQuantity() );
+			if( $itemShippingCosts != 0 ) {
+				$itemShippingCostsTax = ( $price->getTaxValue() * $product->getQuantity() ) - $unitTax;
+				$items[] = array(
+					'name' => $i18n->dt( 'mshop', 'Item shipping costs' ),
+					'type' => 'shipping_fee',
+					'quantity' => 1,
+					'vatRate' => round( ( $itemShippingCostsTax * 100 ) / ( $itemShippingCosts - $itemShippingCostsTax ) ),
+					'unitPrice' => round( $itemShippingCosts, 2),
+					'totalAmount' => round( $itemShippingCosts, 2),
+					'vatAmount' => round( $itemShippingCostsTax, 2)
+				);
+			}
+		}
+
+		foreach( $base->getService( 'delivery' ) as $service )
+		{
+			$deliveryPriceItem = $service->getPrice();
+
+			$items[] = array(
+				'name' => $i18n->dt( 'mshop', 'Shipping' ),
+				'type' => 'shipping_fee',
+				'quantity' => 1,
+				'vatRate' => $deliveryPriceItem->getTaxRate(),
+				'unitPrice' => round( $deliveryPriceItem->getCosts() + $deliveryPriceItem->getValue(), 2),
+				'totalAmount' => round( $deliveryPriceItem->getCosts() + $deliveryPriceItem->getValue(), 2),
+				'vatAmount' => round( $deliveryPriceItem->getTaxValue(), 2),
 			);
 		}
+
+		foreach( $base->getService( 'payment' ) as $service )
+		{
+			$paymentPriceItem = $service->getPrice();
+
+			$items[] = array(
+				'name' => $i18n->dt( 'mshop', 'Payment costs' ),
+				'type' => 'surcharge',
+				'quantity' => 1,
+				'vatRate' => $paymentPriceItem->getTaxRate(),
+				'unitPrice' => round( $paymentPriceItem->getCosts() + $paymentPriceItem->getValue(), 2),
+				'totalAmount' => round( $paymentPriceItem->getCosts() + $paymentPriceItem->getValue(), 2),
+				'vatAmount' => round( $paymentPriceItem->getTaxValue(), 2),
+			);
+		}
+
 		return $items;
 	}
 	
@@ -111,15 +159,15 @@ class Mollie
 			$params['currency'] = $base->getLocale()->getCurrencyId();
 			$params['createCard'] = true;
 
-			if( $this->getValue( 'authorize', false ) && $provider->supportsCompleteAuthorize() )
-			{
-				$response = $provider->completeAuthorize( $params )->send();
-				$status = \Aimeos\MShop\Order\Item\Base::PAY_AUTHORIZED;
-			}
-			elseif( $this->getValue('apiType', 'payment') == 'order' )
+			if( $this->getValue('apiType', '') === 'order' )
 			{
 				$response = $provider->completeOrder( $params )->send();
 				$status = \Aimeos\MShop\Order\Item\Base::PAY_RECEIVED;
+			}
+			elseif( $this->getValue( 'authorize', false ) && $provider->supportsCompleteAuthorize() )
+			{
+				$response = $provider->completeAuthorize( $params )->send();
+				$status = \Aimeos\MShop\Order\Item\Base::PAY_AUTHORIZED;
 			}
 			elseif( $provider->supportsCompletePurchase() )
 			{
@@ -197,14 +245,14 @@ class Mollie
 		{
 			$provider = $this->getProvider();
 
-			if( $this->getValue( 'authorize', false ) && $provider->supportsAuthorize() )
-			{
-				$response = $provider->authorize( $data )->send();
-				$status = \Aimeos\MShop\Order\Item\Base::PAY_AUTHORIZED;
-			}
-			elseif( $this->getValue( 'apiType', '' ) === 'order' )
+			if( $this->getValue( 'apiType', '' ) === 'order' )
 			{
 				$response = $provider->createOrder( $data )->setItems( $this->getItems( $base, $params ) )->send();
+				$status = \Aimeos\MShop\Order\Item\Base::PAY_AUTHORIZED;
+			}
+			elseif( $this->getValue( 'authorize', false ) && $provider->supportsAuthorize() )
+			{
+				$response = $provider->authorize( $data )->send();
 				$status = \Aimeos\MShop\Order\Item\Base::PAY_AUTHORIZED;
 			}
 			else
