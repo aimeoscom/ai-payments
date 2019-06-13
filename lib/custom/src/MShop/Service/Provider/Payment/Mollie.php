@@ -70,7 +70,7 @@ class Mollie
 				'vatRate' => $price->getTaxRate(),
 				'unitPrice' => round( $price->getValue(), 2),
 				'totalAmount' => round( $price->getValue() * $product->getQuantity(), 2),
-				'vatAmount' => round( $unitTax, 2),
+				'vatAmount' => round( $unitTax * $product->getQuantity(), 2),
 			);
 
 			$itemShippingCosts = floatval( $price->getCosts() * $product->getQuantity() );
