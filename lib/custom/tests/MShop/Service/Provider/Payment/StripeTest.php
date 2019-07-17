@@ -39,6 +39,8 @@ class StripeTest extends \PHPUnit\Framework\TestCase
 		$result = $this->object->getConfigBE();
 
 		$this->assertInternalType( 'array', $result );
+		$this->assertArrayHasKey( 'apiKey', $result );
+		$this->assertArrayHasKey( 'publishableKey', $result );
 		$this->assertArrayHasKey( 'address', $result );
 		$this->assertArrayHasKey( 'authorize', $result );
 		$this->assertArrayHasKey( 'testmode', $result );
@@ -51,21 +53,24 @@ class StripeTest extends \PHPUnit\Framework\TestCase
 	public function testCheckConfigBE()
 	{
 		$attributes = array(
+			'apiKey' => '123',
+			'publishableKey' => 'abc',
 			'address' => '0',
 			'authorize' => '1',
 			'testmode' => '1',
-			'type' => 'Stripe'
+			'type' => 'Stripe',
 		);
 
 		$result = $this->object->checkConfigBE( $attributes );
 
-		$this->assertEquals( 6, count( $result ) );
+		$this->assertEquals( 8, count( $result ) );
+		$this->assertEquals( null, $result['apiKey'] );
+		$this->assertEquals( null, $result['publishableKey'] );
 		$this->assertEquals( null, $result['address'] );
 		$this->assertEquals( null, $result['authorize'] );
 		$this->assertEquals( null, $result['createtoken'] );
 		$this->assertEquals( null, $result['testmode'] );
 		$this->assertEquals( null, $result['onsite'] );
-		$this->assertEquals( null, $result['type'] );
 	}
 
 
