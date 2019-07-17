@@ -838,8 +838,8 @@ class OmniPay
 	 */
 	protected function getTransactionReference( \Aimeos\MShop\Order\Item\Base\Iface $base )
 	{
-		$code = $this->getServiceItem()->getCode();
-		$service = $base->getService( \Aimeos\MShop\Order\Item\Base\Service\Base::TYPE_PAYMENT, $code );
+		$type = \Aimeos\MShop\Order\Item\Base\Service\Base::TYPE_PAYMENT;
+		$service = $this->getBasketService( $base, $type, $this->getServiceItem()->getCode() );
 
 		return $service->getAttribute( 'TRANSACTIONID', 'payment/omnipay' );
 	}
