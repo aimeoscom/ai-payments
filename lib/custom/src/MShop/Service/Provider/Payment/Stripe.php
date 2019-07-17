@@ -196,7 +196,7 @@ class Stripe
 	protected function getProvider()
 	{
 		$config = $this->getServiceItem()->getConfig();
-		$config['apiKey'] = $this->getServiceItem()->getConfigValue( 'stripe.apiKey' );
+		$config['apiKey'] = $this->getServiceItem()->getConfigValue( 'apiKey' );
 
 		if( !isset( $this->provider ) )
 		{
@@ -286,7 +286,7 @@ StripeProvider = {
 };
 
 document.addEventListener("DOMContentLoaded", function() {
-	StripeProvider.init("' . $this->getConfigValue( 'stripe.publishableKey', '' ) . '",
+	StripeProvider.init("' . $this->getConfigValue( 'publishableKey', '' ) . '",
 		[
 			{"element": "cardNumber", "selector": "div[id=\"process-payment.cardno\"]"},
 			{"element": "cardExpiry", "selector": "div[id=\"process-payment.expiry\"]"},
