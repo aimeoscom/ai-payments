@@ -24,32 +24,14 @@ class Stripe
 {
 
 	private $beConfig = array(
-		'address' => array(
-			'code' => 'address',
-			'internalcode'=> 'address',
-			'label'=> 'Send address to payment gateway too',
-			'type'=> 'boolean',
-			'internaltype'=> 'boolean',
-			'default'=> '0',
-			'required'=> false,
-		),
-		'authorize' => array(
-			'code' => 'authorize',
-			'internalcode'=> 'authorize',
-			'label'=> 'Authorize payments and capture later',
-			'type'=> 'boolean',
-			'internaltype'=> 'boolean',
-			'default'=> '0',
-			'required'=> false,
-		),
-		'testmode' => array(
-			'code' => 'testmode',
-			'internalcode'=> 'testmode',
-			'label'=> 'Test mode without payments',
-			'type'=> 'boolean',
-			'internaltype'=> 'boolean',
-			'default'=> '0',
-			'required'=> false,
+		'type' => array(
+			'code' => 'type',
+			'internalcode'=> 'type',
+			'label'=> 'Payment provider type',
+			'type'=> 'string',
+			'internaltype'=> 'string',
+			'default'=> 'Stripe',
+			'required'=> true,
 		),
 		'apiKey' => array(
 			'code' => 'apiKey',
@@ -117,28 +99,33 @@ class Stripe
 
 
 	/**
-	 * Checks the frontend configuration attributes for validity.
+	 * Checks the backend configuration attributes for validity.
 	 *
-	 * @param array $attributes Attributes entered by the customer during the checkout process
+	 * @param array $attributes Attributes added by the shop owner in the administraton interface
 	 * @return array An array with the attribute keys as key and an error message as values for all attributes that are
-	 *    known by the provider but aren't valid resp. null for attributes whose values are OK
+	 * 	known by the provider but aren't valid resp. null for attributes whose values are OK
 	 */
-	public function checkConfigFE( array $attributes )
+	public function checkConfigBE( array $attributes )
 	{
-		return [];
+		return array_merge( parent::checkConfigBE( $attributes ), $this->checkConfig( $this->beConfig, $attributes ) );
 	}
 
 
 	/**
 	 * Returns the configuration attribute definitions of the provider to generate a list of available fields and
-	 * rules for the value of each field in the frontend.
+	 * rules for the value of each field in the administration interface.
 	 *
-	 * @param \Aimeos\MShop\Order\Item\Base\Iface $basket Basket object
 	 * @return array List of attribute definitions implementing \Aimeos\MW\Common\Critera\Attribute\Iface
 	 */
-	public function getConfigFE( \Aimeos\MShop\Order\Item\Base\Iface $basket )
+	public function getConfigBE()
 	{
-		return [];
+		$list = parent::getConfigBE();
+
+		foreach( $this->beConfig as $key => $config ) {
+			$list[$key] = new \Aimeos\MW\Criteria\Attribute\Standard( $config );
+		}
+
+		return $list;
 	}
 
 
