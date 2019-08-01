@@ -593,7 +593,10 @@ class OmniPay
 			}
 			else
 			{
-				$this->saveOrder( $order->setPaymentStatus( \Aimeos\MShop\Order\Item\Base::PAY_REFUSED ) );
+				if( $order->getPaymentStatus() === \Aimeos\MShop\Order\Item\Base::PAY_UNFINISHED ) {
+					$this->saveOrder( $order->setPaymentStatus( \Aimeos\MShop\Order\Item\Base::PAY_REFUSED ) );
+				}
+
 				throw new \Aimeos\MShop\Service\Exception( $response->getMessage() );
 			}
 
