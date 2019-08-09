@@ -120,7 +120,7 @@ class Datatrans
 	 *
 	 * @param \Aimeos\MShop\Order\Item\Iface $order
 	 */
-	public function query(\Aimeos\MShop\Order\Item\Iface $order)
+	public function query( \Aimeos\MShop\Order\Item\Iface $order )
 	{
 		$base = $this->getOrderBase( $order->getBaseId() );
 		$data = array(
@@ -129,7 +129,7 @@ class Datatrans
 
 		$response = $this->getProvider()->getTransaction( $data )->send();
 
-		if ($response->isSuccessful()) {
+		if ( $response->isSuccessful() ) {
 			if ( in_array( $response->getResponseCode(), $this->datatransReceivedCode ) ) {
 				$order->setPaymentStatus( \Aimeos\MShop\Order\Item\Base::PAY_RECEIVED );
 			} elseif ( in_array( $response->getResponseCode(), $this->datatransAuthorizedCode ) ) {
