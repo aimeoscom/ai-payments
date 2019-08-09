@@ -133,7 +133,7 @@ class Datatrans
 			if ( in_array( $response->getResponseCode(), $this->datatransReceivedCode ) ) {
 				$order->setPaymentStatus( \Aimeos\MShop\Order\Item\Base::PAY_RECEIVED );
 			} elseif ( in_array( $response->getResponseCode(), $this->datatransAuthorizedCode ) ) {
-				$order->setPaymentStatus( \Aimeos\MShop\Order\Item\Base::PAY_RECEIVED );
+				$order->setPaymentStatus( \Aimeos\MShop\Order\Item\Base::PAY_AUTHORIZED );
 			}
 		} elseif ( method_exists($response, 'isPending') && $response->isPending() ) {
 			$order->setPaymentStatus( \Aimeos\MShop\Order\Item\Base::PAY_PENDING );
