@@ -26,9 +26,7 @@ class DatatransQueryTest extends \PHPUnit\Framework\TestCase
 		$this->serviceItem->setCode('OGONE');
 
 		$methods = [
-			'getCustomerData', 'getOrder', 'getOrderBase', 'getTransactionReference', 'isImplemented',
-			'saveOrder', 'saveOrderBase', 'getXmlProvider', 'saveTransationRef', 'setCustomerData',
-			'getProvider', 'getTransaction',
+			'getOrder', 'getOrderBase', 'saveTransationRef', 'saveOrder', 'getProvider', 'getTransaction'
 		];
 
 		$this->object = $this->getMockBuilder(\Aimeos\MShop\Service\Provider\Payment\Datatrans::class)
@@ -42,23 +40,6 @@ class DatatransQueryTest extends \PHPUnit\Framework\TestCase
 		unset($this->object, $this->serviceItem, $this->context);
 	}
 
-	public function testDatatransReceivedCode()
-	{
-		$this->assertEquals(self::getObjectAttribute($this->object, 'datatransReceivedCode'), [2, 3, 21]);
-	}
-	public function testDatatransAuthorizedCode()
-	{
-		$this->assertEquals(self::getObjectAttribute($this->object, 'datatransAuthorizedCode'), [1]);
-	}
-
-	public function testTransactionId()
-	{
-		$orderItem = $this->getOrder();
-		$data = [
-			'transactionId' => $orderItem->getId(),
-		];
-		$this->assertTrue(is_numeric($data['transactionId']));
-	}
 
 	public function testProvider()
 	{
@@ -66,10 +47,11 @@ class DatatransQueryTest extends \PHPUnit\Framework\TestCase
 		$this->assertInstanceOf(\Omnipay\Common\GatewayInterface::class, $result);
 	}
 
-	public function testQuery()
+	public function testQuerySuccess()
 	{
-		$orderItem = $this->getOrder();
-		$baseItem = $this->getOrderBase(\Aimeos\MShop\Order\Item\Base\Base::PARTS_SERVICE);
+		$manager = \Aimeos\MShop\Order\Manager\Factory::create( $this->context )->getSubmanager( 'base' );
+		$baseItem = $manager->load( $this->getOrder()->getBaseId(), \Aimeos\MShop\Order\Item\Base\Base::PARTS_NONE );
+
 
 		$provider = $this->getMockBuilder('Omnipay\Dummy\Gateway')
 						 ->setMethods([ 'getProvider', 'getTransaction' ])
@@ -102,7 +84,139 @@ class DatatransQueryTest extends \PHPUnit\Framework\TestCase
 
 		$this->object->expects($this->once())->method('saveTransationRef');
 
-		$this->object->expects($this->once())->method('saveOrder');
+		$cmpFcn = function( $subject ) {
+			return $subject->getPaymentStatus() === \Aimeos\MShop\Order\Item\Base::PAY_RECEIVED;
+		};
+
+		$this->object->expects( $this->once() )->method( 'saveOrder' )->with( $this->callback( $cmpFcn ) );
+
+		$this->object->query($this->getOrder());
+	}
+
+	public function testQueryAuthorizeFailure()
+	{
+		$manager = \Aimeos\MShop\Order\Manager\Factory::create( $this->context )->getSubmanager( 'base' );
+		$baseItem = $manager->load( $this->getOrder()->getBaseId(), \Aimeos\MShop\Order\Item\Base\Base::PARTS_NONE );
+
+		$this->serviceItem->setConfig( array( 'type' => 'Dummy', 'authorize' => '1' ) );
+
+		$provider = $this->getMockBuilder( \Omnipay\Dummy\Gateway::class )
+						 ->setMethods( array( 'supportsCompleteAuthorize', 'completeAuthorize','getTransaction' ) )
+						 ->disableOriginalConstructor()
+						 ->getMock();
+
+		$request = $this->getMockBuilder(\Omnipay\Dummy\Message\AuthorizeRequest::class)
+						->disableOriginalConstructor()
+						->setMethods([ 'send' ])
+						->getMock();
+
+		$response = $this->getMockBuilder('Omnipay\Dummy\Message\Response')
+						 ->disableOriginalConstructor()
+						 ->setMethods([ 'isSuccessful', 'getResponseCode' ])
+						 ->getMock();
+
+		$this->object->expects($this->once())->method('getOrderBase')
+					 ->will($this->returnValue($baseItem));
+
+		$this->object->expects($this->once())->method('getProvider')
+					 ->will($this->returnValue($provider));
+
+		$provider->expects($this->once())->method('getTransaction')
+				 ->will($this->returnValue($request));
+
+		$request->expects($this->once())->method('send')
+				->will($this->returnValue($response));
+
+		$response->expects($this->once())->method('isSuccessful')
+				 ->will($this->returnValue(false));
+
+		$this->object->query( $this->getOrder());
+	}
+
+	public function testQueryPending()
+	{
+		$manager = \Aimeos\MShop\Order\Manager\Factory::create( $this->context )->getSubmanager( 'base' );
+		$baseItem = $manager->load( $this->getOrder()->getBaseId(), \Aimeos\MShop\Order\Item\Base\Base::PARTS_NONE );
+
+
+		$provider = $this->getMockBuilder('Omnipay\Dummy\Gateway')
+						 ->setMethods([ 'getProvider', 'getTransaction' ])
+						 ->getMock();
+
+		$request = $this->getMockBuilder(\Omnipay\Dummy\Message\AuthorizeRequest::class)
+						->disableOriginalConstructor()
+						->setMethods([ 'send' ])
+						->getMock();
+
+		$response = $this->getMockBuilder('Omnipay\Dummy\Message\Response')
+						 ->disableOriginalConstructor()
+						 ->setMethods([ 'isPending' ])
+						 ->getMock();
+
+		$this->object->expects($this->once())->method('getOrderBase')
+					 ->will($this->returnValue($baseItem));
+
+		$this->object->expects($this->once())->method('getProvider')
+					 ->will($this->returnValue($provider));
+
+		$provider->expects($this->once())->method('getTransaction')
+				 ->will($this->returnValue($request));
+
+		$request->expects($this->once())->method('send')
+				->will($this->returnValue($response));
+
+		$response->expects($this->once())->method('isPending')
+				 ->will($this->returnValue(true));
+
+		$cmpFcn = function( $subject ) {
+			return $subject->getPaymentStatus() === \Aimeos\MShop\Order\Item\Base::PAY_PENDING;
+		};
+
+		$this->object->expects( $this->once() )->method( 'saveOrder' )->with( $this->callback( $cmpFcn ) );
+
+		$this->object->query($this->getOrder());
+	}
+
+	public function testQueryCancelled()
+	{
+		$manager = \Aimeos\MShop\Order\Manager\Factory::create( $this->context )->getSubmanager( 'base' );
+		$baseItem = $manager->load( $this->getOrder()->getBaseId(), \Aimeos\MShop\Order\Item\Base\Base::PARTS_NONE );
+
+
+		$provider = $this->getMockBuilder('Omnipay\Dummy\Gateway')
+						 ->setMethods([ 'getProvider', 'getTransaction' ])
+						 ->getMock();
+
+		$request = $this->getMockBuilder(\Omnipay\Dummy\Message\AuthorizeRequest::class)
+						->disableOriginalConstructor()
+						->setMethods([ 'send' ])
+						->getMock();
+
+		$response = $this->getMockBuilder('Omnipay\Dummy\Message\Response')
+						 ->disableOriginalConstructor()
+						 ->setMethods([ 'isCancelled' ])
+						 ->getMock();
+
+		$this->object->expects($this->once())->method('getOrderBase')
+					 ->will($this->returnValue($baseItem));
+
+		$this->object->expects($this->once())->method('getProvider')
+					 ->will($this->returnValue($provider));
+
+		$provider->expects($this->once())->method('getTransaction')
+				 ->will($this->returnValue($request));
+
+		$request->expects($this->once())->method('send')
+				->will($this->returnValue($response));
+
+		$response->expects($this->once())->method('isCancelled')
+				 ->will($this->returnValue(true));
+
+		$cmpFcn = function( $subject ) {
+			return $subject->getPaymentStatus() === \Aimeos\MShop\Order\Item\Base::PAY_CANCELED;
+		};
+
+		$this->object->expects( $this->once() )->method( 'saveOrder' )->with( $this->callback( $cmpFcn ) );
 
 		$this->object->query($this->getOrder());
 	}
@@ -121,17 +235,6 @@ class DatatransQueryTest extends \PHPUnit\Framework\TestCase
 		}
 
 		return $item;
-	}
-
-	protected function getOrderBase( $parts = null )
-	{
-		if ( $parts === null ) {
-			$parts = \Aimeos\MShop\Order\Item\Base\Base::PARTS_ADDRESS | \Aimeos\MShop\Order\Item\Base\Base::PARTS_SERVICE;
-		}
-
-		$manager = \Aimeos\MShop\Order\Manager\Factory::create($this->context)->getSubmanager('base');
-
-		return $manager->load($this->getOrder()->getBaseId(), $parts);
 	}
 
 	protected function access( $name )

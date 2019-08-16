@@ -24,11 +24,6 @@ class Datatrans
 	extends \Aimeos\MShop\Service\Provider\Payment\OmniPay
 	implements \Aimeos\MShop\Service\Provider\Payment\Iface
 {
-
-	private $datatransReceivedCode = [ 2, 3, 21 ];
-
-	private $datatransAuthorizedCode = [ 1 ];
-
 	/**
 	 * Executes the payment again for the given order if supported.
 	 * This requires support of the payment gateway and token based payment
@@ -114,7 +109,6 @@ class Datatrans
 		return $provider;
 	}
 
-
 	/**
 	 * Queries for status updates for the given order compare with the responseCode
 	 *
@@ -122,7 +116,7 @@ class Datatrans
 	 */
 	public function query( \Aimeos\MShop\Order\Item\Iface $order )
 	{
-		$base = $this->getOrderBase( $order->getBaseId() );
+		$base = $this->getOrderBase( $order->getBaseId(), \Aimeos\MShop\Order\Item\Base\Base::PARTS_NONE );
 		$data = array(
 			'transactionId' => $order->getId(),
 		);
@@ -130,9 +124,9 @@ class Datatrans
 		$response = $this->getProvider()->getTransaction( $data )->send();
 
 		if ( $response->isSuccessful() ) {
-			if ( in_array( $response->getResponseCode(), $this->datatransReceivedCode ) ) {
+			if ( in_array( $response->getResponseCode(), [ 2, 3, 21 ] ) ) {
 				$order->setPaymentStatus( \Aimeos\MShop\Order\Item\Base::PAY_RECEIVED );
-			} elseif ( in_array( $response->getResponseCode(), $this->datatransAuthorizedCode ) ) {
+			} elseif ( in_array( $response->getResponseCode(), [ 1 ] ) ) {
 				$order->setPaymentStatus( \Aimeos\MShop\Order\Item\Base::PAY_AUTHORIZED );
 			}
 		} elseif ( method_exists($response, 'isPending') && $response->isPending() ) {
@@ -140,7 +134,6 @@ class Datatrans
 		} elseif ( method_exists($response, 'isCancelled') && $response->isCancelled() ) {
 			$order->setPaymentStatus( \Aimeos\MShop\Order\Item\Base::PAY_CANCELED );
 		}
-
 		$this->saveTransationRef($base, $response->getTransactionReference());
 		$this->saveOrder($order);
 	}
