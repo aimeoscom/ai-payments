@@ -41,12 +41,6 @@ class DatatransQueryTest extends \PHPUnit\Framework\TestCase
 	}
 
 
-	public function testProvider()
-	{
-		$result = $this->access('getProvider')->invokeArgs($this->object, []);
-		$this->assertInstanceOf(\Omnipay\Common\GatewayInterface::class, $result);
-	}
-
 	public function testQuerySuccess()
 	{
 		$manager = \Aimeos\MShop\Order\Manager\Factory::createManager( $this->context )->getSubmanager( 'base' );
