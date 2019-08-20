@@ -30,9 +30,9 @@ class DatatransQueryTest extends \PHPUnit\Framework\TestCase
 		];
 
 		$this->object = $this->getMockBuilder(\Aimeos\MShop\Service\Provider\Payment\Datatrans::class)
-							 ->setConstructorArgs([ $this->context, $this->serviceItem ])
-							 ->setMethods($methods)
-							 ->getMock();
+			->setConstructorArgs([ $this->context, $this->serviceItem ])
+			->setMethods($methods)
+			->getMock();
 	}
 
 	protected function tearDown()
@@ -54,33 +54,33 @@ class DatatransQueryTest extends \PHPUnit\Framework\TestCase
 
 
 		$provider = $this->getMockBuilder('Omnipay\Dummy\Gateway')
-						 ->setMethods([ 'getProvider', 'getTransaction' ])
-						 ->getMock();
+			->setMethods([ 'getProvider', 'getTransaction' ])
+			->getMock();
 
 		$request = $this->getMockBuilder(\Omnipay\Dummy\Message\AuthorizeRequest::class)
-						->disableOriginalConstructor()
-						->setMethods([ 'send' ])
-						->getMock();
+			->disableOriginalConstructor()
+			->setMethods([ 'send' ])
+			->getMock();
 
 		$response = $this->getMockBuilder('Omnipay\Dummy\Message\Response')
-						 ->disableOriginalConstructor()
-						 ->setMethods([ 'isSuccessful', 'getResponseCode' ])
-						 ->getMock();
+			->disableOriginalConstructor()
+			->setMethods([ 'isSuccessful', 'getResponseCode' ])
+			->getMock();
 
 		$this->object->expects($this->once())->method('getOrderBase')
-					 ->will($this->returnValue($baseItem));
+			->will($this->returnValue($baseItem));
 
 		$this->object->expects($this->once())->method('getProvider')
-					 ->will($this->returnValue($provider));
+			->will($this->returnValue($provider));
 
 		$provider->expects($this->once())->method('getTransaction')
-				 ->will($this->returnValue($request));
+			->will($this->returnValue($request));
 
 		$request->expects($this->once())->method('send')
-				->will($this->returnValue($response));
+			->will($this->returnValue($response));
 
 		$response->expects($this->once())->method('isSuccessful')
-				 ->will($this->returnValue(true));
+			->will($this->returnValue(true));
 
 		$this->object->expects($this->once())->method('saveTransationRef');
 
@@ -101,34 +101,34 @@ class DatatransQueryTest extends \PHPUnit\Framework\TestCase
 		$this->serviceItem->setConfig( array( 'type' => 'Dummy', 'authorize' => '1' ) );
 
 		$provider = $this->getMockBuilder( \Omnipay\Dummy\Gateway::class )
-						 ->setMethods( array( 'supportsCompleteAuthorize', 'completeAuthorize','getTransaction' ) )
-						 ->disableOriginalConstructor()
-						 ->getMock();
+			->setMethods( array( 'supportsCompleteAuthorize', 'completeAuthorize','getTransaction' ) )
+			->disableOriginalConstructor()
+			->getMock();
 
 		$request = $this->getMockBuilder(\Omnipay\Dummy\Message\AuthorizeRequest::class)
-						->disableOriginalConstructor()
-						->setMethods([ 'send' ])
-						->getMock();
+			->disableOriginalConstructor()
+			->setMethods([ 'send' ])
+			->getMock();
 
 		$response = $this->getMockBuilder('Omnipay\Dummy\Message\Response')
-						 ->disableOriginalConstructor()
-						 ->setMethods([ 'isSuccessful', 'getResponseCode' ])
-						 ->getMock();
+			->disableOriginalConstructor()
+			->setMethods([ 'isSuccessful', 'getResponseCode' ])
+			->getMock();
 
 		$this->object->expects($this->once())->method('getOrderBase')
-					 ->will($this->returnValue($baseItem));
+			->will($this->returnValue($baseItem));
 
 		$this->object->expects($this->once())->method('getProvider')
-					 ->will($this->returnValue($provider));
+			->will($this->returnValue($provider));
 
 		$provider->expects($this->once())->method('getTransaction')
-				 ->will($this->returnValue($request));
+			->will($this->returnValue($request));
 
 		$request->expects($this->once())->method('send')
-				->will($this->returnValue($response));
+			->will($this->returnValue($response));
 
 		$response->expects($this->once())->method('isSuccessful')
-				 ->will($this->returnValue(false));
+			->will($this->returnValue(false));
 
 		$this->object->query( $this->getOrder());
 	}
@@ -140,33 +140,33 @@ class DatatransQueryTest extends \PHPUnit\Framework\TestCase
 
 
 		$provider = $this->getMockBuilder('Omnipay\Dummy\Gateway')
-						 ->setMethods([ 'getProvider', 'getTransaction' ])
-						 ->getMock();
+			->setMethods([ 'getProvider', 'getTransaction' ])
+			->getMock();
 
 		$request = $this->getMockBuilder(\Omnipay\Dummy\Message\AuthorizeRequest::class)
-						->disableOriginalConstructor()
-						->setMethods([ 'send' ])
-						->getMock();
+			->disableOriginalConstructor()
+			->setMethods([ 'send' ])
+			->getMock();
 
 		$response = $this->getMockBuilder('Omnipay\Dummy\Message\Response')
-						 ->disableOriginalConstructor()
-						 ->setMethods([ 'isPending' ])
-						 ->getMock();
+			->disableOriginalConstructor()
+			->setMethods([ 'isPending' ])
+			->getMock();
 
 		$this->object->expects($this->once())->method('getOrderBase')
-					 ->will($this->returnValue($baseItem));
+			->will($this->returnValue($baseItem));
 
 		$this->object->expects($this->once())->method('getProvider')
-					 ->will($this->returnValue($provider));
+			->will($this->returnValue($provider));
 
 		$provider->expects($this->once())->method('getTransaction')
-				 ->will($this->returnValue($request));
+			->will($this->returnValue($request));
 
 		$request->expects($this->once())->method('send')
-				->will($this->returnValue($response));
+			->will($this->returnValue($response));
 
 		$response->expects($this->once())->method('isPending')
-				 ->will($this->returnValue(true));
+			->will($this->returnValue(true));
 
 		$cmpFcn = function( $subject ) {
 			return $subject->getPaymentStatus() === \Aimeos\MShop\Order\Item\Base::PAY_PENDING;
@@ -184,33 +184,33 @@ class DatatransQueryTest extends \PHPUnit\Framework\TestCase
 
 
 		$provider = $this->getMockBuilder('Omnipay\Dummy\Gateway')
-						 ->setMethods([ 'getProvider', 'getTransaction' ])
-						 ->getMock();
+			->setMethods([ 'getProvider', 'getTransaction' ])
+			->getMock();
 
 		$request = $this->getMockBuilder(\Omnipay\Dummy\Message\AuthorizeRequest::class)
-						->disableOriginalConstructor()
-						->setMethods([ 'send' ])
-						->getMock();
+			->disableOriginalConstructor()
+			->setMethods([ 'send' ])
+			->getMock();
 
 		$response = $this->getMockBuilder('Omnipay\Dummy\Message\Response')
-						 ->disableOriginalConstructor()
-						 ->setMethods([ 'isCancelled' ])
-						 ->getMock();
+			->disableOriginalConstructor()
+			->setMethods([ 'isCancelled' ])
+			->getMock();
 
 		$this->object->expects($this->once())->method('getOrderBase')
-					 ->will($this->returnValue($baseItem));
+			->will($this->returnValue($baseItem));
 
 		$this->object->expects($this->once())->method('getProvider')
-					 ->will($this->returnValue($provider));
+			->will($this->returnValue($provider));
 
 		$provider->expects($this->once())->method('getTransaction')
-				 ->will($this->returnValue($request));
+			->will($this->returnValue($request));
 
 		$request->expects($this->once())->method('send')
-				->will($this->returnValue($response));
+			->will($this->returnValue($response));
 
 		$response->expects($this->once())->method('isCancelled')
-				 ->will($this->returnValue(true));
+			->will($this->returnValue(true));
 
 		$cmpFcn = function( $subject ) {
 			return $subject->getPaymentStatus() === \Aimeos\MShop\Order\Item\Base::PAY_CANCELED;
