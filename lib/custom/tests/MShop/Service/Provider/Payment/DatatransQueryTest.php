@@ -20,7 +20,7 @@ class DatatransQueryTest extends \PHPUnit\Framework\TestCase
 
 		$this->context = \TestHelper::getContext();
 
-		$serviceManager = \Aimeos\MShop\Service\Manager\Factory::create($this->context);
+		$serviceManager = \Aimeos\MShop\Service\Manager\Factory::createManager($this->context);
 		$this->serviceItem = $serviceManager->createItem();
 		$this->serviceItem->setConfig([ 'type' => 'Dummy' ]);
 		$this->serviceItem->setCode('OGONE');
@@ -49,7 +49,7 @@ class DatatransQueryTest extends \PHPUnit\Framework\TestCase
 
 	public function testQuerySuccess()
 	{
-		$manager = \Aimeos\MShop\Order\Manager\Factory::create( $this->context )->getSubmanager( 'base' );
+		$manager = \Aimeos\MShop\Order\Manager\Factory::createManager( $this->context )->getSubmanager( 'base' );
 		$baseItem = $manager->load( $this->getOrder()->getBaseId(), \Aimeos\MShop\Order\Item\Base\Base::PARTS_NONE );
 
 
@@ -95,7 +95,7 @@ class DatatransQueryTest extends \PHPUnit\Framework\TestCase
 
 	public function testQueryAuthorizeFailure()
 	{
-		$manager = \Aimeos\MShop\Order\Manager\Factory::create( $this->context )->getSubmanager( 'base' );
+		$manager = \Aimeos\MShop\Order\Manager\Factory::createManager( $this->context )->getSubmanager( 'base' );
 		$baseItem = $manager->load( $this->getOrder()->getBaseId(), \Aimeos\MShop\Order\Item\Base\Base::PARTS_NONE );
 
 		$this->serviceItem->setConfig( array( 'type' => 'Dummy', 'authorize' => '1' ) );
@@ -135,7 +135,7 @@ class DatatransQueryTest extends \PHPUnit\Framework\TestCase
 
 	public function testQueryPending()
 	{
-		$manager = \Aimeos\MShop\Order\Manager\Factory::create( $this->context )->getSubmanager( 'base' );
+		$manager = \Aimeos\MShop\Order\Manager\Factory::createManager( $this->context )->getSubmanager( 'base' );
 		$baseItem = $manager->load( $this->getOrder()->getBaseId(), \Aimeos\MShop\Order\Item\Base\Base::PARTS_NONE );
 
 
@@ -179,7 +179,7 @@ class DatatransQueryTest extends \PHPUnit\Framework\TestCase
 
 	public function testQueryCancelled()
 	{
-		$manager = \Aimeos\MShop\Order\Manager\Factory::create( $this->context )->getSubmanager( 'base' );
+		$manager = \Aimeos\MShop\Order\Manager\Factory::createManager( $this->context )->getSubmanager( 'base' );
 		$baseItem = $manager->load( $this->getOrder()->getBaseId(), \Aimeos\MShop\Order\Item\Base\Base::PARTS_NONE );
 
 
@@ -223,7 +223,7 @@ class DatatransQueryTest extends \PHPUnit\Framework\TestCase
 
 	protected function getOrder()
 	{
-		$manager = \Aimeos\MShop\Order\Manager\Factory::create($this->context);
+		$manager = \Aimeos\MShop\Order\Manager\Factory::createManager($this->context);
 
 		$search = $manager->createSearch();
 		$search->setConditions($search->compare('==', 'order.datepayment', '2008-02-15 12:34:56'));
