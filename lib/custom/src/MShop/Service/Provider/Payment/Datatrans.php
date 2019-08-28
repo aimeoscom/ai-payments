@@ -31,7 +31,7 @@ class Datatrans
 	 */
 	public function query( \Aimeos\MShop\Order\Item\Iface $order )
 	{
-		$base = $this->getOrderBase( $order->getBaseId(), \Aimeos\MShop\Order\Item\Base\Base::PARTS_NONE );
+		$base = $this->getOrderBase( $order->getBaseId(), \Aimeos\MShop\Order\Item\Base\Base::PARTS_SERVICE );
 		$data = ['transactionId' => $order->getId()];
 
 		$response = $this->getProvider()->getTransaction( $data )->send();
