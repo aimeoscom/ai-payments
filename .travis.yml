@@ -9,17 +9,12 @@ php:
   - 7.3
   - 7.2
   - 7.1
-  - 7.0
-  - 5.6
 env:
   - OMNIPAY_VERSION=~2.0
   - OMNIPAY_VERSION=~3.0
 
 matrix:
   fast_finish: true
-  exclude:
-    - php: 5.5
-      env: "OMNIPAY_VERSION=~3.0"
 
 before_script:
   - git clone --depth=50 --branch=master git://github.com/aimeos/aimeos-core.git ../aimeos-core
