@@ -75,12 +75,12 @@ class Mollie
 
 			$itemShippingCosts = floatval( $price->getCosts() * $product->getQuantity() );
 			if( $itemShippingCosts != 0 ) {
-				$itemShippingCostsTax = ( $price->getTaxValue() * $product->getQuantity() ) - $unitTax;
+				$itemShippingCostsTax = $itemShippingCosts - $itemShippingCosts / ( ( floatval( $price->getTaxRate() ) + 100 ) / 100 );
 				$items[] = array(
 					'name' => $i18n->dt( 'mshop', 'Item shipping costs' ),
 					'type' => 'shipping_fee',
 					'quantity' => 1,
-					'vatRate' => round( ( $itemShippingCostsTax * 100 ) / ( $itemShippingCosts - $itemShippingCostsTax ) ),
+					'vatRate' => $price->getTaxRate(),
 					'unitPrice' => round( $itemShippingCosts, 2),
 					'totalAmount' => round( $itemShippingCosts, 2),
 					'vatAmount' => round( $itemShippingCostsTax, 2)
@@ -92,30 +92,34 @@ class Mollie
 		{
 			$deliveryPriceItem = $service->getPrice();
 
-			$items[] = array(
-				'name' => $i18n->dt( 'mshop', 'Shipping' ),
-				'type' => 'shipping_fee',
-				'quantity' => 1,
-				'vatRate' => $deliveryPriceItem->getTaxRate(),
-				'unitPrice' => round( $deliveryPriceItem->getCosts() + $deliveryPriceItem->getValue(), 2),
-				'totalAmount' => round( $deliveryPriceItem->getCosts() + $deliveryPriceItem->getValue(), 2),
-				'vatAmount' => round( $deliveryPriceItem->getTaxValue(), 2),
-			);
+			if( $deliveryPriceItem && $deliveryPriceItem->getCosts() + $deliveryPriceItem->getValue() > 0 ) {
+				$items[] = array(
+					'name' => $i18n->dt( 'mshop', 'Shipping' ),
+					'type' => 'shipping_fee',
+					'quantity' => 1,
+					'vatRate' => $deliveryPriceItem->getTaxRate(),
+					'unitPrice' => round( $deliveryPriceItem->getCosts() + $deliveryPriceItem->getValue(), 2),
+					'totalAmount' => round( $deliveryPriceItem->getCosts() + $deliveryPriceItem->getValue(), 2),
+					'vatAmount' => round( $deliveryPriceItem->getTaxValue(), 2),
+				);
+			}
 		}
 
 		foreach( $base->getService( 'payment' ) as $service )
 		{
 			$paymentPriceItem = $service->getPrice();
 
-			$items[] = array(
-				'name' => $i18n->dt( 'mshop', 'Payment costs' ),
-				'type' => 'surcharge',
-				'quantity' => 1,
-				'vatRate' => $paymentPriceItem->getTaxRate(),
-				'unitPrice' => round( $paymentPriceItem->getCosts() + $paymentPriceItem->getValue(), 2),
-				'totalAmount' => round( $paymentPriceItem->getCosts() + $paymentPriceItem->getValue(), 2),
-				'vatAmount' => round( $paymentPriceItem->getTaxValue(), 2),
-			);
+			if( $paymentPriceItem && $paymentPriceItem->getCosts() + $paymentPriceItem->getValue() > 0 ) {
+				$items[] = array(
+					'name' => $i18n->dt( 'mshop', 'Payment costs' ),
+					'type' => 'surcharge',
+					'quantity' => 1,
+					'vatRate' => $paymentPriceItem->getTaxRate(),
+					'unitPrice' => round( $paymentPriceItem->getCosts() + $paymentPriceItem->getValue(), 2),
+					'totalAmount' => round( $paymentPriceItem->getCosts() + $paymentPriceItem->getValue(), 2),
+					'vatAmount' => round( $paymentPriceItem->getTaxValue(), 2),
+				);
+			}
 		}
 
 		return $items;
