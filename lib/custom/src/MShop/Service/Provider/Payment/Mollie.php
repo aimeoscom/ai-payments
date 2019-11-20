@@ -350,7 +350,14 @@ class Mollie
 		}
 		catch( \Exception $e )
 		{
-			throw new \Aimeos\MShop\Service\Exception( $e->getMessage() );
+			$message = $e->getMessage();
+			$this->getContext()->getLogger()->log( $message, \Aimeos\MW\Logger\Base::WARN, 'payment' );
+
+			if( ( $data = json_decode( $message, true ) ) !== null ) {
+				$message = $this->getContext()->getI18n()->dt( 'mshop', $data['detail'] );
+			}
+
+			throw new \Aimeos\MShop\Service\Exception( $message );
 		}
 
 		return new \Aimeos\MShop\Common\Item\Helper\Form\Standard( $urls['returnUrl'], 'POST', [] );
