@@ -21,6 +21,58 @@ class Mollie
 	extends \Aimeos\MShop\Service\Provider\Payment\OmniPay
 	implements \Aimeos\MShop\Service\Provider\Payment\Iface
 {
+	private $beConfig = array(
+		'mollie.locale' => array(
+			'code' => 'mollie.locale',
+			'internalcode'=> 'mollie.locale',
+			'label'=> 'Locale for orders API (e.g. en_US)',
+			'type'=> 'string',
+			'internaltype'=> 'string',
+			'default'=> '',
+			'required'=> false,
+		),
+		'mollie.paymentmethod' => array(
+			'code' => 'mollie.paymentmethod',
+			'internalcode'=> 'mollie.paymentmethod',
+			'label'=> 'Preselect Mollie payment method (e.g. creditcard)',
+			'type'=> 'string',
+			'internaltype'=> 'string',
+			'default'=> '',
+			'required'=> false,
+		),
+	);
+
+	/**
+	 * Returns the configuration attribute definitions of the provider to generate a list of available fields and
+	 * rules for the value of each field in the administration interface.
+	 *
+	 * @return array List of attribute definitions implementing \Aimeos\MW\Common\Critera\Attribute\Iface
+	 */
+	public function getConfigBE()
+	{
+		$list = parent::getConfigBE();
+
+		foreach( $this->beConfig as $key => $config )
+		{
+			$config['code'] = $config['code'];
+			$list[$key] = new \Aimeos\MW\Criteria\Attribute\Standard( $config );
+		}
+
+		return $list;
+	}
+
+	/**
+	 * Checks the backend configuration attributes for validity.
+	 *
+	 * @param array $attributes Attributes added by the shop owner in the administraton interface
+	 * @return array An array with the attribute keys as key and an error message as values for all attributes that are
+	 * 	known by the provider but aren't valid
+	 */
+	public function checkConfigBE( array $attributes )
+	{
+		return array_merge( parent::checkConfigBE( $attributes ), $this->checkConfig( $this->beConfig, $attributes ) );
+	}
+
 	/**
 	 * Returns the prefix for the configuration definitions
 	 *
@@ -137,6 +189,14 @@ class Mollie
 		$data = array(
 			'orderNumber' => $orderid
 		);
+
+		if( $locale = $this->getValue('locale') ) {
+			$data['locale'] = $locale;
+		}
+
+		if( $method = $this->getValue('paymentmethod') ) {
+			$data['paymentMethod'] = $method;
+		}
 
 		return $data + parent::getData( $base, $orderid, $params );
 	}
