@@ -64,7 +64,7 @@ class DatatransTest extends \PHPUnit\Framework\TestCase
 
 		$response = $this->getMockBuilder( 'Omnipay\Dummy\Message\Response' )
 			->disableOriginalConstructor()
-			->setMethods( ['isSuccessful', 'getResponseCode'] )
+			->setMethods( ['isSuccessful', 'getResponseCode', 'getTransactionReference'] )
 			->getMock();
 
 		$this->object->expects( $this->once() )->method( 'getOrderBase' )
@@ -81,6 +81,9 @@ class DatatransTest extends \PHPUnit\Framework\TestCase
 
 		$response->expects( $this->once() )->method( 'isSuccessful' )
 			->will($this->returnValue(true));
+
+		$response->expects( $this->once() )->method( 'getTransactionReference' )
+			->will($this->returnValue(''));
 
 		$this->object->expects( $this->once() )->method( 'saveTransationRef' );
 
@@ -113,7 +116,7 @@ class DatatransTest extends \PHPUnit\Framework\TestCase
 
 		$response = $this->getMockBuilder( 'Omnipay\Dummy\Message\Response' )
 			->disableOriginalConstructor()
-			->setMethods( ['isSuccessful', 'getResponseCode'] )
+			->setMethods( ['isSuccessful', 'getResponseCode', 'getTransactionReference'] )
 			->getMock();
 
 		$this->object->expects( $this->once() )->method( 'getOrderBase' )
@@ -130,6 +133,9 @@ class DatatransTest extends \PHPUnit\Framework\TestCase
 
 		$response->expects( $this->once() )->method( 'isSuccessful' )
 			->will( $this->returnValue( false ) );
+
+		$response->expects( $this->once() )->method( 'getTransactionReference' )
+			->will($this->returnValue(''));
 
 		$this->object->query( $this->getOrder());
 	}
@@ -152,7 +158,7 @@ class DatatransTest extends \PHPUnit\Framework\TestCase
 
 		$response = $this->getMockBuilder( 'Omnipay\Dummy\Message\Response' )
 			->disableOriginalConstructor()
-			->setMethods( ['isPending'] )
+			->setMethods( ['isPending', 'getTransactionReference'] )
 			->getMock();
 
 		$this->object->expects( $this->once() )->method( 'getOrderBase' )
@@ -169,6 +175,9 @@ class DatatransTest extends \PHPUnit\Framework\TestCase
 
 		$response->expects( $this->once() )->method( 'isPending' )
 			->will( $this->returnValue( true ) );
+
+		$response->expects( $this->once() )->method( 'getTransactionReference' )
+			->will($this->returnValue(''));
 
 		$cmpFcn = function( $subject ) {
 			return $subject->getPaymentStatus() === \Aimeos\MShop\Order\Item\Base::PAY_PENDING;
@@ -197,7 +206,7 @@ class DatatransTest extends \PHPUnit\Framework\TestCase
 
 		$response = $this->getMockBuilder( 'Omnipay\Dummy\Message\Response' )
 			->disableOriginalConstructor()
-			->setMethods( ['isCancelled'] )
+			->setMethods( ['isCancelled', 'getTransactionReference'] )
 			->getMock();
 
 		$this->object->expects( $this->once() )->method( 'getOrderBase' )
@@ -214,6 +223,9 @@ class DatatransTest extends \PHPUnit\Framework\TestCase
 
 		$response->expects( $this->once() )->method( 'isCancelled' )
 			->will( $this->returnValue( true ) );
+
+		$response->expects( $this->once() )->method( 'getTransactionReference' )
+			->will($this->returnValue(''));
 
 		$cmpFcn = function( $subject ) {
 			return $subject->getPaymentStatus() === \Aimeos\MShop\Order\Item\Base::PAY_CANCELED;
@@ -242,7 +254,7 @@ class DatatransTest extends \PHPUnit\Framework\TestCase
 
 		$response = $this->getMockBuilder( 'Omnipay\Dummy\Message\Response' )
 			->disableOriginalConstructor()
-			->setMethods( array( 'isSuccessful' ) )
+			->setMethods( array( 'isSuccessful', 'getTransactionReference' ) )
 			->getMock();
 
 
@@ -263,6 +275,9 @@ class DatatransTest extends \PHPUnit\Framework\TestCase
 
 		$response->expects( $this->once() )->method( 'isSuccessful' )
 			->will( $this->returnValue( true ) );
+
+		$response->expects( $this->once() )->method( 'getTransactionReference' )
+			->will($this->returnValue(''));
 
 		$this->object->expects( $this->once() )->method( 'saveTransationRef' );
 

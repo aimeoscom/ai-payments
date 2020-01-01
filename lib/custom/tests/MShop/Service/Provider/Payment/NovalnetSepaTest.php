@@ -144,6 +144,9 @@ class NovalnetSepaTest extends \PHPUnit\Framework\TestCase
 		$response->expects( $this->once() )->method( 'isSuccessful' )
 			->will( $this->returnValue( true ) );
 
+		$response->expects( $this->once() )->method( 'getTransactionReference' )
+			->will($this->returnValue(''));
+
 
 		$result = $this->object->process( $this->getOrder() );
 

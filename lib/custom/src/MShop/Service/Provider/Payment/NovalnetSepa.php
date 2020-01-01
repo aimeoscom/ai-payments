@@ -59,15 +59,14 @@ class NovalnetSepa
 	 * @param \Aimeos\MShop\Order\Item\Base\Iface $basket Basket object
 	 * @return array List of attribute definitions implementing \Aimeos\MW\Common\Critera\Attribute\Iface
 	 */
-	public function getConfigFE( \Aimeos\MShop\Order\Item\Base\Iface $basket )
+	public function getConfigFE( \Aimeos\MShop\Order\Item\Base\Iface $basket ) : array
 	{
 		$list = [];
 		$feconfig = $this->feConfig;
 
 		try
 		{
-			$code = $this->getServiceItem()->getCode();
-			$service = $basket->getService( \Aimeos\MShop\Order\Item\Base\Service\Base::TYPE_PAYMENT, $code );
+			$service = $basket->getService( \Aimeos\MShop\Order\Item\Base\Service\Base::TYPE_PAYMENT, 0 );
 
 			foreach( $service->getAttributeItems() as $item )
 			{
@@ -106,7 +105,7 @@ class NovalnetSepa
 	 * @return array An array with the attribute keys as key and an error message as values for all attributes that are
 	 * 	known by the provider but aren't valid resp. null for attributes whose values are OK
 	 */
-	public function checkConfigFE( array $attributes )
+	public function checkConfigFE( array $attributes ) : array
 	{
 		return $this->checkConfig( $this->feConfig, $attributes );
 	}
@@ -117,10 +116,12 @@ class NovalnetSepa
 	 *
 	 * @param \Aimeos\MShop\Order\Item\Base\Service\Iface $orderServiceItem Order service item that will be added to the basket
 	 * @param array $attributes Attribute key/value pairs entered by the customer during the checkout process
+	 * @return \Aimeos\MShop\Order\Item\Base\Service\Iface Order service item with attributes added
 	 */
-	public function setConfigFE( \Aimeos\MShop\Order\Item\Base\Service\Iface $orderServiceItem, array $attributes )
+	public function setConfigFE( \Aimeos\MShop\Order\Item\Base\Service\Iface $orderServiceItem,
+		array $attributes ) : \Aimeos\MShop\Order\Item\Base\Service\Iface
 	{
-		$this->setAttributes( $orderServiceItem, $attributes, 'session' );
+		return $this->setAttributes( $orderServiceItem, $attributes, 'session' );
 	}
 
 
@@ -130,10 +131,10 @@ class NovalnetSepa
 	 *
 	 * @param \Aimeos\MShop\Order\Item\Iface $order Order invoice object
 	 * @param array $params Request parameter if available
-	 * @return \Aimeos\MShop\Common\Helper\Form\Standard Form object with URL, action and parameters to redirect to
+	 * @return \Aimeos\MShop\Common\Helper\Form\Iface|null Form object with URL, action and parameters to redirect to
 	 * 	(e.g. to an external server of the payment provider or to a local success page)
 	 */
-	public function process( \Aimeos\MShop\Order\Item\Iface $order, array $params = [] )
+	public function process( \Aimeos\MShop\Order\Item\Iface $order, array $params = [] ) : ?\Aimeos\MShop\Common\Helper\Form\Iface
 	{
 		return $this->processOrder( $order, $params );
 	}
@@ -143,10 +144,11 @@ class NovalnetSepa
 	 * Returns the data passed to the Omnipay library
 	 *
 	 * @param \Aimeos\MShop\Order\Item\Base\Iface $base Basket object
-	 * @param $orderid Unique order ID
+	 * @param string $orderid Unique order ID
 	 * @param array $params Request parameter if available
+	 * @return array Associative list of key/value pairs
 	 */
-	protected function getData( \Aimeos\MShop\Order\Item\Base\Iface $base, $orderid, array $params )
+	protected function getData( \Aimeos\MShop\Order\Item\Base\Iface $base, string $orderid, array $params ) : array
 	{
 		$urls = $this->getPaymentUrls();
 		$card = $this->getCardDetails( $base, $params );

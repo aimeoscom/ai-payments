@@ -366,7 +366,7 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 
 		$response = $this->getMockBuilder( 'Omnipay\Dummy\Message\Response' )
 			->disableOriginalConstructor()
-			->setMethods( array( 'getTransactionId', 'isSuccessful' ) )
+			->setMethods( array( 'getTransactionId', 'isSuccessful', 'getTransactionReference' ) )
 			->getMock();
 
 		$psr7request = $this->getMockBuilder( \Psr\Http\Message\ServerRequestInterface::class )->getMock();
@@ -393,6 +393,9 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 		$response->expects( $this->once() )->method( 'isSuccessful' )
 			->will( $this->returnValue( true ) );
 
+		$response->expects( $this->once() )->method( 'getTransactionReference' )
+			->will($this->returnValue(''));
+
 
 		$result = $this->object->updateSync( $psr7request, $order );
 
@@ -417,7 +420,7 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 
 		$response = $this->getMockBuilder( 'Omnipay\Dummy\Message\Response' )
 			->disableOriginalConstructor()
-			->setMethods( array( 'isSuccessful' ) )
+			->setMethods( array( 'isSuccessful', 'getTransactionReference' ) )
 			->getMock();
 
 		$psr7request = $this->getMockBuilder( \Psr\Http\Message\ServerRequestInterface::class )->getMock();
@@ -449,6 +452,9 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 
 		$response->expects( $this->once() )->method( 'isSuccessful' )
 			->will( $this->returnValue( true ) );
+
+		$response->expects( $this->once() )->method( 'getTransactionReference' )
+			->will($this->returnValue(''));
 
 		$request->expects( $this->once() )->method( 'getTransactionStatus' )
 			->will( $this->returnValue( \Omnipay\Common\Message\NotificationInterface::STATUS_COMPLETED ) );
@@ -483,7 +489,7 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 
 		$response = $this->getMockBuilder( 'Omnipay\Dummy\Message\Response' )
 			->disableOriginalConstructor()
-			->setMethods( array( 'isPending' ) )
+			->setMethods( array( 'isPending', 'getTransactionReference' ) )
 			->getMock();
 
 		$psr7request = $this->getMockBuilder( \Psr\Http\Message\ServerRequestInterface::class )->getMock();
@@ -516,6 +522,9 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 		$response->expects( $this->once() )->method( 'isPending' )
 			->will( $this->returnValue( true ) );
 
+		$response->expects( $this->once() )->method( 'getTransactionReference' )
+			->will($this->returnValue(''));
+
 		$cmpFcn = function( $subject ) {
 			return $subject->getPaymentStatus() === \Aimeos\MShop\Order\Item\Base::PAY_PENDING;
 		};
@@ -546,7 +555,7 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 
 		$response = $this->getMockBuilder( 'Omnipay\Dummy\Message\Response' )
 			->disableOriginalConstructor()
-			->setMethods( array( 'isCancelled' ) )
+			->setMethods( array( 'isCancelled', 'getTransactionReference' ) )
 			->getMock();
 
 		$psr7request = $this->getMockBuilder( \Psr\Http\Message\ServerRequestInterface::class )->getMock();
@@ -578,6 +587,9 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 
 		$response->expects( $this->once() )->method( 'isCancelled' )
 			->will( $this->returnValue( true ) );
+
+		$response->expects( $this->once() )->method( 'getTransactionReference' )
+			->will($this->returnValue(''));
 
 		$cmpFcn = function( $subject ) {
 			return $subject->getPaymentStatus() === \Aimeos\MShop\Order\Item\Base::PAY_CANCELED;
@@ -665,7 +677,7 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 			->getMock();
 
 		$response = $this->getMockBuilder( 'Omnipay\Dummy\Message\Response' )
-			->setMethods( array( 'getTransactionId', 'isSuccessful' ) )
+			->setMethods( array( 'getTransactionId', 'isSuccessful', 'getTransactionReference' ) )
 			->disableOriginalConstructor()
 			->getMock();
 
@@ -965,7 +977,7 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 
 		$response = $this->getMockBuilder( 'Omnipay\Dummy\Message\Response' )
 			->disableOriginalConstructor()
-			->setMethods( array( 'isSuccessful' ) )
+			->setMethods( array( 'isSuccessful', 'getTransactionReference' ) )
 			->getMock();
 
 
@@ -989,6 +1001,9 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 
 		$response->expects( $this->once() )->method( 'isSuccessful' )
 			->will( $this->returnValue( true ) );
+
+		$response->expects( $this->once() )->method( 'getTransactionReference' )
+			->will($this->returnValue(''));
 
 		$this->object->expects( $this->once() )->method( 'saveTransationRef' );
 

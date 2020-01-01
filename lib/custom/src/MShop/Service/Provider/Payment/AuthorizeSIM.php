@@ -40,7 +40,7 @@ class AuthorizeSIM
 	 *
 	 * @return array List of attribute definitions implementing \Aimeos\MW\Common\Critera\Attribute\Iface
 	 */
-	public function getConfigBE()
+	public function getConfigBE() : array
 	{
 		$list = parent::getConfigBE();
 
@@ -61,7 +61,7 @@ class AuthorizeSIM
 	 * @return array An array with the attribute keys as key and an error message as values for all attributes that are
 	 * 	known by the provider but aren't valid
 	 */
-	public function checkConfigBE( array $attributes )
+	public function checkConfigBE( array $attributes ) : array
 	{
 		return array_merge( parent::checkConfigBE( $attributes ), $this->checkConfig( $this->beConfig, $attributes ) );
 	}
@@ -73,7 +73,8 @@ class AuthorizeSIM
 	 * @param \Psr\Http\Message\ServerRequestInterface Request object
 	 * @return \Psr\Http\Message\ResponseInterface Response object
 	 */
-	public function updatePush( \Psr\Http\Message\ServerRequestInterface $request, \Psr\Http\Message\ResponseInterface $response )
+	public function updatePush( \Psr\Http\Message\ServerRequestInterface $request,
+		\Psr\Http\Message\ResponseInterface $response ) : \Psr\Http\Message\ResponseInterface
 	{
 		$params = (array) $request->getAttributes() + (array) $request->getParsedBody() + (array) $request->getQueryParams();
 
@@ -98,7 +99,7 @@ class AuthorizeSIM
 	 * @param mixed $default Default value if no configuration is found
 	 * @return mixed Configuration value
 	 */
-	protected function getValue( $key, $default = null )
+	protected function getValue( string $key, $default = null )
 	{
 		switch( $key ) {
 			case 'type': return 'AuthorizeNet_SIM';

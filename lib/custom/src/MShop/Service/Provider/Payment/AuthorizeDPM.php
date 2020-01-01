@@ -147,7 +147,7 @@ class AuthorizeDPM
 	 * @param array $params Request parameter if available
 	 * @return \Aimeos\MShop\Common\Helper\Form\Iface Form helper object
 	 */
-	protected function getPaymentForm( \Aimeos\MShop\Order\Item\Iface $order, array $params )
+	protected function getPaymentForm( \Aimeos\MShop\Order\Item\Iface $order, array $params ) : \Aimeos\MShop\Common\Helper\Form\Iface
 	{
 		$list = [];
 		$feConfig = $this->feConfig;
@@ -184,7 +184,7 @@ class AuthorizeDPM
 			$list[$key] = new \Aimeos\MW\Criteria\Attribute\Standard( $config );
 		}
 
-		$url = $this->getConfigValue( array( 'payment.url-self' ) );
+		$url = $this->getConfigValue( 'payment.url-self', '' );
 		return new \Aimeos\MShop\Common\Helper\Form\Standard( $url, 'POST', $list, false );
 	}
 
@@ -196,7 +196,7 @@ class AuthorizeDPM
 	 * @param mixed $default Default value if no configuration is found
 	 * @return mixed Configuration value
 	 */
-	protected function getValue( $key, $default = null )
+	protected function getValue( string $key, $default = null )
 	{
 		switch( $key )
 		{

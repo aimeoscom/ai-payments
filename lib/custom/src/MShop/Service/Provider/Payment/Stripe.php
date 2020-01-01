@@ -105,7 +105,7 @@ class Stripe
 	 * @return array An array with the attribute keys as key and an error message as values for all attributes that are
 	 * 	known by the provider but aren't valid resp. null for attributes whose values are OK
 	 */
-	public function checkConfigBE( array $attributes )
+	public function checkConfigBE( array $attributes ) : array
 	{
 		return array_merge( parent::checkConfigBE( $attributes ), $this->checkConfig( $this->beConfig, $attributes ) );
 	}
@@ -117,7 +117,7 @@ class Stripe
 	 *
 	 * @return array List of attribute definitions implementing \Aimeos\MW\Common\Critera\Attribute\Iface
 	 */
-	public function getConfigBE()
+	public function getConfigBE() : array
 	{
 		$list = parent::getConfigBE();
 
@@ -135,10 +135,10 @@ class Stripe
 	 *
 	 * @param \Aimeos\MShop\Order\Item\Iface $order Order invoice object
 	 * @param array $params Request parameter if available
-	 * @return \Aimeos\MShop\Common\Helper\Form\Standard Form object with URL, action and parameters to redirect to
+	 * @return \Aimeos\MShop\Common\Helper\Form\Iface|null Form object with URL, action and parameters to redirect to
 	 *    (e.g. to an external server of the payment provider or to a local success page)
 	 */
-	public function process( \Aimeos\MShop\Order\Item\Iface $order, array $params = [] )
+	public function process( \Aimeos\MShop\Order\Item\Iface $order, array $params = [] ) : ?\Aimeos\MShop\Common\Helper\Form\Iface
 	{
 		if( !isset( $params['paymenttoken'] ) ) {
 			return $this->getPaymentForm( $order, $params );
@@ -152,10 +152,11 @@ class Stripe
 	 * Returns the data passed to the Omnipay library
 	 *
 	 * @param \Aimeos\MShop\Order\Item\Base\Iface $base Basket object
-	 * @param $orderid Unique order ID
+	 * @param string $orderid Unique order ID
 	 * @param array $params Request parameter if available
+	 * @return array Associative list of key/value pairs
 	 */
-	protected function getData( \Aimeos\MShop\Order\Item\Base\Iface $base, $orderid, array $params )
+	protected function getData( \Aimeos\MShop\Order\Item\Base\Iface $base, string $orderid, array $params ) : array
 	{
 		$data = parent::getData( $base, $orderid, $params );
 
@@ -174,7 +175,7 @@ class Stripe
 	 * @param array $params Request parameter if available
 	 * @return \Aimeos\MShop\Common\Helper\Form\Iface Form helper object
 	 */
-	protected function getPaymentForm( \Aimeos\MShop\Order\Item\Iface $order, array $params )
+	protected function getPaymentForm( \Aimeos\MShop\Order\Item\Iface $order, array $params ) : \Aimeos\MShop\Common\Helper\Form\Iface
 	{
 		$list = [];
 		$feConfig = $this->feConfig;
@@ -183,7 +184,7 @@ class Stripe
 			$list[$key] = new \Aimeos\MW\Criteria\Attribute\Standard( $config );
 		}
 
-		$url = $this->getConfigValue( 'payment.url-self' );
+		$url = $this->getConfigValue( 'payment.url-self', '' );
 		return new \Aimeos\MShop\Common\Helper\Form\Standard( $url, 'POST', $list, false, $this->getStripeJs() );
 	}
 
@@ -193,7 +194,7 @@ class Stripe
 	 *
 	 * @return \Omnipay\Common\GatewayInterface Gateway provider object
 	 */
-	protected function getProvider()
+	protected function getProvider() : \Omnipay\Common\GatewayInterface
 	{
 		$config = $this->getServiceItem()->getConfig();
 		$config['apiKey'] = $this->getServiceItem()->getConfigValue( 'apiKey' );
@@ -214,7 +215,7 @@ class Stripe
 	 *
 	 * @return string Stripe JS code
 	 */
-	protected function getStripeJs()
+	protected function getStripeJs() : string
 	{
 		return '
 <script src="https://js.stripe.com/v3/"></script>
@@ -309,7 +310,7 @@ document.addEventListener("DOMContentLoaded", function() {
 	 * @param mixed $default Default value if no configuration is found
 	 * @return mixed Configuration value
 	 */
-	protected function getValue( $key, $default = null )
+	protected function getValue( string $key, $default = null )
 	{
 		switch( $key )
 		{

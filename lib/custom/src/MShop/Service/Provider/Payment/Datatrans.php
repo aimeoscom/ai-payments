@@ -28,8 +28,9 @@ class Datatrans
 	 * Queries for status updates for the given order compare with the responseCode
 	 *
 	 * @param \Aimeos\MShop\Order\Item\Iface $order Order item
+	 * @return \Aimeos\MShop\Order\Item\Iface Updated order item
 	 */
-	public function query( \Aimeos\MShop\Order\Item\Iface $order )
+	public function query( \Aimeos\MShop\Order\Item\Iface $order ) : \Aimeos\MShop\Order\Item\Iface
 	{
 		$base = $this->getOrderBase( $order->getBaseId(), \Aimeos\MShop\Order\Item\Base\Base::PARTS_SERVICE );
 		$data = ['transactionId' => $order->getId()];
@@ -54,7 +55,7 @@ class Datatrans
 		}
 
 		$this->saveTransationRef( $base, $response->getTransactionReference() );
-		$this->saveOrder( $order );
+		return $this->saveOrder( $order );
 	}
 
 
@@ -63,9 +64,9 @@ class Datatrans
 	 * This requires support of the payment gateway and token based payment
 	 *
 	 * @param \Aimeos\MShop\Order\Item\Iface $order Order invoice object
-	 * @return void
+	 * @return \Aimeos\MShop\Order\Item\Iface Updated order item
 	 */
-	public function repay( \Aimeos\MShop\Order\Item\Iface $order )
+	public function repay( \Aimeos\MShop\Order\Item\Iface $order ) : \Aimeos\MShop\Order\Item\Iface
 	{
 		$base = $this->getOrderBase( $order->getBaseId() );
 
@@ -103,13 +104,15 @@ class Datatrans
 		{
 			$this->saveTransationRef( $base, $response->getTransactionReference() );
 			$order->setPaymentStatus( \Aimeos\MShop\Order\Item\Base::PAY_RECEIVED );
-			$this->saveOrder( $order );
+			$order = $this->saveOrder( $order );
 		}
 		else
 		{
 			$msg = ( method_exists( $response, 'getMessage' ) ? $response->getMessage() : '' );
 			throw new \Aimeos\MShop\Service\Exception( sprintf( 'Token based payment failed: %1$s', $msg ) );
 		}
+
+		return $order;
 	}
 
 
@@ -120,7 +123,7 @@ class Datatrans
 	 * @param mixed $default Default value if no configuration is found
 	 * @return mixed Configuration value
 	 */
-	protected function getValue( $key, $default = null )
+	protected function getValue( string $key, $default = null )
 	{
 		switch( $key ) {
 			case 'type': return 'Datatrans';
@@ -135,7 +138,7 @@ class Datatrans
 	 *
 	 * @return \Omnipay\Common\GatewayInterface Gateway provider object
 	 */
-	protected function getXmlProvider()
+	protected function getXmlProvider() : \Omnipay\Common\GatewayInterface
 	{
 		$provider = OPay::create('Datatrans\Xml');
 		$provider->initialize( $this->getServiceItem()->getConfig() );

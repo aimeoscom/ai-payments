@@ -25,10 +25,11 @@ class Payone
 	 * Returns the data passed to the Omnipay library
 	 *
 	 * @param \Aimeos\MShop\Order\Item\Base\Iface $base Basket object
-	 * @param $orderid Unique order ID
+	 * @param string $orderid Unique order ID
 	 * @param array $params Request parameter if available
+	 * @return array Associative list of key/value pairs
 	 */
-	protected function getData( \Aimeos\MShop\Order\Item\Base\Iface $base, $orderid, array $params )
+	protected function getData( \Aimeos\MShop\Order\Item\Base\Iface $base, string $orderid, array $params ) : array
 	{
 		$lines = [];
 
@@ -75,7 +76,8 @@ class Payone
 	 * @param \Psr\Http\Message\ServerRequestInterface Request object
 	 * @return \Psr\Http\Message\ResponseInterface Response object
 	 */
-	public function updatePush( \Psr\Http\Message\ServerRequestInterface $request, \Psr\Http\Message\ResponseInterface $response )
+	public function updatePush( \Psr\Http\Message\ServerRequestInterface $request,
+		\Psr\Http\Message\ResponseInterface $response ) : \Psr\Http\Message\ResponseInterface
 	{
 		$params = (array) $request->getAttributes() + (array) $request->getParsedBody() + (array) $request->getQueryParams();
 

@@ -92,15 +92,14 @@ class NovalnetCredit
 	 * @param \Aimeos\MShop\Order\Item\Base\Iface $basket Basket object
 	 * @return array List of attribute definitions implementing \Aimeos\MW\Common\Critera\Attribute\Iface
 	 */
-	public function getConfigFE( \Aimeos\MShop\Order\Item\Base\Iface $basket )
+	public function getConfigFE( \Aimeos\MShop\Order\Item\Base\Iface $basket ) : array
 	{
 		$list = [];
 		$feconfig = $this->feConfig;
 
 		try
 		{
-			$code = $this->getServiceItem()->getCode();
-			$service = $basket->getService( \Aimeos\MShop\Order\Item\Base\Service\Base::TYPE_PAYMENT, $code );
+			$service = $basket->getService( \Aimeos\MShop\Order\Item\Base\Service\Base::TYPE_PAYMENT, 0 );
 
 			foreach( $service->getAttributeItems() as $item )
 			{
@@ -144,7 +143,7 @@ class NovalnetCredit
 	 * @return array An array with the attribute keys as key and an error message as values for all attributes that are
 	 * 	known by the provider but aren't valid resp. null for attributes whose values are OK
 	 */
-	public function checkConfigFE( array $attributes )
+	public function checkConfigFE( array $attributes ) : array
 	{
 		return $this->checkConfig( $this->feConfig, $attributes );
 	}
@@ -155,10 +154,12 @@ class NovalnetCredit
 	 *
 	 * @param \Aimeos\MShop\Order\Item\Base\Service\Iface $orderServiceItem Order service item that will be added to the basket
 	 * @param array $attributes Attribute key/value pairs entered by the customer during the checkout process
+	 * @return \Aimeos\MShop\Order\Item\Base\Service\Iface Order service item with attributes added
 	 */
-	public function setConfigFE( \Aimeos\MShop\Order\Item\Base\Service\Iface $orderServiceItem, array $attributes )
+	public function setConfigFE( \Aimeos\MShop\Order\Item\Base\Service\Iface $orderServiceItem,
+		array $attributes ) : \Aimeos\MShop\Order\Item\Base\Service\Iface
 	{
-		$this->setAttributes( $orderServiceItem, $attributes, 'session' );
+		return $this->setAttributes( $orderServiceItem, $attributes, 'session' );
 	}
 
 
@@ -168,10 +169,10 @@ class NovalnetCredit
 	 *
 	 * @param \Aimeos\MShop\Order\Item\Iface $order Order invoice object
 	 * @param array $params Request parameter if available
-	 * @return \Aimeos\MShop\Common\Helper\Form\Standard Form object with URL, action and parameters to redirect to
+	 * @return \Aimeos\MShop\Common\Helper\Form\Iface|null Form object with URL, action and parameters to redirect to
 	 * 	(e.g. to an external server of the payment provider or to a local success page)
 	 */
-	public function process( \Aimeos\MShop\Order\Item\Iface $order, array $params = [] )
+	public function process( \Aimeos\MShop\Order\Item\Iface $order, array $params = [] ) : ?\Aimeos\MShop\Common\Helper\Form\Iface
 	{
 		return $this->processOrder( $order, $params );
 	}
@@ -184,7 +185,7 @@ class NovalnetCredit
 	 * @param array $params POST parameters passed to the provider
 	 * @return \Omnipay\Common\CreditCard Credit card object
 	 */
-	protected function getCardDetails( \Aimeos\MShop\Order\Item\Base\Iface $base, array $params )
+	protected function getCardDetails( \Aimeos\MShop\Order\Item\Base\Iface $base, array $params ) : \Omnipay\Common\CreditCard
 	{
 		$addresses = $base->getAddress( \Aimeos\MShop\Order\Item\Base\Address\Base::TYPE_PAYMENT );
 
