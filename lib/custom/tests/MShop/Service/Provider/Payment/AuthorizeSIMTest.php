@@ -16,7 +16,7 @@ class AuthorizeSimTest extends \PHPUnit\Framework\TestCase
 	private $serviceItem;
 
 
-	protected function setUp()
+	protected function setUp() : void
 	{
 		if( !class_exists( 'Omnipay\Omnipay' ) ) {
 			$this->markTestSkipped( 'Omnipay library not available' );
@@ -36,7 +36,7 @@ class AuthorizeSimTest extends \PHPUnit\Framework\TestCase
 	}
 
 
-	protected function tearDown()
+	protected function tearDown() : void
 	{
 		unset( $this->object, $this->context, $this->serviceItem );
 	}
@@ -48,7 +48,7 @@ class AuthorizeSimTest extends \PHPUnit\Framework\TestCase
 
 		$result = $object->getConfigBE();
 
-		$this->assertInternalType( 'array', $result );
+		$this->assertIsArray( $result );
 		$this->assertArrayHasKey( 'address', $result );
 		$this->assertArrayHasKey( 'authorize', $result );
 		$this->assertArrayHasKey( 'testmode', $result );

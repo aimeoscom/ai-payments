@@ -10,7 +10,7 @@ class PayoneTest extends \PHPUnit\Framework\TestCase
 	private $serviceItem;
 
 
-	protected function setUp()
+	protected function setUp() : void
 	{
 		if( !class_exists( 'Omnipay\Omnipay' ) ) {
 			$this->markTestSkipped( 'Omnipay library not available' );
@@ -30,7 +30,7 @@ class PayoneTest extends \PHPUnit\Framework\TestCase
 	}
 
 
-	protected function tearDown()
+	protected function tearDown() : void
 	{
 		unset( $this->object );
 		unset( $this->context );

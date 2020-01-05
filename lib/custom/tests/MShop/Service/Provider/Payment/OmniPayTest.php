@@ -16,7 +16,7 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 	private $serviceItem;
 
 
-	protected function setUp()
+	protected function setUp() : void
 	{
 		if( !class_exists( 'Omnipay\Omnipay' ) ) {
 			$this->markTestSkipped( 'Omnipay library not available' );
@@ -41,7 +41,7 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 	}
 
 
-	protected function tearDown()
+	protected function tearDown() : void
 	{
 		unset( $this->object );
 		unset( $this->context );
@@ -55,7 +55,7 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 
 		$result = $object->getConfigBE();
 
-		$this->assertInternalType( 'array', $result );
+		$this->assertIsArray( $result );
 		$this->assertArrayHasKey( 'type', $result );
 		$this->assertArrayHasKey( 'address', $result );
 		$this->assertArrayHasKey( 'authorize', $result );
@@ -189,7 +189,7 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 			'expiryYear' => '2099',
 		);
 
-		$this->setExpectedException( '\\Aimeos\\MShop\\Service\\Exception' );
+		$this->expectException( '\\Aimeos\\MShop\\Service\\Exception' );
 		$this->object->process( $this->getOrder(), $params );
 	}
 
@@ -243,7 +243,7 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 		$this->object->expects( $this->once() )->method( 'getOrderBase' )
 			->will( $this->returnValue( $baseItem ) );
 
-		$this->setExpectedException( '\\Aimeos\\MShop\\Service\\Exception' );
+		$this->expectException( '\\Aimeos\\MShop\\Service\\Exception' );
 		$this->object->process( $this->getOrder(), [] );
 	}
 
@@ -709,7 +709,7 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 			->will( $this->returnValue( false ) );
 
 
-		$this->setExpectedException( '\\Aimeos\\MShop\\Service\\Exception' );
+		$this->expectException( '\\Aimeos\\MShop\\Service\\Exception' );
 		$this->object->updateSync( $psr7request, $order );
 	}
 
@@ -762,7 +762,7 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 			->will( $this->returnValue( true ) );
 
 
-		$this->setExpectedException( '\\Aimeos\\MShop\\Service\\Exception' );
+		$this->expectException( '\\Aimeos\\MShop\\Service\\Exception' );
 		$this->object->updateSync( $psr7request, $order );
 	}
 

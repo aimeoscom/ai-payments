@@ -17,7 +17,7 @@ class NovalnetSepaTest extends \PHPUnit\Framework\TestCase
 	private $context;
 
 
-	protected function setUp()
+	protected function setUp() : void
 	{
 		if( !class_exists( 'Omnipay\Omnipay' ) ) {
 			$this->markTestSkipped( 'Omnipay library not available' );
@@ -41,7 +41,7 @@ class NovalnetSepaTest extends \PHPUnit\Framework\TestCase
 	}
 
 
-	protected function tearDown()
+	protected function tearDown() : void
 	{
 		unset( $this->object );
 	}

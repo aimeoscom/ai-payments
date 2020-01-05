@@ -15,7 +15,7 @@ class StripeTest extends \PHPUnit\Framework\TestCase
 	private $object;
 
 
-	protected function setUp()
+	protected function setUp() : void
 	{
 		if( !class_exists( 'Omnipay\Omnipay' ) ) {
 			$this->markTestSkipped( 'Omnipay library not available' );
@@ -28,7 +28,7 @@ class StripeTest extends \PHPUnit\Framework\TestCase
 	}
 
 
-	protected function tearDown()
+	protected function tearDown() : void
 	{
 		unset( $this->object, $this->context );
 	}
@@ -38,7 +38,7 @@ class StripeTest extends \PHPUnit\Framework\TestCase
 	{
 		$result = $this->object->getConfigBE();
 
-		$this->assertInternalType( 'array', $result );
+		$this->assertIsArray( $result );
 		$this->assertArrayHasKey( 'apiKey', $result );
 		$this->assertArrayHasKey( 'publishableKey', $result );
 		$this->assertArrayHasKey( 'address', $result );

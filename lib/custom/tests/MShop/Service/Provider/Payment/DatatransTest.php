@@ -16,7 +16,7 @@ class DatatransTest extends \PHPUnit\Framework\TestCase
 	private $serviceItem;
 
 
-	protected function setUp()
+	protected function setUp() : void
 	{
 		if( !class_exists( 'Omnipay\Omnipay' ) ) {
 			$this->markTestSkipped( 'Omnipay library not available' );
@@ -41,7 +41,7 @@ class DatatransTest extends \PHPUnit\Framework\TestCase
 	}
 
 
-	protected function tearDown()
+	protected function tearDown() : void
 	{
 		unset( $this->object, $this->serviceItem, $this->context );
 	}
@@ -300,7 +300,7 @@ class DatatransTest extends \PHPUnit\Framework\TestCase
 			->will( $this->returnValue( null ) );
 
 
-		$this->setExpectedException( \Aimeos\MShop\Service\Exception::class );
+		$this->expectException( \Aimeos\MShop\Service\Exception::class );
 		$this->object->repay( $this->getOrder() );
 	}
 
@@ -317,7 +317,7 @@ class DatatransTest extends \PHPUnit\Framework\TestCase
 			->will( $this->returnValue( [] ) );
 
 
-		$this->setExpectedException( \Aimeos\MShop\Service\Exception::class );
+		$this->expectException( \Aimeos\MShop\Service\Exception::class );
 		$this->object->repay( $this->getOrder() );
 	}
 
