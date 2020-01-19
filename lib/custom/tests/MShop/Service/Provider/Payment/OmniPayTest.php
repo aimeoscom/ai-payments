@@ -1021,9 +1021,7 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 		$search = $manager->createSearch();
 		$search->setConditions( $search->compare( '==', 'order.datepayment', '2008-02-15 12:34:56' ) );
 
-		$result = $manager->searchItems( $search );
-
-		if( ( $item = reset( $result ) ) === false ) {
+		if( ( $item = $manager->searchItems( $search )->first() ) === null ) {
 			throw new \RuntimeException( 'No order found' );
 		}
 
