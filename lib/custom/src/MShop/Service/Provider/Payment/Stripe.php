@@ -160,8 +160,10 @@ class Stripe
 		$data = parent::getData( $base, $orderid, $params );
 
 		if( isset( $params['paymenttoken'] ) ) {
-			$data['token'] = $params['paymenttoken'];
+			$this->getContext()->getSession()->set( 'stripe_token', $params['paymenttoken'] );
 		}
+
+		$data['token'] = $this->getContext()->getSession()->get( 'stripe_token' );
 
 		return $data;
 	}

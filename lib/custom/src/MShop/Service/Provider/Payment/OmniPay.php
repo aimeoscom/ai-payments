@@ -548,12 +548,8 @@ class OmniPay
 			$base = $this->getOrderBase( $order->getBaseId() );
 
 			$params = (array) $request->getAttributes() + (array) $request->getParsedBody() + (array) $request->getQueryParams();
-			$params['transactionId'] = $order->getId();
+			$params = $this->getData( $base, $order->getId(), $params );
 			$params['transactionReference'] = $this->getTransactionReference( $base );
-			$params['amount'] = $this->getAmount( $base->getPrice() );
-			$params['currency'] = $base->getLocale()->getCurrencyId();
-			$params['createCard'] = true;
-
 
 			if( $this->getValue( 'authorize', false ) && $provider->supportsCompleteAuthorize() )
 			{
