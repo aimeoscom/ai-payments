@@ -158,13 +158,16 @@ class Stripe
 	 */
 	protected function getData( \Aimeos\MShop\Order\Item\Base\Iface $base, string $orderid, array $params ) : array
 	{
+		$session = $this->getContext()->getSession();
 		$data = parent::getData( $base, $orderid, $params );
 
 		if( isset( $params['paymenttoken'] ) ) {
-			$this->getContext()->getSession()->set( 'stripe_token', $params['paymenttoken'] );
+			$session->set( 'aimeos/stripe_token', $params['paymenttoken'] );
 		}
 
-		$data['token'] = $this->getContext()->getSession()->get( 'stripe_token' );
+		if( ( $token = $session->get( 'aimeos/stripe_token' ) ) !== null ) {
+			$data['token'] = $token;
+		}
 
 		return $data;
 	}
