@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-10-03 10:00+0200\n"
+"POT-Creation-Date: 2020-04-02 15:27+0200\n"
 "PO-Revision-Date: 2017-09-14 09:25+0000\n"
 "Last-Translator: Plamen Petkov <mcplamen@gmail.com>, 2019\n"
 "Language-Team: Bulgarian (https://www.transifex.com/aimeos/teams/39015/bg/)\n"
@@ -21,36 +21,36 @@ msgstr ""
 "Language: bg\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: src/MShop/Service/Provider/Payment/OmniPay.php:426
+#: src/MShop/Service/Provider/Payment/OmniPay.php:435
 #, php-format
 msgid "Method \"%1$s\" for provider not available"
 msgstr "Метод \"%1$s\" за доставчик не е възможен"
 
-#: src/MShop/Service/Provider/Payment/OmniPay.php:437
-#: src/MShop/Service/Provider/Payment/Datatrans.php:80
+#: src/MShop/Service/Provider/Payment/OmniPay.php:446
+#: src/MShop/Service/Provider/Payment/Datatrans.php:81
 #, php-format
 msgid "No payment token available for customer ID \"%1$s\""
 msgstr ""
 
-#: src/MShop/Service/Provider/Payment/OmniPay.php:431
-#: src/MShop/Service/Provider/Payment/Datatrans.php:74
+#: src/MShop/Service/Provider/Payment/OmniPay.php:440
+#: src/MShop/Service/Provider/Payment/Datatrans.php:75
 #, php-format
 msgid "No reoccurring payment data available for customer ID \"%1$s\""
 msgstr ""
 
-#: src/MShop/Service/Provider/Payment/NovalnetSepa.php:153
-#: src/MShop/Service/Provider/Payment/OmniPay.php:689
+#: src/MShop/Service/Provider/Payment/NovalnetSepa.php:155
+#: src/MShop/Service/Provider/Payment/OmniPay.php:699
 #, php-format
 msgid "Order %1$s"
 msgstr "Поръчка %1$s"
 
-#: src/MShop/Service/Provider/Payment/OmniPay.php:468
-#: src/MShop/Service/Provider/Payment/Datatrans.php:111
+#: src/MShop/Service/Provider/Payment/OmniPay.php:477
+#: src/MShop/Service/Provider/Payment/Datatrans.php:112
 #, php-format
 msgid "Token based payment failed: %1$s"
 msgstr ""
 
-#: src/MShop/Service/Provider/Payment/OmniPay.php:592
+#: src/MShop/Service/Provider/Payment/OmniPay.php:601
 #, php-format
 msgid "Unexpected redirect: %1$s"
 msgstr "Неочаквано пренасочване: %1$s "
