@@ -508,7 +508,7 @@ class OmniPay
 		try
 		{
 			$provider = $this->getProvider();
-			$params = $request->getQueryParams();
+			$params = (array) $request->getAttributes() + (array) $request->getParsedBody() + (array) $request->getQueryParams();
 
 			if( !isset( $params['orderid'] ) ) {
 				throw new \Aimeos\MShop\Service\Exception( 'No order ID available' );
