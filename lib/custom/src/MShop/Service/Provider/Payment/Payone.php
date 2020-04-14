@@ -83,8 +83,11 @@ class Payone
 
 		if( isset( $params['reference'] ) )
 		{
-			$response = parent::updatePush( $request, $response );
-			$response = $response->withBody( $response->createStreamFromString( 'TSOK' ) ); // payment update successful
+			$response = parent::updatePush( $request->withAttribute( 'orderid', $params['reference'] ), $response );
+
+			if( $response->getStatusCode() === 200 ) {
+				$response = $response->withBody( $response->createStreamFromString( 'TSOK' ) ); // payment update successful
+			}
 		}
 
 		return $response;

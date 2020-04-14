@@ -71,8 +71,14 @@ class PayoneTest extends \PHPUnit\Framework\TestCase
 		$psr7request = $this->getMockBuilder( \Psr\Http\Message\ServerRequestInterface::class )->getMock();
 		$psr7response = $this->getMockBuilder( \Aimeos\MW\View\Helper\Response\Iface::class )->getMock();
 
-		$psr7request->expects( $this->once() )->method( 'getAttributes' )
+		$psr7request->expects( $this->exactly( 2 ) )->method( 'getAttributes' )
 			->will( $this->returnValue( ['reference' => 1] ) );
+
+		$psr7request->expects( $this->once() )->method( 'withAttribute' )
+			->will( $this->returnValue( $psr7request ) );
+
+		$psr7response->expects( $this->once() )->method( 'getStatusCode' )
+			->will( $this->returnValue( 200 ) );
 
 		$psr7response->expects( $this->once() )->method( 'withBody' )
 			->will( $this->returnValue( $psr7response ) );
