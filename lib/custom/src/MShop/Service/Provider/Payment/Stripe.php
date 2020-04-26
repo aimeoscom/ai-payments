@@ -10,7 +10,8 @@
 
 namespace Aimeos\MShop\Service\Provider\Payment;
 
-use Omnipay\Omnipay as OPay;
+use Aimeos\MShop\Order\Item\Base as Status;
+
 
 /**
  * Payment provider for Stripe.
@@ -30,7 +31,7 @@ class Stripe
 			'label'=> 'Payment provider type',
 			'type'=> 'string',
 			'internaltype'=> 'string',
-			'default'=> 'Stripe',
+			'default'=> 'Stripe_PaymentIntents',
 			'required'=> true,
 		),
 		'apiKey' => array(
@@ -54,7 +55,6 @@ class Stripe
 	);
 
 	protected $feConfig = array(
-
 		'paymenttoken' => array(
 			'code' => 'paymenttoken',
 			'internalcode' => 'paymenttoken',
@@ -65,7 +65,16 @@ class Stripe
 			'required' => true,
 			'public' => false,
 		),
-
+		'setup_future_usage' => array(
+			'code' => 'setup_future_usage',
+			'internalcode' => 'setup_future_usage',
+			'label' => 'Save card for recurring payments',
+			'type' => 'string',
+			'internaltype' => 'string',
+			'default' => 'off_session',
+			'required' => true,
+			'public' => false,
+		),
 		'payment.cardno' => array(
 			'code' => 'payment.cardno',
 			'internalcode'=> 'number',
@@ -144,7 +153,59 @@ class Stripe
 			return $this->getPaymentForm( $order, $params );
 		}
 
+		if( $this->getConfigValue( 'createtoken' )
+			&& $this->getCustomerData( $this->getContext()->getUserId(), 'customerid' ) === null
+		) {
+			$data = [];
+			$base = $this->getOrderBase( $order->getBaseId() );
+
+			if( $addr = current( $base->getAddress( 'payment' ) ) )
+			{
+				$data['description'] = $addr->getFirstName() . ' ' . $addr->getLastName();
+				$data['email'] = $addr->getEmail();
+			}
+
+			$response = $this->getProvider()->createCustomer( $data )->send();
+
+			if( $response->isSuccessful() ) {
+				$this->setCustomerData( $this->getContext()->getUserId(), 'customerid', $response->getCustomerReference() );
+			}
+		}
+
 		return $this->processOrder( $order, $params );
+	}
+
+
+	/**
+	 * Updates the orders for whose status updates have been received by the confirmation page
+	 *
+	 * @param \Psr\Http\Message\ServerRequestInterface $request Request object with parameters and request body
+	 * @param \Aimeos\MShop\Order\Item\Iface $order Order item that should be updated
+	 * @return \Aimeos\MShop\Order\Item\Iface Updated order item
+	 * @throws \Aimeos\MShop\Service\Exception If updating the orders failed
+	 */
+	public function updateSync( \Psr\Http\Message\ServerRequestInterface $request,
+		\Aimeos\MShop\Order\Item\Iface $order ) : \Aimeos\MShop\Order\Item\Iface
+	{
+		$response = $this->getProvider()->confirm( [
+			'paymentIntentReference' => $this->getOrderData( $order, 'STRIPEINTENTREF' )
+		] )->send();
+
+		if( $response->isSuccessful() )
+		{
+			$status = $this->getValue( 'authorize', false ) ? Status::PAY_AUTHORIZED : Status::PAY_RECEIVED;
+
+			$this->setOrderData( $order, ['TRANSACTIONID' => $response->getTransactionReference()] );
+			$this->saveRepayData( $response, $this->getOrderBase( $order->getBaseId() )->getCustomerId() );
+		}
+		else
+		{
+			$status = Status::PAY_REFUSED;
+		}
+
+		$this->saveOrder( $order->setPaymentStatus( $status ) );
+
+		return $order;
 	}
 
 
@@ -169,6 +230,21 @@ class Stripe
 			$data['token'] = $token;
 		}
 
+		if( $this->getConfigValue( 'createtoken' ) &&
+			$custid = $this->getCustomerData( $this->getContext()->getUserId(), 'customerid' )
+		) {
+			$data['customerReference'] = $custid;
+		}
+
+		$type = \Aimeos\MShop\Order\Item\Base\Service\Base::TYPE_PAYMENT;
+		$serviceItem = $this->getBasketService( $base, $type, $this->getServiceItem()->getCode() );
+
+		if( $stripeIntentsRef = $serviceItem->getAttribute( 'STRIPEINTENTREF', 'payment/omnipay' ) ) {
+			$data['paymentIntentReference'] = $stripeIntentsRef;
+		}
+
+		$data['confirm'] = true;
+
 		return $data;
 	}
 
@@ -191,27 +267,6 @@ class Stripe
 
 		$url = $this->getConfigValue( 'payment.url-self', '' );
 		return new \Aimeos\MShop\Common\Helper\Form\Standard( $url, 'POST', $list, false, $this->getStripeJs() );
-	}
-
-
-	/**
-	 * Returns the Omnipay gateway provider object.
-	 *
-	 * @return \Omnipay\Common\GatewayInterface Gateway provider object
-	 */
-	protected function getProvider() : \Omnipay\Common\GatewayInterface
-	{
-		$config = $this->getServiceItem()->getConfig();
-		$config['apiKey'] = $this->getServiceItem()->getConfigValue( 'apiKey' );
-
-		if( !isset( $this->provider ) )
-		{
-			$this->provider = OPay::create( 'Stripe' );
-			$this->provider->setTestMode( (bool) $this->getValue( 'testmode', false ) );
-			$this->provider->initialize( $config );
-		}
-
-		return $this->provider;
 	}
 
 
@@ -309,20 +364,17 @@ document.addEventListener("DOMContentLoaded", function() {
 
 
 	/**
-	 * Returns the value for the given configuration key
+	 * Sends the given data for the order to the payment gateway
 	 *
-	 * @param string $key Configuration key name
-	 * @param mixed $default Default value if no configuration is found
-	 * @return mixed Configuration value
+	 * @param \Aimeos\MShop\Order\Item\Iface $order Order item which should be paid
+	 * @param array $data Associative list of key/value pairs sent to the payment gateway
+	 * @return \Omnipay\Common\Message\ResponseInterface Omnipay response from the payment gateway
 	 */
-	protected function getValue( string $key, $default = null )
+	protected function sendRequest( \Aimeos\MShop\Order\Item\Iface $order, array $data ) : \Omnipay\Common\Message\ResponseInterface
 	{
-		switch( $key )
-		{
-			case 'type': return 'Stripe';
-			case 'onsite': return true;
-		}
+		$response = parent::sendRequest( $order, $data );
+		$this->setOrderData( $order, ['STRIPEINTENTREF' => $response->getPaymentIntentReference()] );
 
-		return parent::getValue( $key, $default );
+		return $response;
 	}
 }
