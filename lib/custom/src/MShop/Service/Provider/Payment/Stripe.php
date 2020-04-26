@@ -65,16 +65,6 @@ class Stripe
 			'required' => true,
 			'public' => false,
 		),
-		'setup_future_usage' => array(
-			'code' => 'setup_future_usage',
-			'internalcode' => 'setup_future_usage',
-			'label' => 'Save card for recurring payments',
-			'type' => 'string',
-			'internaltype' => 'string',
-			'default' => 'off_session',
-			'required' => true,
-			'public' => false,
-		),
 		'payment.cardno' => array(
 			'code' => 'payment.cardno',
 			'internalcode'=> 'number',
@@ -151,7 +141,7 @@ class Stripe
 			return $this->getPaymentForm( $order, $params );
 		}
 
-		if( $this->getConfigValue( 'createtoken' )
+		if( $this->getContext()->getUserId() && $this->getConfigValue( 'createtoken' )
 			&& $this->getCustomerData( $this->getContext()->getUserId(), 'customerid' ) === null
 		) {
 			$data = [];
@@ -185,23 +175,24 @@ class Stripe
 	public function updateSync( \Psr\Http\Message\ServerRequestInterface $request,
 		\Aimeos\MShop\Order\Item\Iface $order ) : \Aimeos\MShop\Order\Item\Iface
 	{
-		$response = $this->getProvider()->confirm( [
-			'paymentIntentReference' => $this->getOrderData( $order, 'STRIPEINTENTREF' )
-		] )->send();
-
-		if( $response->isSuccessful() )
+		if( $order->getPaymentStatus() === Status::PAY_UNFINISHED )
 		{
-			$status = $this->getValue( 'authorize', false ) ? Status::PAY_AUTHORIZED : Status::PAY_RECEIVED;
+			$response = $this->getProvider()->confirm( [
+				'paymentIntentReference' => $this->getOrderData( $order, 'Reference' )
+			] )->send();
 
-			$this->setOrderData( $order, ['TRANSACTIONID' => $response->getTransactionReference()] );
-			$this->saveRepayData( $response, $this->getOrderBase( $order->getBaseId() )->getCustomerId() );
-		}
-		else
-		{
-			$status = Status::PAY_REFUSED;
-		}
+			if( $response->isSuccessful() )
+			{
+				$status = $this->getValue( 'authorize', false ) ? Status::PAY_AUTHORIZED : Status::PAY_RECEIVED;
+				$this->saveRepayData( $response, $this->getOrderBase( $order->getBaseId() )->getCustomerId() );
+			}
+			else
+			{
+				$status = Status::PAY_REFUSED;
+			}
 
-		$this->saveOrder( $order->setPaymentStatus( $status ) );
+			$this->saveOrder( $order->setPaymentStatus( $status ) );
+		}
 
 		return $order;
 	}
@@ -228,8 +219,8 @@ class Stripe
 			$data['token'] = $token;
 		}
 
-		if( $this->getConfigValue( 'createtoken' ) &&
-			$custid = $this->getCustomerData( $this->getContext()->getUserId(), 'customerid' )
+		if( $this->getContext()->getUserId() && $this->getConfigValue( 'createtoken' )
+			&& $custid = $this->getCustomerData( $this->getContext()->getUserId(), 'customerid' )
 		) {
 			$data['customerReference'] = $custid;
 		}
@@ -237,7 +228,7 @@ class Stripe
 		$type = \Aimeos\MShop\Order\Item\Base\Service\Base::TYPE_PAYMENT;
 		$serviceItem = $this->getBasketService( $base, $type, $this->getServiceItem()->getCode() );
 
-		if( $stripeIntentsRef = $serviceItem->getAttribute( 'STRIPEINTENTREF', 'payment/omnipay' ) ) {
+		if( $stripeIntentsRef = $serviceItem->getAttribute( 'Reference', 'payment/omnipay' ) ) {
 			$data['paymentIntentReference'] = $stripeIntentsRef;
 		}
 
@@ -371,7 +362,7 @@ document.addEventListener("DOMContentLoaded", function() {
 	protected function sendRequest( \Aimeos\MShop\Order\Item\Iface $order, array $data ) : \Omnipay\Common\Message\ResponseInterface
 	{
 		$response = parent::sendRequest( $order, $data );
-		$this->setOrderData( $order, ['STRIPEINTENTREF' => $response->getPaymentIntentReference()] );
+		$this->setOrderData( $order, ['Reference' => $response->getPaymentIntentReference()] );
 
 		return $response;
 	}
