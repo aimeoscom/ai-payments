@@ -131,7 +131,7 @@ class NovalnetCreditTest extends \PHPUnit\Framework\TestCase
 			->disableOriginalConstructor()
 			->getMock();
 
-		$this->object->expects( $this->once() )->method( 'getOrderBase' )
+		$this->object->expects( $this->exactly( 2 ) )->method( 'getOrderBase' )
 			->will( $this->returnValue( $baseItem ) );
 
 		$this->object->expects( $this->once() )->method( 'getProvider' )

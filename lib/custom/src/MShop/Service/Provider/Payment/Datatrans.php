@@ -53,8 +53,8 @@ class Datatrans
 			$order->setPaymentStatus( \Aimeos\MShop\Order\Item\Base::PAY_CANCELED );
 		}
 
-		$this->saveTransationRef( $base, $response->getTransactionReference() );
-		$this->saveOrder( $order );
+		$this->setOrderData( $order, ['TRANSACTIONID' => $response->getTransactionReference()] );
+		return $this->saveOrder( $order );
 	}
 
 
@@ -101,9 +101,8 @@ class Datatrans
 
 		if( $response->isSuccessful() )
 		{
-			$this->saveTransationRef( $base, $response->getTransactionReference() );
-			$order->setPaymentStatus( \Aimeos\MShop\Order\Item\Base::PAY_RECEIVED );
-			$this->saveOrder( $order );
+			$this->setOrderData( $order, ['TRANSACTIONID' => $response->getTransactionReference()] );
+			$order = $this->saveOrder( $order->setPaymentStatus( \Aimeos\MShop\Order\Item\Base::PAY_RECEIVED ) );
 		}
 		else
 		{

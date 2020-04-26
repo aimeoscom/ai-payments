@@ -31,7 +31,7 @@ class DatatransTest extends \PHPUnit\Framework\TestCase
 
 		$methods = [
 			'getCustomerData', 'getOrder', 'getOrderBase', 'getTransactionReference', 'isImplemented',
-			'saveOrder', 'saveOrderBase', 'getProvider', 'getXmlProvider', 'saveTransationRef', 'setCustomerData'
+			'saveOrder', 'saveOrderBase', 'getProvider', 'getXmlProvider', 'setOrderData', 'setCustomerData'
 		];
 
 		$this->object = $this->getMockBuilder( \Aimeos\MShop\Service\Provider\Payment\Datatrans::class )
@@ -82,7 +82,10 @@ class DatatransTest extends \PHPUnit\Framework\TestCase
 		$response->expects( $this->once() )->method( 'isSuccessful' )
 			->will($this->returnValue(true));
 
-		$this->object->expects( $this->once() )->method( 'saveTransationRef' );
+		$response->expects( $this->once() )->method( 'getTransactionReference' )
+			->will($this->returnValue(''));
+
+		$this->object->expects( $this->once() )->method( 'setOrderData' );
 
 		$cmpFcn = function( $subject ) {
 			return $subject->getPaymentStatus() === \Aimeos\MShop\Order\Item\Base::PAY_RECEIVED;
@@ -264,7 +267,10 @@ class DatatransTest extends \PHPUnit\Framework\TestCase
 		$response->expects( $this->once() )->method( 'isSuccessful' )
 			->will( $this->returnValue( true ) );
 
-		$this->object->expects( $this->once() )->method( 'saveTransationRef' );
+		$response->expects( $this->once() )->method( 'getTransactionReference' )
+			->will($this->returnValue(''));
+
+		$this->object->expects( $this->once() )->method( 'setOrderData' );
 
 		$this->object->expects( $this->once() )->method( 'saveOrder' );
 

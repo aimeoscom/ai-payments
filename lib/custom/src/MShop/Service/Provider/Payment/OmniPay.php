@@ -229,6 +229,7 @@ class OmniPay
 	);
 
 	private $provider;
+	private $basket;
 
 
 	/**
@@ -458,9 +459,8 @@ class OmniPay
 
 		if( $response->isSuccessful() )
 		{
-			$this->saveTransationRef( $base, $response->getTransactionReference() );
-			$order->setPaymentStatus( \Aimeos\MShop\Order\Item\Base::PAY_RECEIVED );
-			$this->saveOrder( $order );
+			$this->setOrderData( $order, ['TRANSACTIONID' => $response->getTransactionReference()] );
+			$order = $this->saveOrder( $order->setPaymentStatus( \Aimeos\MShop\Order\Item\Base::PAY_RECEIVED ) );
 		}
 		else
 		{
@@ -517,7 +517,7 @@ class OmniPay
 			}
 
 			$base = $this->getOrderBase( $order->getBaseId() );
-			$this->saveTransationRef( $base, $omniResponse->getTransactionReference() );
+			$this->setOrderData( $order, ['TRANSACTIONID' => $omniResponse->getTransactionReference()] );
 			$this->saveRepayData( $omniResponse, $base->getCustomerId() );
 			$this->saveOrder( $order );
 
@@ -596,7 +596,7 @@ class OmniPay
 				throw new \Aimeos\MShop\Service\Exception( $response->getMessage() );
 			}
 
-			$this->saveTransationRef( $base, $response->getTransactionReference() );
+			$this->setOrderData( $order, ['TRANSACTIONID' => $response->getTransactionReference()] );
 			$this->saveRepayData( $response, $base->getCustomerId() );
 			$this->saveOrder( $order );
 		}
@@ -865,39 +865,22 @@ class OmniPay
 
 		try
 		{
-			$provider = $this->getProvider();
-
-			if( $this->getValue( 'authorize', false ) && $provider->supportsAuthorize() )
-			{
-				$response = $provider->authorize( $data )->send();
-				$status = \Aimeos\MShop\Order\Item\Base::PAY_AUTHORIZED;
-			}
-			else
-			{
-				$response = $provider->purchase( $data )->send();
-				$status = \Aimeos\MShop\Order\Item\Base::PAY_RECEIVED;
-			}
+			$status = \Aimeos\MShop\Order\Item\Base::PAY_UNFINISHED;
+			$response = $this->sendRequest( $order, $data );
 
 			if( $response->isSuccessful() )
 			{
-				$this->saveTransationRef( $base, $response->getTransactionReference() );
-
-				$order->setPaymentStatus( $status );
-				$this->saveOrder( $order );
+				$this->setOrderData( $order, ['TRANSACTIONID' => $response->getTransactionReference()] );
+				$this->saveOrder( $order->setPaymentStatus( $status ) );
 			}
 			elseif( $response->isRedirect() )
 			{
-				if( ( $ref = $response->getTransactionReference() ) != null ) {
-					$this->saveTransationRef( $base, $ref );
-				}
-
+				$this->setOrderData( $order, ['TRANSACTIONID' => $response->getTransactionReference()] );
 				return $this->getRedirectForm( $response );
 			}
 			else
 			{
-				$order->setPaymentStatus( \Aimeos\MShop\Order\Item\Base::PAY_REFUSED );
-				$this->saveOrder( $order );
-
+				$this->saveOrder( $order->setPaymentStatus( \Aimeos\MShop\Order\Item\Base::PAY_REFUSED ) );
 				throw new \Aimeos\MShop\Service\Exception( $response->getMessage() );
 			}
 		}
@@ -938,11 +921,42 @@ class OmniPay
 	}
 
 
+	protected function getOrderData( \Aimeos\MShop\Order\Item\Iface $order, $key )
+	{
+		if( $this->basket === null ) {
+			$this->basket = $this->getOrderBase( $order->getBaseId() );
+		}
+
+		$type = \Aimeos\MShop\Order\Item\Base\Service\Base::TYPE_PAYMENT;
+		$serviceItem = $this->getBasketService( $this->basket, $type, $this->getServiceItem()->getCode() );
+
+		return $serviceItem->getAttribute( $key, 'payment/omnipay' );
+	}
+
+
+	protected function setOrderData( \Aimeos\MShop\Order\Item\Iface $order, array $data ) : Iface
+	{
+		if( $this->basket === null ) {
+			$this->basket = $this->getOrderBase( $order->getBaseId() );
+		}
+
+		$type = \Aimeos\MShop\Order\Item\Base\Service\Base::TYPE_PAYMENT;
+		$serviceItem = $this->getBasketService( $this->basket, $type, $this->getServiceItem()->getCode() );
+
+		$this->setAttributes( $serviceItem, $data, 'payment/omnipay' );
+		$this->saveOrderBase( $this->basket );
+
+		return $this;
+	}
+
+
 	/**
 	 * Adds the transation reference to the order service attributes.
 	 *
 	 * @param \Aimeos\MShop\Order\Item\Base\Iface $baseItem Order base object with service items attached
 	 * @param string $ref Transaction reference from the payment gateway
+	 * @return \Aimeos\MShop\Order\Item\Base\Iface Updated order base item
+	 * @deprecated 2021.01 Use setOrderData() instead
 	 */
 	protected function saveTransationRef( \Aimeos\MShop\Order\Item\Base\Iface $baseItem, $ref )
 	{
@@ -952,6 +966,32 @@ class OmniPay
 		$attr = array( 'TRANSACTIONID' => $ref );
 		$this->setAttributes( $serviceItem, $attr, 'payment/omnipay' );
 		$this->saveOrderBase( $baseItem );
+	}
+
+
+	/**
+	 * Sends the given data for the order to the payment gateway
+	 *
+	 * @param \Aimeos\MShop\Order\Item\Iface $order Order item which should be paid
+	 * @param array $data Associative list of key/value pairs sent to the payment gateway
+	 * @return \Omnipay\Common\Message\ResponseInterface Omnipay response from the payment gateway
+	 */
+	protected function sendRequest( \Aimeos\MShop\Order\Item\Iface $order, array $data ) : \Omnipay\Common\Message\ResponseInterface
+	{
+		$provider = $this->getProvider();
+
+		if( $this->getValue( 'authorize', false ) && $provider->supportsAuthorize() )
+		{
+			$response = $provider->authorize( $data )->send();
+			$order->setPaymentStatus( \Aimeos\MShop\Order\Item\Base::PAY_AUTHORIZED );
+		}
+		else
+		{
+			$response = $provider->purchase( $data )->send();
+			$order->setPaymentStatus( \Aimeos\MShop\Order\Item\Base::PAY_RECEIVED );
+		}
+
+		return $response;
 	}
 
 

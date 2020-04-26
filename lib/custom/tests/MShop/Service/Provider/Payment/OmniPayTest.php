@@ -31,7 +31,7 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 
 		$methods = [
 			'getCustomerData', 'getOrder', 'getOrderBase', 'getTransactionReference', 'isImplemented',
-			'saveOrder', 'saveOrderBase', 'getProvider', 'saveTransationRef', 'setCustomerData'
+			'saveOrder', 'saveOrderBase', 'getProvider', 'getOrderData', 'setOrderData', 'setCustomerData'
 		];
 
 		$this->object = $this->getMockBuilder( '\\Aimeos\\MShop\\Service\\Provider\\Payment\\OmniPay' )
@@ -274,7 +274,7 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 		$this->object->expects( $this->once() )->method( 'getProvider' )
 			->will( $this->returnValue( $provider ) );
 
-		$this->object->expects( $this->once() )->method( 'saveTransationRef' );
+		$this->object->expects( $this->once() )->method( 'setOrderData' );
 
 		$provider->expects( $this->once() )->method( 'purchase' )
 			->will( $this->returnValue( $request ) );
@@ -990,7 +990,10 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 		$response->expects( $this->once() )->method( 'isSuccessful' )
 			->will( $this->returnValue( true ) );
 
-		$this->object->expects( $this->once() )->method( 'saveTransationRef' );
+		$response->expects( $this->once() )->method( 'getTransactionReference' )
+			->will($this->returnValue(''));
+
+		$this->object->expects( $this->once() )->method( 'setOrderData' );
 
 		$this->object->expects( $this->once() )->method( 'saveOrder' );
 
