@@ -35,7 +35,7 @@ class NovalnetCreditTest extends \PHPUnit\Framework\TestCase
 		$serviceItem->setCode( 'OGONE' );
 
 		$this->object = $this->getMockBuilder( '\\Aimeos\\MShop\\Service\\Provider\\Payment\\NovalnetCredit' )
-			->setMethods( array( 'getOrder', 'getOrderBase', 'saveOrder', 'saveOrderBase', 'getProvider', 'getValue' ) )
+			->setMethods( ['getOrder', 'getOrderBase', 'saveOrder', 'saveOrderBase', 'getProvider', 'getValue', 'saveRepayData'] )
 			->setConstructorArgs( array( $this->context, $serviceItem ) )
 			->getMock();
 	}

@@ -25,7 +25,7 @@ class PayoneTest extends \PHPUnit\Framework\TestCase
 
 		$this->object = $this->getMockBuilder( \Aimeos\MShop\Service\Provider\Payment\Payone::class )
 			->setConstructorArgs( array( $this->context, $this->serviceItem ) )
-			->setMethods( array( 'getOrderBase', 'getProvider', 'saveOrder', 'updateSync' ) )
+			->setMethods( ['getOrderBase', 'getProvider', 'saveOrder', 'updateSync', 'saveRepayData'] )
 			->getMock();
 	}
 

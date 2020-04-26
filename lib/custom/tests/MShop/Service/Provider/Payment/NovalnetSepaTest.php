@@ -35,7 +35,7 @@ class NovalnetSepaTest extends \PHPUnit\Framework\TestCase
 		$serviceItem->setCode( 'OGONE' );
 
 		$this->object = $this->getMockBuilder( '\\Aimeos\\MShop\\Service\\Provider\\Payment\\NovalnetSepa' )
-			->setMethods( array( 'getOrder', 'getOrderBase', 'saveOrder', 'saveOrderBase', 'getProvider' ) )
+			->setMethods( ['getOrder', 'getOrderBase', 'saveOrder', 'saveOrderBase', 'getProvider', 'saveRepayData'] )
 			->setConstructorArgs( array( $this->context, $serviceItem ) )
 			->getMock();
 	}
