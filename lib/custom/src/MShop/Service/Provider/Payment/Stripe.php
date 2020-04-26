@@ -104,8 +104,6 @@ class Stripe
 		),
 	);
 
-	private $provider;
-
 
 	/**
 	 * Checks the backend configuration attributes for validity.
