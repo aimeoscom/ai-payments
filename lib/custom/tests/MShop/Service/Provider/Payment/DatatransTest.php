@@ -67,9 +67,6 @@ class DatatransTest extends \PHPUnit\Framework\TestCase
 			->setMethods( ['isSuccessful', 'getResponseCode', 'getTransactionReference'] )
 			->getMock();
 
-		$this->object->expects( $this->once() )->method( 'getOrderBase' )
-			->will($this->returnValue($baseItem));
-
 		$this->object->expects( $this->once() )->method( 'getProvider' )
 			->will($this->returnValue($provider));
 
@@ -119,9 +116,6 @@ class DatatransTest extends \PHPUnit\Framework\TestCase
 			->setMethods( ['isSuccessful', 'getResponseCode', 'getTransactionReference'] )
 			->getMock();
 
-		$this->object->expects( $this->once() )->method( 'getOrderBase' )
-			->will( $this->returnValue( $baseItem ) );
-
 		$this->object->expects( $this->once() )->method( 'getProvider' )
 			->will( $this->returnValue( $provider ) );
 
@@ -160,9 +154,6 @@ class DatatransTest extends \PHPUnit\Framework\TestCase
 			->disableOriginalConstructor()
 			->setMethods( ['isPending', 'getTransactionReference'] )
 			->getMock();
-
-		$this->object->expects( $this->once() )->method( 'getOrderBase' )
-			->will( $this->returnValue( $baseItem ) );
 
 		$this->object->expects( $this->once() )->method( 'getProvider' )
 			->will( $this->returnValue( $provider ) );
@@ -208,9 +199,6 @@ class DatatransTest extends \PHPUnit\Framework\TestCase
 			->disableOriginalConstructor()
 			->setMethods( ['isCancelled', 'getTransactionReference'] )
 			->getMock();
-
-		$this->object->expects( $this->once() )->method( 'getOrderBase' )
-			->will( $this->returnValue( $baseItem ) );
 
 		$this->object->expects( $this->once() )->method( 'getProvider' )
 			->will( $this->returnValue( $provider ) );
