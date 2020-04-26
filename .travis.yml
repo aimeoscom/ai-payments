@@ -11,7 +11,6 @@ php:
   - 7.2
   - 7.1
 env:
-  - OMNIPAY_VERSION=~2.0
   - OMNIPAY_VERSION=~3.0
 
 matrix:
