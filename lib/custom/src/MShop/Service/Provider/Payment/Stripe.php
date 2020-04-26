@@ -10,7 +10,8 @@
 
 namespace Aimeos\MShop\Service\Provider\Payment;
 
-use Omnipay\Omnipay as OPay;
+use Aimeos\MShop\Order\Item\Base as Status;
+
 
 /**
  * Payment provider for Stripe.
@@ -30,7 +31,7 @@ class Stripe
 			'label'=> 'Payment provider type',
 			'type'=> 'string',
 			'internaltype'=> 'string',
-			'default'=> 'Stripe',
+			'default'=> 'Stripe_PaymentIntents',
 			'required'=> true,
 		),
 		'apiKey' => array(
@@ -54,7 +55,6 @@ class Stripe
 	);
 
 	protected $feConfig = array(
-
 		'paymenttoken' => array(
 			'code' => 'paymenttoken',
 			'internalcode' => 'paymenttoken',
@@ -65,7 +65,16 @@ class Stripe
 			'required' => true,
 			'public' => false,
 		),
-
+		'setup_future_usage' => array(
+			'code' => 'setup_future_usage',
+			'internalcode' => 'setup_future_usage',
+			'label' => 'Save card for recurring payments',
+			'type' => 'string',
+			'internaltype' => 'string',
+			'default' => 'off_session',
+			'required' => true,
+			'public' => false,
+		),
 		'payment.cardno' => array(
 			'code' => 'payment.cardno',
 			'internalcode'=> 'number',
@@ -144,9 +153,8 @@ class Stripe
 			return $this->getPaymentForm( $order, $params );
 		}
 
-		if( ( $userid = $this->getContext()->getUserId() ) !== null
-			&& $this->getCustomerData( $userid, 'customer' ) === null
-			&& $this->getConfigValue( 'createtoken' )
+		if( $this->getConfigValue( 'createtoken' )
+			&& $this->getCustomerData( $this->getContext()->getUserId(), 'customerid' ) === null
 		) {
 			$data = [];
 			$base = $this->getOrderBase( $order->getBaseId() );
@@ -160,65 +168,11 @@ class Stripe
 			$response = $this->getProvider()->createCustomer( $data )->send();
 
 			if( $response->isSuccessful() ) {
-				$this->setCustomerData( $userid, 'customer', $response->getCustomerReference() );
+				$this->setCustomerData( $this->getContext()->getUserId(), 'customerid', $response->getCustomerReference() );
 			}
 		}
 
 		return $this->processOrder( $order, $params );
-	}
-
-
-	/**
-	 * Executes the payment again for the given order if supported.
-	 * This requires support of the payment gateway and token based payment
-	 *
-	 * @param \Aimeos\MShop\Order\Item\Iface $order Order invoice object
-	 * @return \Aimeos\MShop\Order\Item\Iface Updated order item object
-	 */
-	public function repay( \Aimeos\MShop\Order\Item\Iface $order ) : \Aimeos\MShop\Order\Item\Iface
-	{
-		$base = $this->getOrderBase( $order->getBaseId() );
-
-		if( ( $custid = $this->getCustomerData( $base->getCustomerId(), 'customer' ) ) === null )
-		{
-			$msg = sprintf( 'No Stripe customer data available for customer ID "%1$s"', $base->getCustomerId() );
-			throw new \Aimeos\MShop\Service\Exception( $msg );
-		}
-
-		if( ( $cfg = $this->getCustomerData( $base->getCustomerId(), 'repay' ) ) === null )
-		{
-			$msg = sprintf( 'No Stripe payment method available for customer ID "%1$s"', $base->getCustomerId() );
-			throw new \Aimeos\MShop\Service\Exception( $msg );
-		}
-
-		if( !isset( $cfg['token'] ) )
-		{
-			$msg = sprintf( 'No payment token available for customer ID "%1$s"', $base->getCustomerId() );
-			throw new \Aimeos\MShop\Service\Exception( $msg );
-		}
-
-		$response = $this->getProvider()->purchase( [
-			'transactionId' => $order->getId(),
-			'currency' => $base->getPrice()->getCurrencyId(),
-			'amount' => $this->getAmount( $base->getPrice() ),
-			'cardReference' => $cfg['token'],
-			'customerReference' => $custid,
-			'off_session' => true,
-			'confirm' => true,
-		] )->send();
-
-		if( $response->isSuccessful() )
-		{
-			$this->setOrderData( $order, ['Transaction' => $response->getTransactionReference()] );
-			$order = $this->saveOrder( $order->setPaymentStatus( Status::PAY_RECEIVED ) );
-		}
-		else
-		{
-			$msg = ( method_exists( $response, 'getMessage' ) ? $response->getMessage() : '' );
-			throw new \Aimeos\MShop\Service\Exception( sprintf( 'Token based payment failed: %1$s', $msg ) );
-		}
-
-		return $order;
 	}
 
 
@@ -242,6 +196,7 @@ class Stripe
 			if( $response->isSuccessful() )
 			{
 				$status = $this->getValue( 'authorize', false ) ? Status::PAY_AUTHORIZED : Status::PAY_RECEIVED;
+				$this->setOrderData( $order, ['TRANSACTIONID' => $response->getTransactionReference()] );
 
 				if( $paymethod = $response->getCardReference() ) {
 					$this->setCustomerData( $this->getContext()->getUserId(), 'repay', ['token' => $paymethod] );
@@ -279,8 +234,8 @@ class Stripe
 			$data['token'] = $token;
 		}
 
-		if( $this->getContext()->getUserId() && $this->getConfigValue( 'createtoken' )
-			&& $custid = $this->getCustomerData( $this->getContext()->getUserId(), 'customer' )
+		if( $this->getConfigValue( 'createtoken' ) &&
+			$custid = $this->getCustomerData( $this->getContext()->getUserId(), 'customerid' )
 		) {
 			$data['customerReference'] = $custid;
 		}
@@ -316,27 +271,6 @@ class Stripe
 
 		$url = $this->getConfigValue( 'payment.url-self' );
 		return new \Aimeos\MShop\Common\Helper\Form\Standard( $url, 'POST', $list, false, $this->getStripeJs() );
-	}
-
-
-	/**
-	 * Returns the Omnipay gateway provider object.
-	 *
-	 * @return \Omnipay\Common\GatewayInterface Gateway provider object
-	 */
-	protected function getProvider()
-	{
-		$config = $this->getServiceItem()->getConfig();
-		$config['apiKey'] = $this->getServiceItem()->getConfigValue( 'apiKey' );
-
-		if( !isset( $this->provider ) )
-		{
-			$this->provider = OPay::create( 'Stripe' );
-			$this->provider->setTestMode( (bool) $this->getValue( 'testmode', false ) );
-			$this->provider->initialize( $config );
-		}
-
-		return $this->provider;
 	}
 
 
@@ -442,10 +376,6 @@ document.addEventListener("DOMContentLoaded", function() {
 	 */
 	protected function sendRequest( \Aimeos\MShop\Order\Item\Iface $order, array $data ) : \Omnipay\Common\Message\ResponseInterface
 	{
-		if( $this->getConfigValue( 'createtoken' ) ) {
-			$data['setup_future_usage'] = 'off_session';
-		}
-
 		$response = parent::sendRequest( $order, $data );
 		$this->setOrderData( $order, ['Reference' => $response->getPaymentIntentReference()] );
 
