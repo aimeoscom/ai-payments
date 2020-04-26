@@ -25,7 +25,7 @@ class PayoneTest extends \PHPUnit\Framework\TestCase
 
 		$this->object = $this->getMockBuilder( \Aimeos\MShop\Service\Provider\Payment\Payone::class )
 			->setConstructorArgs( array( $this->context, $this->serviceItem ) )
-			->setMethods( array( 'getOrderBase', 'getProvider', 'updateSync' ) )
+			->setMethods( array( 'getOrderBase', 'getProvider', 'saveOrder', 'updateSync' ) )
 			->getMock();
 	}
 
@@ -51,7 +51,7 @@ class PayoneTest extends \PHPUnit\Framework\TestCase
 			| \Aimeos\MShop\Order\Item\Base\Base::PARTS_SERVICE
 			| \Aimeos\MShop\Order\Item\Base\Base::PARTS_PRODUCT;
 
-		$this->object->expects( $this->once() )->method( 'getOrderBase' )
+		$this->object->expects( $this->exactly( 2 ) )->method( 'getOrderBase' )
 			->will( $this->returnValue( $this->getOrderBase( $parts ) ) );
 
 		$params = array(
