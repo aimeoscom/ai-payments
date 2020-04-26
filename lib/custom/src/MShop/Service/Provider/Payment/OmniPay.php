@@ -12,6 +12,7 @@ namespace Aimeos\MShop\Service\Provider\Payment;
 
 
 use Omnipay\Omnipay as OPay;
+use Aimeos\MShop\Order\Item\Base as Status;
 
 
 /**
@@ -288,11 +289,8 @@ class OmniPay
 
 		$response = $provider->void( $data )->send();
 
-		if( $response->isSuccessful() )
-		{
-			$status = \Aimeos\MShop\Order\Item\Base::PAY_CANCELED;
-			$order->setPaymentStatus( $status );
-			$order = $this->saveOrder( $order );
+		if( $response->isSuccessful() ) {
+			$order = $this->saveOrder( $order->setPaymentStatus( Status::PAY_CANCELED ) );
 		}
 
 		return $order;
@@ -324,10 +322,8 @@ class OmniPay
 
 		$response = $provider->capture( $data )->send();
 
-		if( $response->isSuccessful() )
-		{
-			$status = \Aimeos\MShop\Order\Item\Base::PAY_RECEIVED;
-			$order = $order->setPaymentStatus( $status );
+		if( $response->isSuccessful() ) {
+			$order = $order->setPaymentStatus( Status::PAY_RECEIVED );
 		}
 
 		return $order;
@@ -412,9 +408,7 @@ class OmniPay
 			$this->setAttributes( $service, $attr, 'payment/omnipay' );
 			$this->saveOrderBase( $base );
 
-			$status = \Aimeos\MShop\Order\Item\Base::PAY_REFUND;
-			$order->setPaymentStatus( $status );
-			$order = $this->saveOrder( $order );
+			$order = $this->saveOrder( $order->setPaymentStatus( Status::PAY_REFUND ) );
 		}
 
 		return $order;
@@ -469,7 +463,7 @@ class OmniPay
 		if( $response->isSuccessful() )
 		{
 			$this->setOrderData( $order, ['TRANSACTIONID' => $response->getTransactionReference()] );
-			$order = $this->saveOrder( $order->setPaymentStatus( \Aimeos\MShop\Order\Item\Base::PAY_RECEIVED ) );
+			$order = $this->saveOrder( $order->setPaymentStatus( Status::PAY_RECEIVED ) );
 		}
 		else
 		{
@@ -514,17 +508,15 @@ class OmniPay
 			}
 			elseif( method_exists( $omniResponse, 'isPending' ) && $omniResponse->isPending() )
 			{
-				$order->setPaymentStatus( \Aimeos\MShop\Order\Item\Base::PAY_PENDING );
+				$order->setPaymentStatus( Status::PAY_PENDING );
 			}
 			elseif( method_exists( $omniResponse, 'isCancelled' ) && $omniResponse->isCancelled() )
 			{
-				$order->setPaymentStatus( \Aimeos\MShop\Order\Item\Base::PAY_CANCELED );
+				$order->setPaymentStatus( Status::PAY_CANCELED );
 			}
 			else
 			{
-				$order->setPaymentStatus( \Aimeos\MShop\Order\Item\Base::PAY_REFUSED );
-				$this->saveOrder( $order );
-
+				$this->saveOrder( $order->setPaymentStatus( Status::PAY_REFUSED ) );
 				throw new \Aimeos\MShop\Service\Exception( $omniResponse->getMessage() );
 			}
 
@@ -567,12 +559,12 @@ class OmniPay
 			if( $this->getValue( 'authorize', false ) && $provider->supportsCompleteAuthorize() )
 			{
 				$response = $provider->completeAuthorize( $params )->send();
-				$status = \Aimeos\MShop\Order\Item\Base::PAY_AUTHORIZED;
+				$status = Status::PAY_AUTHORIZED;
 			}
 			elseif( $provider->supportsCompletePurchase() )
 			{
 				$response = $provider->completePurchase( $params )->send();
-				$status = \Aimeos\MShop\Order\Item\Base::PAY_RECEIVED;
+				$status = Status::PAY_RECEIVED;
 			}
 			else
 			{
@@ -589,11 +581,11 @@ class OmniPay
 			}
 			elseif( method_exists( $response, 'isPending' ) && $response->isPending() )
 			{
-				$order->setPaymentStatus( \Aimeos\MShop\Order\Item\Base::PAY_PENDING );
+				$order->setPaymentStatus( Status::PAY_PENDING );
 			}
 			elseif( method_exists( $response, 'isCancelled' ) && $response->isCancelled() )
 			{
-				$order->setPaymentStatus( \Aimeos\MShop\Order\Item\Base::PAY_CANCELED );
+				$order->setPaymentStatus( Status::PAY_CANCELED );
 			}
 			elseif( method_exists( $response, 'isRedirect' ) && $response->isRedirect() )
 			{
@@ -602,8 +594,8 @@ class OmniPay
 			}
 			else
 			{
-				if( $order->getPaymentStatus() === \Aimeos\MShop\Order\Item\Base::PAY_UNFINISHED ) {
-					$this->saveOrder( $order->setPaymentStatus( \Aimeos\MShop\Order\Item\Base::PAY_REFUSED ) );
+				if( $order->getPaymentStatus() === Status::PAY_UNFINISHED ) {
+					$this->saveOrder( $order->setPaymentStatus( Status::PAY_REFUSED ) );
 				}
 
 				throw new \Aimeos\MShop\Service\Exception( $response->getMessage() );
@@ -880,12 +872,14 @@ class OmniPay
 
 		try
 		{
-			$status = \Aimeos\MShop\Order\Item\Base::PAY_UNFINISHED;
 			$response = $this->sendRequest( $order, $data );
 
 			if( $response->isSuccessful() )
 			{
 				$this->setOrderData( $order, ['TRANSACTIONID' => $response->getTransactionReference()] );
+				$this->saveRepayData( $response, $base->getCustomerId() );
+
+				$status = $this->getValue( 'authorize', false ) ? Status::PAY_AUTHORIZED : Status::PAY_RECEIVED;
 				$this->saveOrder( $order->setPaymentStatus( $status ) );
 			}
 			elseif( $response->isRedirect() )
@@ -895,7 +889,7 @@ class OmniPay
 			}
 			else
 			{
-				$this->saveOrder( $order->setPaymentStatus( \Aimeos\MShop\Order\Item\Base::PAY_REFUSED ) );
+				$this->saveOrder( $order->setPaymentStatus( Status::PAY_REFUSED ) );
 				throw new \Aimeos\MShop\Service\Exception( $response->getMessage() );
 			}
 		}
@@ -1003,12 +997,12 @@ class OmniPay
 		if( $this->getValue( 'authorize', false ) && $provider->supportsAuthorize() )
 		{
 			$response = $provider->authorize( $data )->send();
-			$order->setPaymentStatus( \Aimeos\MShop\Order\Item\Base::PAY_AUTHORIZED );
+			$order->setPaymentStatus( Status::PAY_AUTHORIZED );
 		}
 		else
 		{
 			$response = $provider->purchase( $data )->send();
-			$order->setPaymentStatus( \Aimeos\MShop\Order\Item\Base::PAY_RECEIVED );
+			$order->setPaymentStatus( Status::PAY_RECEIVED );
 		}
 
 		return $response;
@@ -1024,17 +1018,17 @@ class OmniPay
 	protected function translateStatus( string $status ) : ?int
 	{
 		if( !interface_exists( '\Omnipay\Common\Message\NotificationInterface' ) ) {
-			return \Aimeos\MShop\Order\Item\Base::PAY_REFUSED;
+			return Status::PAY_REFUSED;
 		}
 
 		switch( $status )
 		{
 			case \Omnipay\Common\Message\NotificationInterface::STATUS_COMPLETED:
-				return \Aimeos\MShop\Order\Item\Base::PAY_RECEIVED;
+				return Status::PAY_RECEIVED;
 			case \Omnipay\Common\Message\NotificationInterface::STATUS_PENDING:
-				return \Aimeos\MShop\Order\Item\Base::PAY_PENDING;
+				return Status::PAY_PENDING;
 			case \Omnipay\Common\Message\NotificationInterface::STATUS_FAILED:
-				return \Aimeos\MShop\Order\Item\Base::PAY_REFUSED;
+				return Status::PAY_REFUSED;
 		}
 
 		return null;
