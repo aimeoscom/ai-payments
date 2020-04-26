@@ -49,10 +49,6 @@ class DatatransTest extends \PHPUnit\Framework\TestCase
 
 	public function testQuerySuccess()
 	{
-		$manager = \Aimeos\MShop\Order\Manager\Factory::create( $this->context )->getSubmanager( 'base' );
-		$baseItem = $manager->load( $this->getOrder()->getBaseId(), \Aimeos\MShop\Order\Item\Base\Base::PARTS_NONE );
-
-
 		$provider = $this->getMockBuilder( 'Omnipay\Dummy\Gateway' )
 			->setMethods( ['getProvider', 'getTransaction'] )
 			->getMock();
@@ -96,9 +92,6 @@ class DatatransTest extends \PHPUnit\Framework\TestCase
 
 	public function testQueryAuthorizeFailure()
 	{
-		$manager = \Aimeos\MShop\Order\Manager\Factory::create( $this->context )->getSubmanager( 'base' );
-		$baseItem = $manager->load( $this->getOrder()->getBaseId(), \Aimeos\MShop\Order\Item\Base\Base::PARTS_NONE );
-
 		$this->serviceItem->setConfig( array( 'type' => 'Dummy', 'authorize' => '1' ) );
 
 		$provider = $this->getMockBuilder( \Omnipay\Dummy\Gateway::class )
@@ -137,10 +130,6 @@ class DatatransTest extends \PHPUnit\Framework\TestCase
 
 	public function testQueryPending()
 	{
-		$manager = \Aimeos\MShop\Order\Manager\Factory::create( $this->context )->getSubmanager( 'base' );
-		$baseItem = $manager->load( $this->getOrder()->getBaseId(), \Aimeos\MShop\Order\Item\Base\Base::PARTS_NONE );
-
-
 		$provider = $this->getMockBuilder( 'Omnipay\Dummy\Gateway' )
 			->setMethods( ['getProvider', 'getTransaction'] )
 			->getMock();
@@ -182,10 +171,6 @@ class DatatransTest extends \PHPUnit\Framework\TestCase
 
 	public function testQueryCancelled()
 	{
-		$manager = \Aimeos\MShop\Order\Manager\Factory::create( $this->context )->getSubmanager( 'base' );
-		$baseItem = $manager->load( $this->getOrder()->getBaseId(), \Aimeos\MShop\Order\Item\Base\Base::PARTS_NONE );
-
-
 		$provider = $this->getMockBuilder( 'Omnipay\Dummy\Gateway' )
 			->setMethods( ['getProvider', 'getTransaction'] )
 			->getMock();
