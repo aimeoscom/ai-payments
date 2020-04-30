@@ -169,6 +169,60 @@ class Stripe
 
 
 	/**
+	 * Executes the payment again for the given order if supported.
+	 * This requires support of the payment gateway and token based payment
+	 *
+	 * @param \Aimeos\MShop\Order\Item\Iface $order Order invoice object
+	 * @return \Aimeos\MShop\Order\Item\Iface Updated order item object
+	 */
+	public function repay( \Aimeos\MShop\Order\Item\Iface $order ) : \Aimeos\MShop\Order\Item\Iface
+	{
+		$base = $this->getOrderBase( $order->getBaseId() );
+
+		if( ( $custid = $this->getCustomerData( $base->getCustomerId(), 'customer' ) ) === null )
+		{
+			$msg = sprintf( 'No Stripe customer data available for customer ID "%1$s"', $base->getCustomerId() );
+			throw new \Aimeos\MShop\Service\Exception( $msg );
+		}
+
+		if( ( $cfg = $this->getCustomerData( $base->getCustomerId(), 'repay' ) ) === null )
+		{
+			$msg = sprintf( 'No Stripe payment method available for customer ID "%1$s"', $base->getCustomerId() );
+			throw new \Aimeos\MShop\Service\Exception( $msg );
+		}
+
+		if( !isset( $cfg['token'] ) )
+		{
+			$msg = sprintf( 'No payment token available for customer ID "%1$s"', $base->getCustomerId() );
+			throw new \Aimeos\MShop\Service\Exception( $msg );
+		}
+
+		$response = $this->getProvider()->purchase( [
+			'transactionId' => $order->getId(),
+			'currency' => $base->getPrice()->getCurrencyId(),
+			'amount' => $this->getAmount( $base->getPrice() ),
+			'cardReference' => $cfg['token'],
+			'customerReference' => $custid,
+			'off_session' => true,
+			'confirm' => true,
+		] )->send();
+
+		if( $response->isSuccessful() )
+		{
+			$this->setOrderData( $order, ['Transaction' => $response->getTransactionReference()] );
+			$order = $this->saveOrder( $order->setPaymentStatus( Status::PAY_RECEIVED ) );
+		}
+		else
+		{
+			$msg = ( method_exists( $response, 'getMessage' ) ? $response->getMessage() : '' );
+			throw new \Aimeos\MShop\Service\Exception( sprintf( 'Token based payment failed: %1$s', $msg ) );
+		}
+
+		return $order;
+	}
+
+
+	/**
 	 * Updates the orders for whose status updates have been received by the confirmation page
 	 *
 	 * @param \Psr\Http\Message\ServerRequestInterface $request Request object with parameters and request body
@@ -380,20 +434,21 @@ document.addEventListener("DOMContentLoaded", function() {
 
 
 	/**
-	 * Returns the value for the given configuration key
+	 * Sends the given data for the order to the payment gateway
 	 *
-	 * @param string $key Configuration key name
-	 * @param mixed $default Default value if no configuration is found
-	 * @return mixed Configuration value
+	 * @param \Aimeos\MShop\Order\Item\Iface $order Order item which should be paid
+	 * @param array $data Associative list of key/value pairs sent to the payment gateway
+	 * @return \Omnipay\Common\Message\ResponseInterface Omnipay response from the payment gateway
 	 */
-	protected function getValue( $key, $default = null )
+	protected function sendRequest( \Aimeos\MShop\Order\Item\Iface $order, array $data ) : \Omnipay\Common\Message\ResponseInterface
 	{
-		switch( $key )
-		{
-			case 'type': return 'Stripe';
-			case 'onsite': return true;
+		if( $this->getConfigValue( 'createtoken' ) ) {
+			$data['setup_future_usage'] = 'off_session';
 		}
 
-		return parent::getValue( $key, $default );
+		$response = parent::sendRequest( $order, $data );
+		$this->setOrderData( $order, ['Reference' => $response->getPaymentIntentReference()] );
+
+		return $response;
 	}
 }
