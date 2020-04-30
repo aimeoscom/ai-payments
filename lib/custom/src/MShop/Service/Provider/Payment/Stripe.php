@@ -419,8 +419,8 @@ document.addEventListener("DOMContentLoaded", function() {
 	 */
 	protected function sendRequest( \Aimeos\MShop\Order\Item\Iface $order, array $data ) : \Omnipay\Common\Message\ResponseInterface
 	{
-		if( $value = $this->getConfigValue( 'setup_future_usage' ) ) {
-			$data['setup_future_usage'] = $value;
+		if( $this->getConfigValue( 'createtoken' ) ) {
+			$data['setup_future_usage'] = 'off_session';
 		}
 
 		$response = parent::sendRequest( $order, $data );
