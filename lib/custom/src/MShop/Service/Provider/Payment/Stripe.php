@@ -144,7 +144,64 @@ class Stripe
 			return $this->getPaymentForm( $order, $params );
 		}
 
+		if( ( $userid = $this->getContext()->getUserId() ) !== null
+			&& $this->getCustomerData( $userid, 'customer' ) === null
+			&& $this->getConfigValue( 'createtoken' )
+		) {
+			$data = [];
+			$base = $this->getOrderBase( $order->getBaseId() );
+
+			if( $addr = current( $base->getAddress( 'payment' ) ) )
+			{
+				$data['description'] = $addr->getFirstName() . ' ' . $addr->getLastName();
+				$data['email'] = $addr->getEmail();
+			}
+
+			$response = $this->getProvider()->createCustomer( $data )->send();
+
+			if( $response->isSuccessful() ) {
+				$this->setCustomerData( $userid, 'customer', $response->getCustomerReference() );
+			}
+		}
+
 		return $this->processOrder( $order, $params );
+	}
+
+
+	/**
+	 * Updates the orders for whose status updates have been received by the confirmation page
+	 *
+	 * @param \Psr\Http\Message\ServerRequestInterface $request Request object with parameters and request body
+	 * @param \Aimeos\MShop\Order\Item\Iface $order Order item that should be updated
+	 * @return \Aimeos\MShop\Order\Item\Iface Updated order item
+	 * @throws \Aimeos\MShop\Service\Exception If updating the orders failed
+	 */
+	public function updateSync( \Psr\Http\Message\ServerRequestInterface $request,
+		\Aimeos\MShop\Order\Item\Iface $order ) : \Aimeos\MShop\Order\Item\Iface
+	{
+		if( $order->getPaymentStatus() === Status::PAY_UNFINISHED )
+		{
+			$response = $this->getProvider()->confirm( [
+				'paymentIntentReference' => $this->getOrderData( $order, 'Reference' )
+			] )->send();
+
+			if( $response->isSuccessful() )
+			{
+				$status = $this->getValue( 'authorize', false ) ? Status::PAY_AUTHORIZED : Status::PAY_RECEIVED;
+
+				if( $paymethod = $response->getCardReference() ) {
+					$this->setCustomerData( $this->getContext()->getUserId(), 'repay', ['token' => $paymethod] );
+				}
+			}
+			else
+			{
+				$status = Status::PAY_REFUSED;
+			}
+
+			$this->saveOrder( $order->setPaymentStatus( $status ) );
+		}
+
+		return $order;
 	}
 
 
@@ -167,6 +224,21 @@ class Stripe
 		if( ( $token = $session->get( 'aimeos/stripe_token' ) ) !== null ) {
 			$data['token'] = $token;
 		}
+
+		if( $this->getContext()->getUserId() && $this->getConfigValue( 'createtoken' )
+			&& $custid = $this->getCustomerData( $this->getContext()->getUserId(), 'customer' )
+		) {
+			$data['customerReference'] = $custid;
+		}
+
+		$type = \Aimeos\MShop\Order\Item\Base\Service\Base::TYPE_PAYMENT;
+		$serviceItem = $this->getBasketService( $base, $type, $this->getServiceItem()->getCode() );
+
+		if( $stripeIntentsRef = $serviceItem->getAttribute( 'Reference', 'payment/omnipay' ) ) {
+			$data['paymentIntentReference'] = $stripeIntentsRef;
+		}
+
+		$data['confirm'] = true;
 
 		return $data;
 	}
