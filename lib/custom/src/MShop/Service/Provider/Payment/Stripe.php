@@ -185,7 +185,7 @@ class Stripe
 	 * @throws \Aimeos\MShop\Service\Exception If updating the orders failed
 	 */
 	public function updateSync( \Psr\Http\Message\ServerRequestInterface $request,
-		\Aimeos\MShop\Order\Item\Iface $order ) : \Aimeos\MShop\Order\Item\Iface
+		\Aimeos\MShop\Order\Item\Iface $order )
 	{
 		if( $order->getPaymentStatus() === Status::PAY_UNFINISHED )
 		{
@@ -374,7 +374,7 @@ document.addEventListener("DOMContentLoaded", function() {
 	 * @param array $data Associative list of key/value pairs sent to the payment gateway
 	 * @return \Omnipay\Common\Message\ResponseInterface Omnipay response from the payment gateway
 	 */
-	protected function sendRequest( \Aimeos\MShop\Order\Item\Iface $order, array $data ) : \Omnipay\Common\Message\ResponseInterface
+	protected function sendRequest( \Aimeos\MShop\Order\Item\Iface $order, array $data )
 	{
 		$response = parent::sendRequest( $order, $data );
 		$this->setOrderData( $order, ['Reference' => $response->getPaymentIntentReference()] );
