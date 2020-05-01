@@ -17,8 +17,8 @@ class StripeTest extends \PHPUnit\Framework\TestCase
 
 	protected function setUp()
 	{
-		if( !class_exists( 'Omnipay\Omnipay' ) ) {
-			$this->markTestSkipped( 'Omnipay library not available' );
+		if( !class_exists( 'Omnipay\Omnipay' ) || !class_exists( '\Omnipay\Stripe\PaymentIntentsGateway' ) ) {
+			$this->markTestSkipped( 'Stripe Omnipay library not available' );
 		}
 
 		$this->context = \TestHelper::getContext();
