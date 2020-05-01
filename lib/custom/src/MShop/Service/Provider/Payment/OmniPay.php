@@ -934,7 +934,7 @@ class OmniPay
 	}
 
 
-	protected function setOrderData( \Aimeos\MShop\Order\Item\Iface $order, array $data ) : Iface
+	protected function setOrderData( \Aimeos\MShop\Order\Item\Iface $order, array $data )
 	{
 		if( $this->basket === null ) {
 			$this->basket = $this->getOrderBase( $order->getBaseId() );
