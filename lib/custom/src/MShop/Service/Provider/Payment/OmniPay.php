@@ -976,7 +976,7 @@ class OmniPay
 	 * @param array $data Associative list of key/value pairs sent to the payment gateway
 	 * @return \Omnipay\Common\Message\ResponseInterface Omnipay response from the payment gateway
 	 */
-	protected function sendRequest( \Aimeos\MShop\Order\Item\Iface $order, array $data ) : \Omnipay\Common\Message\ResponseInterface
+	protected function sendRequest( \Aimeos\MShop\Order\Item\Iface $order, array $data )
 	{
 		$provider = $this->getProvider();
 
