@@ -65,16 +65,7 @@ class Stripe
 			'required' => true,
 			'public' => false,
 		),
-		'setup_future_usage' => array(
-			'code' => 'setup_future_usage',
-			'internalcode' => 'setup_future_usage',
-			'label' => 'Save card for recurring payments',
-			'type' => 'string',
-			'internaltype' => 'string',
-			'default' => 'off_session',
-			'required' => true,
-			'public' => false,
-		),
+
 		'payment.cardno' => array(
 			'code' => 'payment.cardno',
 			'internalcode'=> 'number',
@@ -153,8 +144,9 @@ class Stripe
 			return $this->getPaymentForm( $order, $params );
 		}
 
-		if( $this->getConfigValue( 'createtoken' )
-			&& $this->getCustomerData( $this->getContext()->getUserId(), 'customerid' ) === null
+		if( ( $userid = $this->getContext()->getUserId() ) !== null
+			&& $this->getCustomerData( $userid, 'customer' ) === null
+			&& $this->getConfigValue( 'createtoken' )
 		) {
 			$data = [];
 			$base = $this->getOrderBase( $order->getBaseId() );
@@ -168,11 +160,65 @@ class Stripe
 			$response = $this->getProvider()->createCustomer( $data )->send();
 
 			if( $response->isSuccessful() ) {
-				$this->setCustomerData( $this->getContext()->getUserId(), 'customerid', $response->getCustomerReference() );
+				$this->setCustomerData( $userid, 'customer', $response->getCustomerReference() );
 			}
 		}
 
 		return $this->processOrder( $order, $params );
+	}
+
+
+	/**
+	 * Executes the payment again for the given order if supported.
+	 * This requires support of the payment gateway and token based payment
+	 *
+	 * @param \Aimeos\MShop\Order\Item\Iface $order Order invoice object
+	 * @return \Aimeos\MShop\Order\Item\Iface Updated order item object
+	 */
+	public function repay( \Aimeos\MShop\Order\Item\Iface $order )
+	{
+		$base = $this->getOrderBase( $order->getBaseId() );
+
+		if( ( $custid = $this->getCustomerData( $base->getCustomerId(), 'customer' ) ) === null )
+		{
+			$msg = sprintf( 'No Stripe customer data available for customer ID "%1$s"', $base->getCustomerId() );
+			throw new \Aimeos\MShop\Service\Exception( $msg );
+		}
+
+		if( ( $cfg = $this->getCustomerData( $base->getCustomerId(), 'repay' ) ) === null )
+		{
+			$msg = sprintf( 'No Stripe payment method available for customer ID "%1$s"', $base->getCustomerId() );
+			throw new \Aimeos\MShop\Service\Exception( $msg );
+		}
+
+		if( !isset( $cfg['token'] ) )
+		{
+			$msg = sprintf( 'No payment token available for customer ID "%1$s"', $base->getCustomerId() );
+			throw new \Aimeos\MShop\Service\Exception( $msg );
+		}
+
+		$response = $this->getProvider()->purchase( [
+			'transactionId' => $order->getId(),
+			'currency' => $base->getPrice()->getCurrencyId(),
+			'amount' => $this->getAmount( $base->getPrice() ),
+			'cardReference' => $cfg['token'],
+			'customerReference' => $custid,
+			'off_session' => true,
+			'confirm' => true,
+		] )->send();
+
+		if( $response->isSuccessful() )
+		{
+			$this->setOrderData( $order, ['Transaction' => $response->getTransactionReference()] );
+			$order = $this->saveOrder( $order->setPaymentStatus( Status::PAY_RECEIVED ) );
+		}
+		else
+		{
+			$msg = ( method_exists( $response, 'getMessage' ) ? $response->getMessage() : '' );
+			throw new \Aimeos\MShop\Service\Exception( sprintf( 'Token based payment failed: %1$s', $msg ) );
+		}
+
+		return $order;
 	}
 
 
@@ -234,8 +280,8 @@ class Stripe
 			$data['token'] = $token;
 		}
 
-		if( $this->getConfigValue( 'createtoken' ) &&
-			$custid = $this->getCustomerData( $this->getContext()->getUserId(), 'customerid' )
+		if( $this->getContext()->getUserId() && $this->getConfigValue( 'createtoken' )
+			&& $custid = $this->getCustomerData( $this->getContext()->getUserId(), 'customer' )
 		) {
 			$data['customerReference'] = $custid;
 		}
@@ -376,6 +422,10 @@ document.addEventListener("DOMContentLoaded", function() {
 	 */
 	protected function sendRequest( \Aimeos\MShop\Order\Item\Iface $order, array $data )
 	{
+		if( $this->getConfigValue( 'createtoken' ) ) {
+			$data['setup_future_usage'] = 'off_session';
+		}
+
 		$response = parent::sendRequest( $order, $data );
 		$this->setOrderData( $order, ['Reference' => $response->getPaymentIntentReference()] );
 
