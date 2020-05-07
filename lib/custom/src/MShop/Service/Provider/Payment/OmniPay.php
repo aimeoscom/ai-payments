@@ -865,12 +865,14 @@ class OmniPay
 
 		try
 		{
-			$status = \Aimeos\MShop\Order\Item\Base::PAY_UNFINISHED;
 			$response = $this->sendRequest( $order, $data );
 
 			if( $response->isSuccessful() )
 			{
-				$this->setOrderData( $order, ['TRANSACTIONID' => $response->getTransactionReference()] );
+				$this->setOrderData( $order, ['Transaction' => $response->getTransactionReference()] );
+				$this->saveRepayData( $response, $base->getCustomerId() );
+
+				$status = $this->getValue( 'authorize', false ) ? \Aimeos\MShop\Order\Item\Base::PAY_AUTHORIZED : \Aimeos\MShop\Order\Item\Base::PAY_RECEIVED;
 				$this->saveOrder( $order->setPaymentStatus( $status ) );
 			}
 			elseif( $response->isRedirect() )
