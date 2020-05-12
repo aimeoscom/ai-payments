@@ -464,7 +464,7 @@ class OmniPay
 		if( $response->isSuccessful() )
 		{
 			$this->setOrderData( $order, ['Transaction' => $response->getTransactionReference()] );
-			$order = $this->saveOrder( $order->setPaymentStatus( Status::PAY_RECEIVED ) );
+			$this->saveOrder( $order->setPaymentStatus( Status::PAY_RECEIVED ) );
 		}
 		else
 		{
