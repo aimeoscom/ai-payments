@@ -445,6 +445,7 @@ class OmniPay
 			'amount' => $this->getAmount( $base->getPrice() ),
 			'cardReference' => $cfg['token'],
 			'paymentPage' => false,
+			'language' => 'en',
 		);
 
 		if( isset( $cfg['month'] ) && isset( $cfg['year'] ) )
