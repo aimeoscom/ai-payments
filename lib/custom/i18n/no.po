@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ai-payments\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-07-01 17:24+0200\n"
+"POT-Creation-Date: 2020-07-07 11:14+0200\n"
 "PO-Revision-Date: 2015-07-20 09:55+0000\n"
 "Last-Translator: Aimeos <aimeos@aimeos.org>\n"
 "Language-Team: Norwegian (http://www.transifex.com/aimeos/ai-payments/language/no/)\n"
@@ -16,10 +16,6 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-
-#: src/MShop/Service/Provider/Payment/Mollie.php:132
-msgid "Item shipping costs"
-msgstr ""
 
 #: src/MShop/Service/Provider/Payment/OmniPay.php:430
 #, php-format
@@ -57,14 +53,6 @@ msgstr ""
 msgid "Order %1$s"
 msgstr ""
 
-#: src/MShop/Service/Provider/Payment/Mollie.php:166
-msgid "Payment costs"
-msgstr ""
-
-#: src/MShop/Service/Provider/Payment/Mollie.php:149
-msgid "Shipping"
-msgstr ""
-
 #: src/MShop/Service/Provider/Payment/OmniPay.php:471
 #: src/MShop/Service/Provider/Payment/Mpay24.php:68
 #, php-format
@@ -78,7 +66,6 @@ msgid "Token based payment failed: %1$s"
 msgstr ""
 
 #: src/MShop/Service/Provider/Payment/OmniPay.php:595
-#: src/MShop/Service/Provider/Payment/Mollie.php:271
 #, php-format
 msgid "Unexpected redirect: %1$s"
 msgstr ""
