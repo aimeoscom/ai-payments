@@ -53,6 +53,10 @@ class Mpay24
 			'language' => 'en',
 		);
 
+		if( $this->getValue( 'address', false ) ) {
+			$data['card'] = $this->getCardDetails( $base, [] );
+		}
+
 		$provider = \Omnipay\Omnipay::create( 'Mpay24_Backend' );
 		$provider->setTestMode( (bool) $this->getValue( 'testmode', false ) );
 		$provider->initialize( $this->getServiceItem()->getConfig() );
