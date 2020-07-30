@@ -30,7 +30,7 @@ class Mpay24
 	 */
 	public function repay( \Aimeos\MShop\Order\Item\Iface $order )
 	{
-		$base = $this->getOrderBase( $order->getBaseId() );
+		$base = $this->getOrderBase( $order->getBaseId(), \Aimeos\MShop\Order\Item\Base\Base::PARTS_ADDRESS );
 
 		if( ( $cfg = $this->getCustomerData( $base->getCustomerId(), 'repay' ) ) === null )
 		{
