@@ -32,7 +32,7 @@ php -r "readfile('https://getcomposer.org/installer');" | php -- --filename=comp
 Add the cache extension name to the "require" section of your ```composer.json``` file:
 ```
 "require": [
-    "aimeos/ai-payments": "dev-master",
+    "aimeos/ai-payments": "2020.10.*",
     ...
 ],
 ```
