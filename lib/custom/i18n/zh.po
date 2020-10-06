@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-07-07 11:14+0200\n"
+"POT-Creation-Date: 2020-10-05 09:22+0200\n"
 "PO-Revision-Date: 2017-09-14 09:25+0000\n"
 "Last-Translator: Aimeos, 2017\n"
 "Language-Team: Chinese (https://www.transifex.com/aimeos/teams/39015/zh/)\n"
@@ -58,7 +58,7 @@ msgid "Order %1$s"
 msgstr "訂單 %1$s"
 
 #: src/MShop/Service/Provider/Payment/OmniPay.php:471
-#: src/MShop/Service/Provider/Payment/Mpay24.php:68
+#: src/MShop/Service/Provider/Payment/Mpay24.php:72
 #, php-format
 msgid "Token based payment failed with code \"%1$s\" and message \"%2$s\": %3$s"
 msgstr ""
