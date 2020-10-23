@@ -18,7 +18,7 @@
 		"aimeos/aimeos-core": "dev-master",
 		"composer/installers": "^1.0",
 		"omnipay/common": "~3.0",
-		"php-http/httplug": "~1.0",
+		"php-http/httplug": "~2.0",
 		"php-http/curl-client": "~2.0"
 	},
 	"require-dev": {
