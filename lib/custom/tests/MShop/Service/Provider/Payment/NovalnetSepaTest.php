@@ -58,7 +58,7 @@ class NovalnetSepaTest extends \PHPUnit\Framework\TestCase
 		);
 		$search->setConditions( $search->combine( '&&', $expr ) );
 
-		if( ( $item = $orderManager->searchItems( $search )->first() ) === null )
+		if( ( $item = $orderManager->search( $search )->first() ) === null )
 		{
 			$msg = 'No Order found with statuspayment "%1$s" and type "%2$s"';
 			throw new \RuntimeException( sprintf( $msg, \Aimeos\MShop\Order\Item\Base::PAY_AUTHORIZED, \Aimeos\MShop\Order\Item\Base::TYPE_WEB ) );
@@ -160,7 +160,7 @@ class NovalnetSepaTest extends \PHPUnit\Framework\TestCase
 		$search = $manager->createSearch();
 		$search->setConditions( $search->compare( '==', 'order.datepayment', '2008-02-15 12:34:56' ) );
 
-		if( ( $item = $manager->searchItems( $search )->first() ) === null ) {
+		if( ( $item = $manager->search( $search )->first() ) === null ) {
 			throw new \RuntimeException( 'No order found' );
 		}
 
