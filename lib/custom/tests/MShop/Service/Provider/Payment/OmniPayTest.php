@@ -450,11 +450,8 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 		$request->expects( $this->once() )->method( 'send' )
 			->will( $this->returnValue( $response ) );
 
-		$response->expects( $this->once() )->method( 'isSuccessful' )
-			->will( $this->returnValue( true ) );
-
 		$response->expects( $this->once() )->method( 'getTransactionReference' )
-			->will($this->returnValue(''));
+			->will( $this->returnValue( '' ) );
 
 		$request->expects( $this->once() )->method( 'getTransactionStatus' )
 			->will( $this->returnValue( \Omnipay\Common\Message\NotificationInterface::STATUS_COMPLETED ) );
@@ -519,80 +516,14 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 		$request->expects( $this->once() )->method( 'send' )
 			->will( $this->returnValue( $response ) );
 
-		$response->expects( $this->once() )->method( 'isPending' )
-			->will( $this->returnValue( true ) );
-
 		$response->expects( $this->once() )->method( 'getTransactionReference' )
-			->will($this->returnValue(''));
+			->will( $this->returnValue( '' ) );
+
+		$request->expects( $this->once() )->method( 'getTransactionStatus' )
+			->will( $this->returnValue( \Omnipay\Common\Message\NotificationInterface::STATUS_PENDING ) );
 
 		$cmpFcn = function( $subject ) {
 			return $subject->getPaymentStatus() === \Aimeos\MShop\Order\Item\Base::PAY_PENDING;
-		};
-
-		$this->object->expects( $this->once() )->method( 'saveOrder' )->with( $this->callback( $cmpFcn ) );
-
-
-		$result = $this->object->updatePush( $psr7request, $psr7response );
-
-		$this->assertInstanceOf( \Psr\Http\Message\ResponseInterface::class, $result );
-	}
-
-
-	public function testUpdatePushCancelled()
-	{
-		$orderItem = $this->getOrder();
-		$baseItem = $this->getOrderBase( \Aimeos\MShop\Order\Item\Base\Base::PARTS_SERVICE );
-
-
-		$provider = $this->getMockBuilder( 'Omnipay\Dummy\Gateway' )
-			->setMethods( array( 'supportsAcceptNotification', 'acceptNotification' ) )
-			->getMock();
-
-		$request = $this->getMockBuilder( \Omnipay\Dummy\Message\AuthorizeRequest::class )
-			->disableOriginalConstructor()
-			->setMethods( array( 'getTransactionStatus', 'send' ) )
-			->getMock();
-
-		$response = $this->getMockBuilder( 'Omnipay\Dummy\Message\Response' )
-			->disableOriginalConstructor()
-			->setMethods( array( 'isCancelled', 'getTransactionReference' ) )
-			->getMock();
-
-		$psr7request = $this->getMockBuilder( \Psr\Http\Message\ServerRequestInterface::class )->getMock();
-		$psr7response = $this->getMockBuilder( \Psr\Http\Message\ResponseInterface::class )->getMock();
-
-		$psr7request->expects( $this->once() )->method( 'getQueryParams' )->will( $this->returnValue( ['orderid' => '1'] ) );
-		$psr7response->expects( $this->once() )->method( 'withStatus' )
-			->will( $this->returnValue( $psr7response ) )
-			->with( $this->equalTo( 200 ) );
-
-
-		$this->object->expects( $this->once() )->method( 'getOrder' )
-			->will( $this->returnValue( $orderItem ) );
-
-		$this->object->expects( $this->once() )->method( 'getOrderBase' )
-			->will( $this->returnValue( $baseItem ) );
-
-		$this->object->expects( $this->once() )->method( 'getProvider' )
-			->will( $this->returnValue( $provider ) );
-
-		$provider->expects( $this->once() )->method( 'supportsAcceptNotification' )
-			->will( $this->returnValue( true ) );
-
-		$provider->expects( $this->once() )->method( 'acceptNotification' )
-			->will( $this->returnValue( $request ) );
-
-		$request->expects( $this->once() )->method( 'send' )
-			->will( $this->returnValue( $response ) );
-
-		$response->expects( $this->once() )->method( 'isCancelled' )
-			->will( $this->returnValue( true ) );
-
-		$response->expects( $this->once() )->method( 'getTransactionReference' )
-			->will($this->returnValue(''));
-
-		$cmpFcn = function( $subject ) {
-			return $subject->getPaymentStatus() === \Aimeos\MShop\Order\Item\Base::PAY_CANCELED;
 		};
 
 		$this->object->expects( $this->once() )->method( 'saveOrder' )->with( $this->callback( $cmpFcn ) );
@@ -629,7 +560,7 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 		$psr7request->expects( $this->once() )->method( 'getQueryParams' )->will( $this->returnValue( ['orderid' => '1'] ) );
 		$psr7response->expects( $this->once() )->method( 'withStatus' )
 			->will( $this->returnValue( $psr7response ) )
-			->with( $this->equalTo( 500 ) );
+			->with( $this->equalTo( 200 ) );
 
 
 		$this->object->expects( $this->once() )->method( 'getOrder' )
@@ -646,6 +577,9 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 
 		$request->expects( $this->once() )->method( 'send' )
 			->will( $this->returnValue( $response ) );
+
+		$request->expects( $this->once() )->method( 'getTransactionStatus' )
+			->will( $this->returnValue( \Omnipay\Common\Message\NotificationInterface::STATUS_FAILED) );
 
 		$cmpFcn = function( $subject ) {
 			return $subject->getPaymentStatus() === \Aimeos\MShop\Order\Item\Base::PAY_REFUSED;

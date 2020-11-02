@@ -504,27 +504,9 @@ class OmniPay
 			$omniRequest = $provider->acceptNotification();
 			$omniResponse = $omniRequest->send();
 
-			if( method_exists( $omniResponse, 'isSuccessful' ) && $omniResponse->isSuccessful() )
-			{
-				$order->setPaymentStatus( $this->translateStatus( $omniRequest->getTransactionStatus() ) );
-			}
-			elseif( method_exists( $omniResponse, 'isPending' ) && $omniResponse->isPending() )
-			{
-				$order->setPaymentStatus( Status::PAY_PENDING );
-			}
-			elseif( method_exists( $omniResponse, 'isCancelled' ) && $omniResponse->isCancelled() )
-			{
-				$order->setPaymentStatus( Status::PAY_CANCELED );
-			}
-			else
-			{
-				$this->saveOrder( $order->setPaymentStatus( Status::PAY_REFUSED ) );
-				throw new \Aimeos\MShop\Service\Exception( $omniResponse->getMessage() );
-			}
-
 			$base = $this->getOrderBase( $order->getBaseId() );
+			$order->setPaymentStatus( $this->translateStatus( $omniRequest->getTransactionStatus() ) );
 			$this->setOrderData( $order, ['Transaction' => $omniResponse->getTransactionReference()] );
-			$this->saveRepayData( $omniResponse, $base->getCustomerId() );
 			$this->saveOrder( $order );
 
 			$response->withStatus( 200 );
