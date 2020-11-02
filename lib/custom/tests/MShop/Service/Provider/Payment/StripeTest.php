@@ -128,7 +128,7 @@ class StripeTest extends \PHPUnit\Framework\TestCase
 	{
 		$manager = \Aimeos\MShop\Order\Manager\Factory::create( $this->context );
 
-		$search = $manager->createSearch();
+		$search = $manager->filter();
 		$search->setConditions( $search->compare( '==', 'order.datepayment', '2008-02-15 12:34:56' ) );
 
 		if( ( $item = $manager->search( $search )->first() ) === null ) {
