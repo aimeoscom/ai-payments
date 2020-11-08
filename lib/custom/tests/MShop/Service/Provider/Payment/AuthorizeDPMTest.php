@@ -30,7 +30,7 @@ class AuthorizeDpmTest extends \PHPUnit\Framework\TestCase
 		);
 
 		$serviceManager = \Aimeos\MShop\Service\Manager\Factory::create( $this->context );
-		$item = $serviceManager->createItem();
+		$item = $serviceManager->create();
 		$item->setCode( 'omnipaytest' );
 		$item->setConfig( $conf );
 

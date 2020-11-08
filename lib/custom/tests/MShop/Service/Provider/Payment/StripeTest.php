@@ -23,7 +23,7 @@ class StripeTest extends \PHPUnit\Framework\TestCase
 
 		$this->context = \TestHelper::getContext();
 		$config = ['type' => 'Stripe_PaymentIntents', 'testmode' => true];
-		$item = \Aimeos\MShop::create( $this->context, 'service' )->createItem()->setConfig( $config )->setCode( 'OGONE' );
+		$item = \Aimeos\MShop::create( $this->context, 'service' )->create()->setConfig( $config )->setCode( 'OGONE' );
 
 		$this->object = new Stripe( $this->context, $item );
 	}
@@ -110,7 +110,7 @@ class StripeTest extends \PHPUnit\Framework\TestCase
 
 	public function testGetConfigFE()
 	{
-		$basket = \Aimeos\MShop::create( $this->context, 'order/base' )->createItem();
+		$basket = \Aimeos\MShop::create( $this->context, 'order/base' )->create();
 		$this->assertEquals( [], $this->object->getConfigFE( $basket ) );
 	}
 
@@ -118,7 +118,7 @@ class StripeTest extends \PHPUnit\Framework\TestCase
 	public function testProcess()
 	{
 		$iface = \Aimeos\MShop\Common\Helper\Form\Iface::class;
-		$order = \Aimeos\MShop::create( $this->context, 'order' )->createItem();
+		$order = \Aimeos\MShop::create( $this->context, 'order' )->create();
 
 		$this->assertInstanceOf( $iface, $this->object->process( $order ) );
 	}

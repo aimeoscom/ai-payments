@@ -26,12 +26,12 @@ class NovalnetCreditTest extends \PHPUnit\Framework\TestCase
 		$this->context = \TestHelper::getContext();
 
 		$serviceManager = \Aimeos\MShop\Service\Manager\Factory::create( $this->context );
-		$this->serviceItem = $serviceManager->createItem();
+		$this->serviceItem = $serviceManager->create();
 		$this->serviceItem->setConfig( array( 'type' => 'Dummy', 'address' => 1 ) );
 		$this->serviceItem->setCode( 'OGONE' );
 
-		$this->ordServItem = \Aimeos\MShop::create( $this->context, 'order/base/service' )->createItem();
-		$serviceItem = \Aimeos\MShop::create( $this->context, 'service' )->createItem();
+		$this->ordServItem = \Aimeos\MShop::create( $this->context, 'order/base/service' )->create();
+		$serviceItem = \Aimeos\MShop::create( $this->context, 'service' )->create();
 		$serviceItem->setCode( 'OGONE' );
 
 		$this->object = $this->getMockBuilder( '\\Aimeos\\MShop\\Service\\Provider\\Payment\\NovalnetCredit' )

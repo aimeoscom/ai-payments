@@ -25,7 +25,7 @@ class DatatransTest extends \PHPUnit\Framework\TestCase
 		$this->context = \TestHelper::getContext();
 
 		$serviceManager = \Aimeos\MShop\Service\Manager\Factory::create( $this->context );
-		$this->serviceItem = $serviceManager->createItem();
+		$this->serviceItem = $serviceManager->create();
 		$this->serviceItem->setConfig( array( 'type' => 'Dummy' ) );
 		$this->serviceItem->setCode( 'OGONE' );
 
