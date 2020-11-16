@@ -99,15 +99,20 @@ class Datatrans
 
 		$response = $this->getXmlProvider()->purchase( $data )->send();
 
-		if( $response->isSuccessful() )
+		if( $response->isSuccessful() || $response->isPending() )
 		{
 			$this->setOrderData( $order, ['TRANSACTIONID' => $response->getTransactionReference()] );
 			$order = $this->saveOrder( $order->setPaymentStatus( \Aimeos\MShop\Order\Item\Base::PAY_RECEIVED ) );
 		}
+		elseif( !$response->getTransactionReference() )
+		{
+			$msg = 'Token based payment incomplete: ' . print_r( $response->getData(), true );
+			throw new \Aimeos\MShop\Service\Exception( $msg, 1 );
+		}
 		else
 		{
 			$msg = ( method_exists( $response, 'getMessage' ) ? $response->getMessage() : '' );
-			throw new \Aimeos\MShop\Service\Exception( sprintf( 'Token based payment failed: %1$s', $msg ) );
+			throw new \Aimeos\MShop\Service\Exception( sprintf( 'Token based payment failed: %1$s', $msg ), -1 );
 		}
 	}
 

@@ -207,15 +207,20 @@ class Stripe
 			'confirm' => true,
 		] )->send();
 
-		if( $response->isSuccessful() )
+		if( $response->isSuccessful() || $response->isPending() )
 		{
 			$this->setOrderData( $order, ['Transaction' => $response->getTransactionReference()] );
 			$order = $this->saveOrder( $order->setPaymentStatus( Status::PAY_RECEIVED ) );
 		}
+		elseif( !$response->getTransactionReference() )
+		{
+			$msg = 'Token based payment incomplete: ' . print_r( $response->getData(), true );
+			throw new \Aimeos\MShop\Service\Exception( $msg, 1 );
+		}
 		else
 		{
 			$msg = ( method_exists( $response, 'getMessage' ) ? $response->getMessage() : '' );
-			throw new \Aimeos\MShop\Service\Exception( sprintf( 'Token based payment failed: %1$s', $msg ) );
+			throw new \Aimeos\MShop\Service\Exception( sprintf( 'Token based payment failed: %1$s', $msg ), -1 );
 		}
 
 		return $order;
