@@ -461,16 +461,21 @@ class OmniPay
 
 		$response = $this->getProvider()->purchase( $data )->send();
 
-		if( $response->isSuccessful() )
+		if( $response->isSuccessful() || $response->isPending() )
 		{
 			$this->setOrderData( $order, ['Transaction' => $response->getTransactionReference()] );
 			$this->saveOrder( $order->setPaymentStatus( Status::PAY_RECEIVED ) );
+		}
+		elseif( !$response->getTransactionReference() )
+		{
+			$msg = 'Token based payment incomplete: ' . print_r( $response->getData(), true );
+			throw new \Aimeos\MShop\Service\Exception( $msg, 1 );
 		}
 		else
 		{
 			$msg = sprintf( 'Token based payment failed with code "%1$s" and message "%2$s": %3$s',
 				$response->getCode(), $response->getMessage(), print_r( $response->getData(), true ) );
-			throw new \Aimeos\MShop\Service\Exception( $msg );
+			throw new \Aimeos\MShop\Service\Exception( $msg, -1 );
 		}
 
 		return $order;
