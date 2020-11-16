@@ -430,7 +430,10 @@ document.addEventListener("DOMContentLoaded", function() {
 		}
 
 		$response = parent::sendRequest( $order, $data );
-		$this->setOrderData( $order, ['Reference' => $response->getPaymentIntentReference()] );
+
+		if( method_exists( $response, 'getPaymentIntentReference' ) ) {
+			$this->setOrderData( $order, ['Reference' => $response->getPaymentIntentReference()] );
+		}
 
 		return $response;
 	}
