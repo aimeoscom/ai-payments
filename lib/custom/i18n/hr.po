@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-05 09:22+0200\n"
+"POT-Creation-Date: 2020-12-02 15:16+0100\n"
 "PO-Revision-Date: 2017-09-14 09:25+0000\n"
 "Last-Translator: Miro Sertić <miro.sertic0606@gmail.com>, 2018\n"
 "Language-Team: Croatian (https://www.transifex.com/aimeos/teams/39015/hr/)\n"
@@ -54,24 +54,24 @@ msgstr ""
 "\"%1$s\""
 
 #: src/MShop/Service/Provider/Payment/NovalnetSepa.php:155
-#: src/MShop/Service/Provider/Payment/OmniPay.php:693
+#: src/MShop/Service/Provider/Payment/OmniPay.php:680
 #, php-format
 msgid "Order %1$s"
 msgstr "Narudžba %1$s"
 
-#: src/MShop/Service/Provider/Payment/OmniPay.php:471
-#: src/MShop/Service/Provider/Payment/Mpay24.php:72
+#: src/MShop/Service/Provider/Payment/OmniPay.php:476
+#: src/MShop/Service/Provider/Payment/Mpay24.php:77
 #, php-format
 msgid "Token based payment failed with code \"%1$s\" and message \"%2$s\": %3$s"
 msgstr ""
 
-#: src/MShop/Service/Provider/Payment/Stripe.php:215
-#: src/MShop/Service/Provider/Payment/Datatrans.php:108
+#: src/MShop/Service/Provider/Payment/Stripe.php:220
+#: src/MShop/Service/Provider/Payment/Datatrans.php:113
 #, php-format
 msgid "Token based payment failed: %1$s"
 msgstr "Plaćanje na temelju tokena nije uspjelo:%1$s"
 
-#: src/MShop/Service/Provider/Payment/OmniPay.php:595
+#: src/MShop/Service/Provider/Payment/OmniPay.php:582
 #, php-format
 msgid "Unexpected redirect: %1$s"
 msgstr "Neočekivano preusmjeravanje: %1$s"

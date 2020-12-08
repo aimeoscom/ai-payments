@@ -5,15 +5,16 @@
 # 
 # Translators:
 # Aimeos, 2017
+# Lara Merlotto <lara@vg7.it>, 2020
 # 
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-05 09:22+0200\n"
+"POT-Creation-Date: 2020-12-02 15:16+0100\n"
 "PO-Revision-Date: 2017-09-14 09:25+0000\n"
-"Last-Translator: Aimeos, 2017\n"
+"Last-Translator: Lara Merlotto <lara@vg7.it>, 2020\n"
 "Language-Team: Spanish (https://www.transifex.com/aimeos/teams/39015/es/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -24,17 +25,17 @@ msgstr ""
 #: src/MShop/Service/Provider/Payment/OmniPay.php:430
 #, php-format
 msgid "Method \"%1$s\" for provider not available"
-msgstr ""
+msgstr "Método \"%1$s\" para el proveedor no disponible"
 
 #: src/MShop/Service/Provider/Payment/Stripe.php:181
 #, php-format
 msgid "No Stripe customer data available for customer ID \"%1$s\""
-msgstr ""
+msgstr "Ningúna linea de datos del cliente disponible para el cliente ID \"%1$s\""
 
 #: src/MShop/Service/Provider/Payment/Stripe.php:187
 #, php-format
 msgid "No Stripe payment method available for customer ID \"%1$s\""
-msgstr ""
+msgstr "Ningúna línea de método de pago disponible para el cliente ID \"%1$s\""
 
 #: src/MShop/Service/Provider/Payment/Stripe.php:193
 #: src/MShop/Service/Provider/Payment/OmniPay.php:441
@@ -42,34 +43,34 @@ msgstr ""
 #: src/MShop/Service/Provider/Payment/Datatrans.php:78
 #, php-format
 msgid "No payment token available for customer ID \"%1$s\""
-msgstr ""
+msgstr "Ningún token de pago disponible para el cliente ID \"%1$s\""
 
 #: src/MShop/Service/Provider/Payment/OmniPay.php:435
 #: src/MShop/Service/Provider/Payment/Mpay24.php:37
 #: src/MShop/Service/Provider/Payment/Datatrans.php:72
 #, php-format
 msgid "No reoccurring payment data available for customer ID \"%1$s\""
-msgstr ""
+msgstr "Ningún dato de pago recurrente disponible para el cliente ID \"%1$s\""
 
 #: src/MShop/Service/Provider/Payment/NovalnetSepa.php:155
-#: src/MShop/Service/Provider/Payment/OmniPay.php:693
+#: src/MShop/Service/Provider/Payment/OmniPay.php:680
 #, php-format
 msgid "Order %1$s"
 msgstr "Orden %1$s"
 
-#: src/MShop/Service/Provider/Payment/OmniPay.php:471
-#: src/MShop/Service/Provider/Payment/Mpay24.php:72
+#: src/MShop/Service/Provider/Payment/OmniPay.php:476
+#: src/MShop/Service/Provider/Payment/Mpay24.php:77
 #, php-format
 msgid "Token based payment failed with code \"%1$s\" and message \"%2$s\": %3$s"
-msgstr ""
+msgstr "Pago basado con el Token fallido con código \"%1$s\" y mensaje \"%2$s\".%3$s"
 
-#: src/MShop/Service/Provider/Payment/Stripe.php:215
-#: src/MShop/Service/Provider/Payment/Datatrans.php:108
+#: src/MShop/Service/Provider/Payment/Stripe.php:220
+#: src/MShop/Service/Provider/Payment/Datatrans.php:113
 #, php-format
 msgid "Token based payment failed: %1$s"
-msgstr ""
+msgstr "Pago basado con el Token fallido: %1$s"
 
-#: src/MShop/Service/Provider/Payment/OmniPay.php:595
+#: src/MShop/Service/Provider/Payment/OmniPay.php:582
 #, php-format
 msgid "Unexpected redirect: %1$s"
 msgstr "Redirección no esperada: %1$s"
