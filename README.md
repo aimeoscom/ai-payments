@@ -2,8 +2,7 @@
     <img src="https://aimeos.org/fileadmin/template/icons/logo.png" alt="Aimeos logo" title="Aimeos" align="right" height="60" />
 </a>
 
-Aimeos payment extension
-========================
+# Aimeos payment extension
 
 [![Build Status](https://circleci.com/gh/aimeoscom/ai-payments.svg?style=shield)](https://circleci.com/gh/aimeoscom/ai-payments)
 [![Coverage Status](https://codecov.io/gh/aimeoscom/ai-payments/branch/master/graph/badge.svg?token=ilbfKmIhfs)](https://codecov.io/gh/aimeoscom/ai-payments)
