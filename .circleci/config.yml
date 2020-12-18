@@ -4,6 +4,9 @@
 #
 version: 2
 
+orbs:
+  codecov: codecov/codecov@1
+
 jobs:
   "php-7.1 / mariadb-10":
     docker:
@@ -103,8 +106,8 @@ jobs:
       - run: echo "<?php return array( 'db' => array( 'adapter' => 'mysql', 'host' => '127.0.0.1', 'port' => 3306, 'database' => 'aimeos', 'username' => 'aimeos', 'password' => 'aimeos', 'limit' => 2, 'opt-persistent' => false, 'stmt' => array( \"SET SESSIOn sort_buffer_size=2097144; SET NAMES 'utf8'; SET SESSION sql_mode='ANSI'\" ) ), 'fs' => array( 'adapter' => 'Standard', 'basedir' => '.' ), 'mq' => array( 'adapter' => 'Standard', 'db' => 'db' ) );" > config/resource.php
       - run: for i in `seq 1 10`; do nc -z 127.0.0.1 3306 && echo OK && exit 0; echo -n .; sleep 1; done
       - run: ./vendor/bin/phing -Ddir=ext/ai-payments setup coverageext
-      - run: ./vendor/bin/php-coveralls -x ext/ai-payments/lib/custom/tests/coverage.xml -vvv
-
+      - codecov/upload:
+          file: ext/ai-payments/lib/custom/tests/coverage.xml
 workflows:
   version: 2
   unittest:
