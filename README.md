@@ -2,10 +2,9 @@
     <img src="https://aimeos.org/fileadmin/template/icons/logo.png" alt="Aimeos logo" title="Aimeos" align="right" height="60" />
 </a>
 
-Aimeos payment extension
-========================
+# Aimeos payment extension
 
-[![Build Status](https://travis-ci.org/aimeoscom/ai-payments.svg?branch=master)](https://travis-ci.org/aimeoscom/ai-payments)
+[![Build Status](https://circleci.com/gh/aimeoscom/ai-payments.svg?style=shield)](https://circleci.com/gh/aimeoscom/ai-payments)
 [![Coverage Status](https://coveralls.io/repos/aimeoscom/ai-payments/badge.svg?branch=master&service=github)](https://coveralls.io/github/aimeos/ai-payments?branch=master)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/aimeoscom/ai-payments/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/aimeos/ai-payments/?branch=master)
 [![License](https://poser.pugx.org/aimeos/ai-payments/license.svg)](https://packagist.org/packages/aimeoscom/ai-payments)
