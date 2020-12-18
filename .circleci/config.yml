@@ -2,10 +2,13 @@
 #
 # Check https://circleci.com/docs/2.0/language-php/ for more details
 #
-version: 2
+version: 2.1
+
+orbs:
+  codecov: codecov/codecov@1
 
 jobs:
-  "php-7.1 / mariadb-10":
+  "php-71/mariadb-10":
     docker:
       - image: aimeos/ci-php:7.1
       - image: circleci/mariadb:10
@@ -30,7 +33,7 @@ jobs:
       - run: for i in `seq 1 10`; do nc -z 127.0.0.1 3306 && echo OK && exit 0; echo -n .; sleep 1; done
       - run: ./vendor/bin/phing -Ddir=ext/ai-payments setup testext
 
-  "php-7.2 / mysql-5.7":
+  "php-72/mysql-57":
     docker:
       - image: aimeos/ci-php:7.2
       - image: circleci/mysql:5.7
@@ -55,7 +58,7 @@ jobs:
       - run: for i in `seq 1 10`; do nc -z 127.0.0.1 3306 && echo OK && exit 0; echo -n .; sleep 1; done
       - run: ./vendor/bin/phing -Ddir=ext/ai-payments setup testext checkext
 
-  "php-7.3 / pgsql-13":
+  "php-73/pgsql-13":
     docker:
       - image: aimeos/ci-php:7.3
       - image: circleci/postgres:13
@@ -79,7 +82,7 @@ jobs:
       - run: for i in `seq 1 10`; do nc -z 127.0.0.1 5432 && echo OK && exit 0; echo -n .; sleep 1; done
       - run: ./vendor/bin/phing -Ddir=ext/ai-payments setup testext
 
-  "php-7.4 / mysql-8.0":
+  "php-74/mysql-80":
     docker:
       - image: aimeos/ci-php:7.4
       - image: circleci/mysql:8.0
@@ -103,13 +106,13 @@ jobs:
       - run: echo "<?php return array( 'db' => array( 'adapter' => 'mysql', 'host' => '127.0.0.1', 'port' => 3306, 'database' => 'aimeos', 'username' => 'aimeos', 'password' => 'aimeos', 'limit' => 2, 'opt-persistent' => false, 'stmt' => array( \"SET SESSIOn sort_buffer_size=2097144; SET NAMES 'utf8'; SET SESSION sql_mode='ANSI'\" ) ), 'fs' => array( 'adapter' => 'Standard', 'basedir' => '.' ), 'mq' => array( 'adapter' => 'Standard', 'db' => 'db' ) );" > config/resource.php
       - run: for i in `seq 1 10`; do nc -z 127.0.0.1 3306 && echo OK && exit 0; echo -n .; sleep 1; done
       - run: ./vendor/bin/phing -Ddir=ext/ai-payments setup coverageext
-      - run: ./vendor/bin/php-coveralls -x ext/ai-payments/lib/custom/tests/coverage.xml -vvv
-
+      - codecov/upload:
+          file: ext/ai-payments/lib/custom/tests/coverage.xml
 workflows:
   version: 2
   unittest:
     jobs:
-      - "php-7.1 / mariadb-10"
-      - "php-7.2 / mysql-5.7"
-      - "php-7.3 / pgsql-13"
-      - "php-7.4 / mysql-8.0"
+      - "php-71/mariadb-10"
+      - "php-72/mysql-57"
+      - "php-73/pgsql-13"
+      - "php-74/mysql-80"
