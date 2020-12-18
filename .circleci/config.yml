@@ -8,7 +8,7 @@ orbs:
   codecov: codecov/codecov@1
 
 jobs:
-  "php-71 / mariadb-10":
+  "php-71/mariadb-10":
     docker:
       - image: aimeos/ci-php:7.1
       - image: circleci/mariadb:10
@@ -33,7 +33,7 @@ jobs:
       - run: for i in `seq 1 10`; do nc -z 127.0.0.1 3306 && echo OK && exit 0; echo -n .; sleep 1; done
       - run: ./vendor/bin/phing -Ddir=ext/ai-payments setup testext
 
-  "php-72 / mysql-57":
+  "php-72/mysql-57":
     docker:
       - image: aimeos/ci-php:7.2
       - image: circleci/mysql:5.7
@@ -58,7 +58,7 @@ jobs:
       - run: for i in `seq 1 10`; do nc -z 127.0.0.1 3306 && echo OK && exit 0; echo -n .; sleep 1; done
       - run: ./vendor/bin/phing -Ddir=ext/ai-payments setup testext checkext
 
-  "php-73 / pgsql-13":
+  "php-73/pgsql-13":
     docker:
       - image: aimeos/ci-php:7.3
       - image: circleci/postgres:13
@@ -82,7 +82,7 @@ jobs:
       - run: for i in `seq 1 10`; do nc -z 127.0.0.1 5432 && echo OK && exit 0; echo -n .; sleep 1; done
       - run: ./vendor/bin/phing -Ddir=ext/ai-payments setup testext
 
-  "php-74 / mysql-80":
+  "php-74/mysql-80":
     docker:
       - image: aimeos/ci-php:7.4
       - image: circleci/mysql:8.0
@@ -112,7 +112,7 @@ workflows:
   version: 2
   unittest:
     jobs:
-      - "php-71 / mariadb-10"
-      - "php-72 / mysql-57"
-      - "php-73 / pgsql-13"
-      - "php-74 / mysql-80"
+      - "php-71/mariadb-10"
+      - "php-72/mysql-57"
+      - "php-73/pgsql-13"
+      - "php-74/mysql-80"
