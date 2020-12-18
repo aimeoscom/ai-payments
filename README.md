@@ -5,7 +5,7 @@
 # Aimeos payment extension
 
 [![Build Status](https://circleci.com/gh/aimeoscom/ai-payments.svg?style=shield)](https://circleci.com/gh/aimeoscom/ai-payments)
-[![Coverage Status](https://coveralls.io/repos/aimeoscom/ai-payments/badge.svg?branch=master&service=github)](https://coveralls.io/github/aimeos/ai-payments?branch=master)
+[![Coverage Status](https://codecov.io/gh/aimeoscom/ai-payments/branch/master/graph/badge.svg?token=ilbfKmIhfs)](https://codecov.io/gh/aimeoscom/ai-payments)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/aimeoscom/ai-payments/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/aimeos/ai-payments/?branch=master)
 [![License](https://poser.pugx.org/aimeos/ai-payments/license.svg)](https://packagist.org/packages/aimeoscom/ai-payments)
 
