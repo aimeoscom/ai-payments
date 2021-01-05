@@ -15,7 +15,7 @@
 	"minimum-stability": "dev",
 	"require": {
 		"php": "~7.1",
-		"aimeos/aimeos-core": "dev-master",
+		"aimeos/aimeos-core": ,
 		"composer/installers": "^1.0",
 		"omnipay/common": "~3.0",
 		"php-http/httplug": "~2.0",
