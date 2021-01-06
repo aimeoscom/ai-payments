@@ -25,6 +25,15 @@ class PaypalPlus
 	implements \Aimeos\MShop\Service\Provider\Payment\Iface
 {
 	private $beConfig = array(
+		'authorize' => array(
+			'code' => 'authorize',
+			'internalcode'=> 'authorize',
+			'label'=> 'Authorize payments and capture later',
+			'type'=> 'boolean',
+			'internaltype'=> 'boolean',
+			'default'=> '0',
+			'required'=> false,
+		),
 		'clientid' => array(
 			'code' => 'clientid',
 			'internalcode' => 'clientid',
@@ -42,15 +51,6 @@ class PaypalPlus
 			'internaltype' => 'string',
 			'default' => '0',
 			'required' => true,
-		),
-		'address' => array(
-			'code' => 'address',
-			'internalcode' => 'address',
-			'label' => 'Send address to payment gateway too',
-			'type' => 'boolean',
-			'internaltype' => 'boolean',
-			'default' => '0',
-			'required' => false,
 		),
 		'testmode' => array(
 			'code' => 'testmode',
@@ -113,8 +113,6 @@ class PaypalPlus
 	 */
 	public function process( \Aimeos\MShop\Order\Item\Iface $order, array $params = [] ) : ?\Aimeos\MShop\Common\Helper\Form\Iface
 	{
-		$list = [];
-
 		$baseItem = $this->getOrderBase( $order->getBaseId(), \Aimeos\MShop\Order\Item\Base\Base::PARTS_ADDRESS );
 		$addresses = $baseItem->getAddress( \Aimeos\MShop\Order\Item\Base\Address\Base::TYPE_PAYMENT );
 
@@ -139,7 +137,14 @@ class PaypalPlus
 		$this->saveRepayData( $response, $base->getCustomerId() );
 		$this->saveOrder( $order );
 
-		if( ( $approvalUrl = $response->getData()['links']['1']['href'] ?? null ) == null ) {
+		foreach( $response->getData()['links'] ?? [] as $entry )
+		{
+			if( $entry['rel'] === 'approval_url' ) {
+				$approvalUrl = $entry['href'];
+			}
+		}
+
+		if( empty( $approvalUrl ) ) {
 			throw new \Aimeos\MShop\Service\Exception( sprintf( 'PayPalPlus approval URL not available' ) );
 		}
 
@@ -147,7 +152,9 @@ class PaypalPlus
 			throw new \Aimeos\MShop\Service\Exception( sprintf( 'PayPalPlus requires the country ID of the user' ) );
 		}
 
-		$html = $this->getPayPalPlusJs( $approvalUrl, $address->getCountryId() );
+		$langid = $address->getLanguageId() ?: $this->getContext()->getLocale()->getLanguageId();
+
+		$html = $this->getPayPalPlusJs( $approvalUrl, $address->getCountryId(), $langid );
 		return new \Aimeos\MShop\Common\Helper\Form\Standard( '', '', [], true, $html );
 	}
 
@@ -163,6 +170,10 @@ class PaypalPlus
 	public function updateSync( \Psr\Http\Message\ServerRequestInterface $request,
 		\Aimeos\MShop\Order\Item\Iface $order ) : \Aimeos\MShop\Order\Item\Iface
 	{
+		if( empty( $request->getQueryParams()['PayerID'] ) ) {
+			return $this->saveOrder( $order->setPaymentStatus( Status::PAY_CANCELED ) );
+		}
+
 		try
 		{
 			$provider = $this->getProvider();
@@ -200,9 +211,8 @@ class PaypalPlus
 			{
 				$order->setPaymentStatus( Status::PAY_PENDING );
 			}
-			elseif( method_exists( $response, 'isCancelled' ) && $response->isCancelled()
-				|| ( $response->getData()['name'] ?? null )  === 'PAYMENT_NOT_APPROVED_FOR_EXECUTION' // should be in isCancelled()
-			) {
+			elseif( method_exists( $response, 'isCancelled' ) && $response->isCancelled() )
+			{
 				$order->setPaymentStatus( Status::PAY_CANCELED );
 			}
 			elseif( method_exists( $response, 'isRedirect' ) && $response->isRedirect() )
@@ -232,25 +242,64 @@ class PaypalPlus
 
 
 	/**
+	 * Returns the data passed to the Omnipay library
+	 *
+	 * @param \Aimeos\MShop\Order\Item\Base\Iface $base Basket object
+	 * @param string $orderid string Unique order ID
+	 * @param array $params Request parameter if available
+	 * @return array Associative list of key/value pairs
+	 */
+	protected function getData( \Aimeos\MShop\Order\Item\Base\Iface $base, string $orderid, array $params ) : array
+	{
+		return ['PayerID' => $params['PayerID'] ?? null] + parent::getData( $base, $orderid, $params );
+	}
+
+
+	/**
 	 * Returns the HTML code for displaying the PayPalPlus form.
 	 *
 	 * @param string $approvalUrl Approval URL sent by PayPalPlus
 	 * @param string $countryid Two letter ISO country code
+	 * @param string $languageid Two letter ISO language code
 	 * @return string HTML code
 	 */
-	protected function getPayPalPlusJs( string $approvalUrl, string $countryid ) : string
+	protected function getPayPalPlusJs( string $approvalUrl, string $countryid, string $languageid ) : string
 	{
 		return '
 			<div id="ppplus"></div>
 			<script src="https://www.paypalobjects.com/webstatic/ppplus/ppplus.min.js" type="text/javascript"></script>
 			<script type="application/javascript">
 				var ppp = PAYPAL.apps.PPP({
-					"approvalUrl": \'' . $approvalUrl . '\',
+					"preselection": "none",
 					"placeholder": "ppplus",
-					"country":"' . $countryid . '" ,
+					"showLoadingIndicator": true,
+					"country": "' . $countryid . '",
+					"language": "' . $languageid . '",
+					"approvalUrl": "'. $approvalUrl . '",
 					"mode": "' . ( $this->getConfigValue( 'testmode' ) ? 'sandbox' : 'live' ) . '",
 					onContinue: function () { ppp.doCheckout() } ,
 				});
 			</script>';
+	}
+
+
+	/**
+	 * Sends the given data for the order to the payment gateway
+	 *
+	 * @param \Aimeos\MShop\Order\Item\Iface $order Order item which should be paid
+	 * @param array $data Associative list of key/value pairs sent to the payment gateway
+	 * @return \Omnipay\Common\Message\ResponseInterface Omnipay response from the payment gateway
+	 */
+	protected function sendRequest( \Aimeos\MShop\Order\Item\Iface $order, array $data ) : \Omnipay\Common\Message\ResponseInterface
+	{
+		$provider = $this->getProvider();
+
+		if( $this->getValue( 'authorize', false ) && $provider->supportsAuthorize() ) {
+			$response = $provider->authorize( $data )->send();
+		} else {
+			$response = $provider->purchase( $data )->send();
+		}
+
+		return $response;
 	}
 }
