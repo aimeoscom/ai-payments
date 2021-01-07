@@ -94,7 +94,7 @@ class PaypalPlus
 		if( !isset( $this->provider ) )
 		{
 			$this->provider = OPay::create( 'PayPal_Rest' );
-			$this->provider->setTestMode( (bool) $this->getValue( 'testmode', false  ) );
+			$this->provider->setTestMode( (bool) $this->getValue( 'testmode', false ) );
 			$this->provider->initialize( $this->getServiceItem()->getConfig() );
 		}
 
@@ -131,6 +131,7 @@ class PaypalPlus
 			throw new \Aimeos\MShop\Service\Exception( $response->getMessage() );
 		}
 
+		$approvalUrl = '';
 		$addresses = $base->getAddress( \Aimeos\MShop\Order\Item\Base\Address\Base::TYPE_PAYMENT );
 
 		$this->setOrderData( $order, ['Transaction' => $response->getTransactionReference()] );
@@ -154,7 +155,7 @@ class PaypalPlus
 
 		$langid = $address->getLanguageId() ?: $this->getContext()->getLocale()->getLanguageId();
 
-		$html = $this->getPayPalPlusJs( $approvalUrl, $address->getCountryId(), $langid );
+		$html = $this->getPayPalPlusJs( $approvalUrl, (string) $address->getCountryId(), (string) $langid );
 		return new \Aimeos\MShop\Common\Helper\Form\Standard( '', '', [], true, $html );
 	}
 
