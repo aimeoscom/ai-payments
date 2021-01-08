@@ -141,8 +141,8 @@ class PaypalPlus extends \Aimeos\MShop\Service\Provider\Payment\OmniPay implemen
 		</script>
 		<div id="ppplus">
 		</div>
-		<script type="application/javascript">		  
-		var approvalUrl = \'' . $approvalUrl . '\'; 
+		<script type="application/javascript">
+		var approvalUrl = \'' . $approvalUrl . '\';
 		var ppp = PAYPAL.apps.PPP({
 			"approvalUrl": approvalUrl,
 			"placeholder": "ppplus",
@@ -159,11 +159,6 @@ class PaypalPlus extends \Aimeos\MShop\Service\Provider\Payment\OmniPay implemen
     {
         return $this->getPaymentForm($order, $params);
     }
-
-    // protected function getData(\Aimeos\MShop\Order\Item\Base\Iface $base, string $orderid, array $params): array
-    // {
-    //  return ['payerid' => "payerid-" .$this->getContext()->getUserId() ?: "payerid-" . $orderid] + parent::getData( $base , $orderid , $params);
-    // }
 
 
     public function updateSync(
@@ -182,7 +177,10 @@ class PaypalPlus extends \Aimeos\MShop\Service\Provider\Payment\OmniPay implemen
                 $response = $provider->completeAuthorize($params)->send();
                 $status = Status::PAY_AUTHORIZED;
             } elseif ($provider->supportsCompletePurchase()) {
-                $params['PayerID'] = $request->getQueryParams()['PayerID'] ;
+                $params['PayerID'] = "payerid-" . $this->getContext()->getUserId() ?: "payerid-" . $orderid ;
+                if (!empty($request->getQueryParams()['PayerID'])) {
+                    $params['PayerID'] = $request->getQueryParams()['PayerID'] ;
+                }
 
                 $response = $provider->completePurchase($params)->send();
                 $status = Status::PAY_RECEIVED;
@@ -201,8 +199,7 @@ class PaypalPlus extends \Aimeos\MShop\Service\Provider\Payment\OmniPay implemen
                 $order->setPaymentStatus($status);
             } elseif (method_exists($response, 'isPending') && $response->isPending()) {
                 $order->setPaymentStatus(Status::PAY_PENDING);
-            } elseif (
-                ( method_exists($response, 'isCancelled') && $response->isCancelled() )
+            } elseif (( method_exists($response, 'isCancelled') && $response->isCancelled() )
                 || ( !empty($response->getData()['name']) && $response->getData()['name'] == "PAYMENT_NOT_APPROVED_FOR_EXECUTION")
             ) {
                 $order->setPaymentStatus(Status::PAY_CANCELED);
