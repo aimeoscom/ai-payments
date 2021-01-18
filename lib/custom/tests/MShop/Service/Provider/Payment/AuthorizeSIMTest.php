@@ -9,7 +9,7 @@
 namespace Aimeos\MShop\Service\Provider\Payment;
 
 
-class AuthorizeSimTest extends \PHPUnit\Framework\TestCase
+class AuthorizeSIMTest extends \PHPUnit\Framework\TestCase
 {
 	private $object;
 	private $context;
