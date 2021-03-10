@@ -507,11 +507,10 @@ class OmniPay
 
 			$order = $this->getOrder( $params['orderid'] );
 			$omniRequest = $provider->acceptNotification();
-			$omniResponse = $omniRequest->send();
 
 			$base = $this->getOrderBase( $order->getBaseId() );
 			$order->setPaymentStatus( $this->translateStatus( $omniRequest->getTransactionStatus() ) );
-			$this->setOrderData( $order, ['Transaction' => $omniResponse->getTransactionReference()] );
+			$this->setOrderData( $order, ['Transaction' => $omniRequest->getTransactionReference()] );
 			$this->saveOrder( $order );
 
 			$response->withStatus( 200 );
