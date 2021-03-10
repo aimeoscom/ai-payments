@@ -415,12 +415,7 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 
 		$request = $this->getMockBuilder( \Omnipay\Dummy\Message\AuthorizeRequest::class )
 			->disableOriginalConstructor()
-			->setMethods( array( 'getTransactionStatus', 'send' ) )
-			->getMock();
-
-		$response = $this->getMockBuilder( 'Omnipay\Dummy\Message\Response' )
-			->disableOriginalConstructor()
-			->setMethods( array( 'isSuccessful', 'getTransactionReference' ) )
+			->setMethods( array( 'getTransactionStatus', 'getTransactionReference' ) )
 			->getMock();
 
 		$psr7request = $this->getMockBuilder( \Psr\Http\Message\ServerRequestInterface::class )->getMock();
@@ -447,11 +442,8 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 		$provider->expects( $this->once() )->method( 'acceptNotification' )
 			->will( $this->returnValue( $request ) );
 
-		$request->expects( $this->once() )->method( 'send' )
-			->will( $this->returnValue( $response ) );
-
-		$response->expects( $this->once() )->method( 'getTransactionReference' )
-			->will( $this->returnValue( '' ) );
+		$request->expects( $this->once() )->method( 'getTransactionReference' )
+			->will( $this->returnValue( '123' ) );
 
 		$request->expects( $this->once() )->method( 'getTransactionStatus' )
 			->will( $this->returnValue( \Omnipay\Common\Message\NotificationInterface::STATUS_COMPLETED ) );
@@ -481,12 +473,7 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 
 		$request = $this->getMockBuilder( \Omnipay\Dummy\Message\AuthorizeRequest::class )
 			->disableOriginalConstructor()
-			->setMethods( array( 'getTransactionStatus', 'send' ) )
-			->getMock();
-
-		$response = $this->getMockBuilder( 'Omnipay\Dummy\Message\Response' )
-			->disableOriginalConstructor()
-			->setMethods( array( 'isPending', 'getTransactionReference' ) )
+			->setMethods( array( 'getTransactionStatus', 'getTransactionReference' ) )
 			->getMock();
 
 		$psr7request = $this->getMockBuilder( \Psr\Http\Message\ServerRequestInterface::class )->getMock();
@@ -513,11 +500,8 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 		$provider->expects( $this->once() )->method( 'acceptNotification' )
 			->will( $this->returnValue( $request ) );
 
-		$request->expects( $this->once() )->method( 'send' )
-			->will( $this->returnValue( $response ) );
-
-		$response->expects( $this->once() )->method( 'getTransactionReference' )
-			->will( $this->returnValue( '' ) );
+		$request->expects( $this->once() )->method( 'getTransactionReference' )
+			->will( $this->returnValue( '123' ) );
 
 		$request->expects( $this->once() )->method( 'getTransactionStatus' )
 			->will( $this->returnValue( \Omnipay\Common\Message\NotificationInterface::STATUS_PENDING ) );
@@ -547,11 +531,7 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 
 		$request = $this->getMockBuilder( \Omnipay\Dummy\Message\AuthorizeRequest::class )
 			->disableOriginalConstructor()
-			->setMethods( array( 'getTransactionStatus', 'send' ) )
-			->getMock();
-
-		$response = $this->getMockBuilder( 'Omnipay\Dummy\Message\Response' )
-			->disableOriginalConstructor()
+			->setMethods( array( 'getTransactionStatus', 'getTransactionReference' ) )
 			->getMock();
 
 		$psr7request = $this->getMockBuilder( \Psr\Http\Message\ServerRequestInterface::class )->getMock();
@@ -575,11 +555,11 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 		$provider->expects( $this->once() )->method( 'acceptNotification' )
 			->will( $this->returnValue( $request ) );
 
-		$request->expects( $this->once() )->method( 'send' )
-			->will( $this->returnValue( $response ) );
-
 		$request->expects( $this->once() )->method( 'getTransactionStatus' )
-			->will( $this->returnValue( \Omnipay\Common\Message\NotificationInterface::STATUS_FAILED) );
+			->will( $this->returnValue( \Omnipay\Common\Message\NotificationInterface::STATUS_FAILED ) );
+
+		$request->expects( $this->once() )->method( 'getTransactionReference' )
+			->will( $this->returnValue( '123' ) );
 
 		$cmpFcn = function( $subject ) {
 			return $subject->getPaymentStatus() === \Aimeos\MShop\Order\Item\Base::PAY_REFUSED;
