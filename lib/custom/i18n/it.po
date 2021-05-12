@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-12-02 15:16+0100\n"
+"POT-Creation-Date: 2021-04-21 11:32+0200\n"
 "PO-Revision-Date: 2017-09-14 09:25+0000\n"
 "Last-Translator: isabella carlin <isabella@vg7.it>, 2020\n"
 "Language-Team: Italian (https://www.transifex.com/aimeos/teams/39015/it/)\n"
@@ -54,10 +54,20 @@ msgstr ""
 "Non sono disponibili dati di pagamento ricorrenti per l'ID cliente \"%1$s\""
 
 #: src/MShop/Service/Provider/Payment/NovalnetSepa.php:155
-#: src/MShop/Service/Provider/Payment/OmniPay.php:680
+#: src/MShop/Service/Provider/Payment/OmniPay.php:679
 #, php-format
 msgid "Order %1$s"
 msgstr "Ordine %1$s"
+
+#: src/MShop/Service/Provider/Payment/PaypalPlus.php:149
+#, php-format
+msgid "PayPalPlus approval URL not available"
+msgstr ""
+
+#: src/MShop/Service/Provider/Payment/PaypalPlus.php:153
+#, php-format
+msgid "PayPalPlus requires the country ID of the user"
+msgstr ""
 
 #: src/MShop/Service/Provider/Payment/OmniPay.php:476
 #: src/MShop/Service/Provider/Payment/Mpay24.php:77
@@ -73,7 +83,8 @@ msgstr ""
 msgid "Token based payment failed: %1$s"
 msgstr "Il pagamento basato su token non è andato a buon fine: %1$s"
 
-#: src/MShop/Service/Provider/Payment/OmniPay.php:582
+#: src/MShop/Service/Provider/Payment/OmniPay.php:581
+#: src/MShop/Service/Provider/Payment/PaypalPlus.php:221
 #, php-format
 msgid "Unexpected redirect: %1$s"
 msgstr "Redirect inaspettato: %1$s"

@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-12-02 15:16+0100\n"
+"POT-Creation-Date: 2021-04-21 11:32+0200\n"
 "PO-Revision-Date: 2017-09-14 09:25+0000\n"
 "Last-Translator: Lara Merlotto <lara@vg7.it>, 2020\n"
 "Language-Team: Spanish (https://www.transifex.com/aimeos/teams/39015/es/)\n"
@@ -53,10 +53,20 @@ msgid "No reoccurring payment data available for customer ID \"%1$s\""
 msgstr "Ningún dato de pago recurrente disponible para el cliente ID \"%1$s\""
 
 #: src/MShop/Service/Provider/Payment/NovalnetSepa.php:155
-#: src/MShop/Service/Provider/Payment/OmniPay.php:680
+#: src/MShop/Service/Provider/Payment/OmniPay.php:679
 #, php-format
 msgid "Order %1$s"
 msgstr "Orden %1$s"
+
+#: src/MShop/Service/Provider/Payment/PaypalPlus.php:149
+#, php-format
+msgid "PayPalPlus approval URL not available"
+msgstr ""
+
+#: src/MShop/Service/Provider/Payment/PaypalPlus.php:153
+#, php-format
+msgid "PayPalPlus requires the country ID of the user"
+msgstr ""
 
 #: src/MShop/Service/Provider/Payment/OmniPay.php:476
 #: src/MShop/Service/Provider/Payment/Mpay24.php:77
@@ -70,7 +80,8 @@ msgstr "Pago basado con el Token fallido con código \"%1$s\" y mensaje \"%2$s\"
 msgid "Token based payment failed: %1$s"
 msgstr "Pago basado con el Token fallido: %1$s"
 
-#: src/MShop/Service/Provider/Payment/OmniPay.php:582
+#: src/MShop/Service/Provider/Payment/OmniPay.php:581
+#: src/MShop/Service/Provider/Payment/PaypalPlus.php:221
 #, php-format
 msgid "Unexpected redirect: %1$s"
 msgstr "Redirección no esperada: %1$s"
