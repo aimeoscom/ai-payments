@@ -339,30 +339,32 @@ StripeProvider = {
 	elements: "",
 	token_element: "",
 	token_selector: "#process-paymenttoken",
-	errors_selector: "card-errors",
 	form_selector: ".checkout-standard form",
 	payment_button_id: "payment-button",
+	errors_selector_id: "card-errors",
 
 	init: function(publishableKey,elements_array){
 		StripeProvider.stripe = Stripe(publishableKey);
 		StripeProvider.elements = StripeProvider.stripe.elements();
 		StripeProvider.createElements(elements_array);
 
-		var button = document.getElementById(StripeProvider.payment_button_id);
+		var button = document.getElementById( StripeProvider.payment_button_id );
 		button.addEventListener("click", function (event) {
+			button.disabled = true;
 			event.preventDefault();
 			StripeProvider.stripe.createToken(StripeProvider.token_element).then(function (result) {
 				if (result.error) {
-					document.querySelectorAll( StripeProvider.errors_selector ).value = result.error.message;
+					document.getElementById( StripeProvider.errors_selector_id ).textContent = result.error.message;
+					button.disabled = false;
 				} else {
-					StripeProvider.tokenHandler(result.token);
+					StripeProvider.tokenHandler( result.token );
 				}
 			});
 		});
 	},
 
 	handleEvent: function(event){
-		var displayError = document.getElementById(StripeProvider.errors_selector);
+		var displayError = document.getElementById( StripeProvider.errors_selector_id );
 		if (event.error) {
 			displayError.textContent = event.error.message;
 		} else {
@@ -388,13 +390,13 @@ StripeProvider = {
 
 	// Actions with recieved token
 	tokenHandler: function (token) {
-		var input = document.querySelectorAll( StripeProvider.token_selector);
+		var input = document.querySelectorAll( StripeProvider.token_selector );
 		input[0].value= token.id;
 		this.submitPurchaseForm();
 	},
 
 	submitPurchaseForm: function () {
-		var form = document.querySelectorAll(StripeProvider.form_selector);
+		var form = document.querySelectorAll( StripeProvider.form_selector );
 		form[0].submit();
 	}
 };
