@@ -559,7 +559,7 @@ class OmniPay
 				return $order;
 			}
 
-			if( $response->getTransactionId() != $order->getId() ) {
+			if( $response->getRequest()->getTransactionId() != $order->getId() ) {
 				return $order;
 			}
 
