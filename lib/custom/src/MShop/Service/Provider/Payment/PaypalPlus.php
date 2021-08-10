@@ -145,12 +145,16 @@ class PaypalPlus
 			}
 		}
 
-		if( empty( $approvalUrl ) ) {
-			throw new \Aimeos\MShop\Service\Exception( sprintf( 'PayPalPlus approval URL not available' ) );
+		if( empty( $approvalUrl ) )
+		{
+			$msg = $this->getContext()->i18n()->dt( 'mshop', 'PayPalPlus approval URL not available' );
+			throw new \Aimeos\MShop\Service\Exception( $msg );
 		}
 
-		if( ( $address = current( $addresses ) ) === false ) {
-			throw new \Aimeos\MShop\Service\Exception( sprintf( 'PayPalPlus requires the country ID of the user' ) );
+		if( ( $address = current( $addresses ) ) === false )
+		{
+			$msg = $this->getContext()->i18n()->dt( 'mshop', 'PayPalPlus requires the country ID of the user' );
+			throw new \Aimeos\MShop\Service\Exception( $msg );
 		}
 
 		$langid = $address->getLanguageId() ?: $this->getContext()->getLocale()->getLanguageId();
@@ -218,7 +222,8 @@ class PaypalPlus
 			}
 			elseif( method_exists( $response, 'isRedirect' ) && $response->isRedirect() )
 			{
-				throw new \Aimeos\MShop\Service\Exception( sprintf( 'Unexpected redirect: %1$s', $response->getRedirectUrl() ) );
+				$msg = $this->getContext()->i18n()->dt( 'mshop', 'Unexpected redirect: %1$s' );
+				throw new \Aimeos\MShop\Service\Exception( sprintf( $msg, $response->getRedirectUrl() ) );
 			}
 			else
 			{
