@@ -428,7 +428,7 @@ class OmniPay
 
 		if( !$this->isImplemented( \Aimeos\MShop\Service\Provider\Payment\Base::FEAT_REPAY ) )
 		{
-			$msg = $this->getContext()->i18n()->dt( 'mshop', 'Method "%1$s" for provider not available' );
+			$msg = $this->getContext()->translate( 'mshop', 'Method "%1$s" for provider not available' );
 			throw new \Aimeos\MShop\Service\Exception( sprintf( $msg, 'repay' ) );
 		}
 
@@ -579,7 +579,7 @@ class OmniPay
 			}
 			elseif( method_exists( $response, 'isRedirect' ) && $response->isRedirect() )
 			{
-				$msg = $this->getContext()->i18n()->dt( 'mshop', 'Unexpected redirect: %1$s' );
+				$msg = $this->getContext()->translate( 'mshop', 'Unexpected redirect: %1$s' );
 				throw new \Aimeos\MShop\Service\Exception( sprintf( $msg, $response->getRedirectUrl() ) );
 			}
 			else
