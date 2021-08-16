@@ -290,7 +290,7 @@ class OmniPay
 		$response = $provider->void( $data )->send();
 
 		if( $response->isSuccessful() ) {
-			$order = $this->saveOrder( $order->setPaymentStatus( Status::PAY_CANCELED ) );
+			$order = $this->saveOrder( $order->setStatusPayment( Status::PAY_CANCELED ) );
 		}
 
 		return $order;
@@ -323,7 +323,7 @@ class OmniPay
 		$response = $provider->capture( $data )->send();
 
 		if( $response->isSuccessful() ) {
-			$order = $order->setPaymentStatus( Status::PAY_RECEIVED );
+			$order = $order->setStatusPayment( Status::PAY_RECEIVED );
 		}
 
 		return $order;
@@ -408,7 +408,7 @@ class OmniPay
 			$this->setAttributes( $service, $attr, 'payment/omnipay' );
 			$this->saveOrderBase( $base );
 
-			$order = $this->saveOrder( $order->setPaymentStatus( Status::PAY_REFUND ) );
+			$order = $this->saveOrder( $order->setStatusPayment( Status::PAY_REFUND ) );
 		}
 
 		return $order;
@@ -466,7 +466,7 @@ class OmniPay
 		if( $response->isSuccessful() || $response->isPending() )
 		{
 			$this->setOrderData( $order, ['Transaction' => $response->getTransactionReference()] );
-			$this->saveOrder( $order->setPaymentStatus( Status::PAY_RECEIVED ) );
+			$this->saveOrder( $order->setStatusPayment( Status::PAY_RECEIVED ) );
 		}
 		elseif( !$response->getTransactionReference() )
 		{
@@ -511,7 +511,7 @@ class OmniPay
 			$omniRequest = $provider->acceptNotification();
 
 			$base = $this->getOrderBase( $order->getBaseId() );
-			$order->setPaymentStatus( $this->translateStatus( $omniRequest->getTransactionStatus() ) );
+			$order->setStatusPayment( $this->translateStatus( $omniRequest->getTransactionStatus() ) );
 			$this->setOrderData( $order, ['Transaction' => $omniRequest->getTransactionReference()] );
 			$this->saveOrder( $order );
 
@@ -567,15 +567,15 @@ class OmniPay
 
 			if( method_exists( $response, 'isSuccessful' ) && $response->isSuccessful() )
 			{
-				$order->setPaymentStatus( $status );
+				$order->setStatusPayment( $status );
 			}
 			elseif( method_exists( $response, 'isPending' ) && $response->isPending() )
 			{
-				$order->setPaymentStatus( Status::PAY_PENDING );
+				$order->setStatusPayment( Status::PAY_PENDING );
 			}
 			elseif( method_exists( $response, 'isCancelled' ) && $response->isCancelled() )
 			{
-				$order->setPaymentStatus( Status::PAY_CANCELED );
+				$order->setStatusPayment( Status::PAY_CANCELED );
 			}
 			elseif( method_exists( $response, 'isRedirect' ) && $response->isRedirect() )
 			{
@@ -584,8 +584,8 @@ class OmniPay
 			}
 			else
 			{
-				if( $order->getPaymentStatus() === Status::PAY_UNFINISHED ) {
-					$this->saveOrder( $order->setPaymentStatus( Status::PAY_REFUSED ) );
+				if( $order->getStatusPayment() === Status::PAY_UNFINISHED ) {
+					$this->saveOrder( $order->setStatusPayment( Status::PAY_REFUSED ) );
 				}
 
 				throw new \Aimeos\MShop\Service\Exception( $response->getMessage() );
@@ -870,7 +870,7 @@ class OmniPay
 				$this->saveRepayData( $response, $base->getCustomerId() );
 
 				$status = $this->getValue( 'authorize', false ) ? Status::PAY_AUTHORIZED : Status::PAY_RECEIVED;
-				$this->saveOrder( $order->setPaymentStatus( $status ) );
+				$this->saveOrder( $order->setStatusPayment( $status ) );
 			}
 			elseif( $response->isRedirect() )
 			{
@@ -879,7 +879,7 @@ class OmniPay
 			}
 			else
 			{
-				$this->saveOrder( $order->setPaymentStatus( Status::PAY_REFUSED ) );
+				$this->saveOrder( $order->setStatusPayment( Status::PAY_REFUSED ) );
 				throw new \Aimeos\MShop\Service\Exception( $response->getMessage() );
 			}
 		}
@@ -987,12 +987,12 @@ class OmniPay
 		if( $this->getValue( 'authorize', false ) && $provider->supportsAuthorize() )
 		{
 			$response = $provider->authorize( $data )->send();
-			$order->setPaymentStatus( Status::PAY_AUTHORIZED );
+			$order->setStatusPayment( Status::PAY_AUTHORIZED );
 		}
 		else
 		{
 			$response = $provider->purchase( $data )->send();
-			$order->setPaymentStatus( Status::PAY_RECEIVED );
+			$order->setStatusPayment( Status::PAY_RECEIVED );
 		}
 
 		return $response;

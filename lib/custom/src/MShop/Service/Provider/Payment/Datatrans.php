@@ -37,18 +37,18 @@ class Datatrans
 		if( $response->isSuccessful() )
 		{
 			if( in_array( $response->getResponseCode(), [2, 3, 21] ) ) {
-				$order->setPaymentStatus( \Aimeos\MShop\Order\Item\Base::PAY_RECEIVED );
+				$order->setStatusPayment( \Aimeos\MShop\Order\Item\Base::PAY_RECEIVED );
 			} elseif( $response->getResponseCode() == 1 ) {
-				$order->setPaymentStatus( \Aimeos\MShop\Order\Item\Base::PAY_AUTHORIZED );
+				$order->setStatusPayment( \Aimeos\MShop\Order\Item\Base::PAY_AUTHORIZED );
 			}
 		}
 		elseif( method_exists($response, 'isPending') && $response->isPending() )
 		{
-			$order->setPaymentStatus( \Aimeos\MShop\Order\Item\Base::PAY_PENDING );
+			$order->setStatusPayment( \Aimeos\MShop\Order\Item\Base::PAY_PENDING );
 		}
 		elseif( method_exists($response, 'isCancelled') && $response->isCancelled() )
 		{
-			$order->setPaymentStatus( \Aimeos\MShop\Order\Item\Base::PAY_CANCELED );
+			$order->setStatusPayment( \Aimeos\MShop\Order\Item\Base::PAY_CANCELED );
 		}
 
 		$this->setOrderData( $order, ['TRANSACTIONID' => $response->getTransactionReference()] );
@@ -100,7 +100,7 @@ class Datatrans
 		if( $response->isSuccessful() || $response->isPending() )
 		{
 			$this->setOrderData( $order, ['TRANSACTIONID' => $response->getTransactionReference()] );
-			$order = $this->saveOrder( $order->setPaymentStatus( \Aimeos\MShop\Order\Item\Base::PAY_RECEIVED ) );
+			$order = $this->saveOrder( $order->setStatusPayment( \Aimeos\MShop\Order\Item\Base::PAY_RECEIVED ) );
 		}
 		elseif( !$response->getTransactionReference() )
 		{

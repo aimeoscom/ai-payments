@@ -207,7 +207,7 @@ class Stripe
 		if( $response->isSuccessful() || $response->isPending() )
 		{
 			$this->setOrderData( $order, ['Transaction' => $response->getTransactionReference()] );
-			$order = $this->saveOrder( $order->setPaymentStatus( Status::PAY_RECEIVED ) );
+			$order = $this->saveOrder( $order->setStatusPayment( Status::PAY_RECEIVED ) );
 		}
 		elseif( !$response->getTransactionReference() )
 		{
@@ -236,7 +236,7 @@ class Stripe
 	public function updateSync( \Psr\Http\Message\ServerRequestInterface $request,
 		\Aimeos\MShop\Order\Item\Iface $order ) : \Aimeos\MShop\Order\Item\Iface
 	{
-		if( $order->getPaymentStatus() === Status::PAY_UNFINISHED )
+		if( $order->getStatusPayment() === Status::PAY_UNFINISHED )
 		{
 			$response = $this->getProvider()->confirm( [
 				'paymentIntentReference' => $this->getOrderData( $order, 'Reference' )
@@ -256,7 +256,7 @@ class Stripe
 				$status = Status::PAY_REFUSED;
 			}
 
-			$this->saveOrder( $order->setPaymentStatus( $status ) );
+			$this->saveOrder( $order->setStatusPayment( $status ) );
 		}
 
 		return $order;

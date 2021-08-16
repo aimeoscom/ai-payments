@@ -127,7 +127,7 @@ class PaypalPlus
 
 		if( !$response->isSuccessful() )
 		{
-			$this->saveOrder( $order->setPaymentStatus( Status::PAY_REFUSED ) );
+			$this->saveOrder( $order->setStatusPayment( Status::PAY_REFUSED ) );
 			throw new \Aimeos\MShop\Service\Exception( $response->getMessage() );
 		}
 
@@ -176,7 +176,7 @@ class PaypalPlus
 		\Aimeos\MShop\Order\Item\Iface $order ) : \Aimeos\MShop\Order\Item\Iface
 	{
 		if( empty( $request->getQueryParams()['PayerID'] ) ) {
-			return $this->saveOrder( $order->setPaymentStatus( Status::PAY_CANCELED ) );
+			return $this->saveOrder( $order->setStatusPayment( Status::PAY_CANCELED ) );
 		}
 
 		try
@@ -210,15 +210,15 @@ class PaypalPlus
 
 			if( method_exists( $response, 'isSuccessful' ) && $response->isSuccessful() )
 			{
-				$order->setPaymentStatus( $status );
+				$order->setStatusPayment( $status );
 			}
 			elseif( method_exists( $response, 'isPending' ) && $response->isPending() )
 			{
-				$order->setPaymentStatus( Status::PAY_PENDING );
+				$order->setStatusPayment( Status::PAY_PENDING );
 			}
 			elseif( method_exists( $response, 'isCancelled' ) && $response->isCancelled() )
 			{
-				$order->setPaymentStatus( Status::PAY_CANCELED );
+				$order->setStatusPayment( Status::PAY_CANCELED );
 			}
 			elseif( method_exists( $response, 'isRedirect' ) && $response->isRedirect() )
 			{
@@ -227,8 +227,8 @@ class PaypalPlus
 			}
 			else
 			{
-				if( $order->getPaymentStatus() === Status::PAY_UNFINISHED ) {
-					$this->saveOrder( $order->setPaymentStatus( Status::PAY_REFUSED ) );
+				if( $order->getStatusPayment() === Status::PAY_UNFINISHED ) {
+					$this->saveOrder( $order->setStatusPayment( Status::PAY_REFUSED ) );
 				}
 
 				throw new \Aimeos\MShop\Service\Exception( $response->getMessage() );

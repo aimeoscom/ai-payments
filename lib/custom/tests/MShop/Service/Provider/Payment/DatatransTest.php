@@ -81,7 +81,7 @@ class DatatransTest extends \PHPUnit\Framework\TestCase
 		$this->object->expects( $this->once() )->method( 'setOrderData' );
 
 		$cmpFcn = function( $subject ) {
-			return $subject->getPaymentStatus() === \Aimeos\MShop\Order\Item\Base::PAY_RECEIVED;
+			return $subject->getStatusPayment() === \Aimeos\MShop\Order\Item\Base::PAY_RECEIVED;
 		};
 
 		$this->object->expects( $this->once() )->method( 'saveOrder' )->with( $this->callback( $cmpFcn ) );
@@ -160,7 +160,7 @@ class DatatransTest extends \PHPUnit\Framework\TestCase
 			->will($this->returnValue(''));
 
 		$cmpFcn = function( $subject ) {
-			return $subject->getPaymentStatus() === \Aimeos\MShop\Order\Item\Base::PAY_PENDING;
+			return $subject->getStatusPayment() === \Aimeos\MShop\Order\Item\Base::PAY_PENDING;
 		};
 
 		$this->object->expects( $this->once() )->method( 'saveOrder' )->with( $this->callback( $cmpFcn ) );
@@ -201,7 +201,7 @@ class DatatransTest extends \PHPUnit\Framework\TestCase
 			->will($this->returnValue(''));
 
 		$cmpFcn = function( $subject ) {
-			return $subject->getPaymentStatus() === \Aimeos\MShop\Order\Item\Base::PAY_CANCELED;
+			return $subject->getStatusPayment() === \Aimeos\MShop\Order\Item\Base::PAY_CANCELED;
 		};
 
 		$this->object->expects( $this->once() )->method( 'saveOrder' )->with( $this->callback( $cmpFcn ) );

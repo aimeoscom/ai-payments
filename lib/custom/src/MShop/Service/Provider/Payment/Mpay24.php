@@ -65,7 +65,7 @@ class Mpay24
 		if( $response->isSuccessful() || $response->isPending() )
 		{
 			$this->setOrderData( $order, ['TRANSACTIONID' => $response->getTransactionReference()] );
-			$this->saveOrder( $order->setPaymentStatus( \Aimeos\MShop\Order\Item\Base::PAY_RECEIVED ) );
+			$this->saveOrder( $order->setStatusPayment( \Aimeos\MShop\Order\Item\Base::PAY_RECEIVED ) );
 		}
 		elseif( !$response->getTransactionReference() )
 		{
