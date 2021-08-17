@@ -331,8 +331,8 @@ class Stripe
 	protected function getStripeJs() : string
 	{
 		return '
-<script src="https://js.stripe.com/v3/"></script>
-<script type="text/javascript">
+<script src="https://js.stripe.com/v3/" nonce="' . $this->getContext()->nonce() . '"></script>
+<script type="text/javascript" nonce="' . $this->getContext()->nonce() . '">
 
 StripeProvider = {
 	stripe: "",
