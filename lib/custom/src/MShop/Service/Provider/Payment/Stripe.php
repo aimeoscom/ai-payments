@@ -345,6 +345,7 @@ StripeProvider = {
 
 	init: function(publishableKey,elements_array){
 		StripeProvider.stripe = Stripe(publishableKey);
+		StripeProvider.stripe.registerAppInfo({name: "Aimeos Stripe", version: "1", partner_id: "pp_partner_KAccijqID5B7Gu"});
 		StripeProvider.elements = StripeProvider.stripe.elements();
 		StripeProvider.createElements(elements_array);
 
