@@ -236,7 +236,7 @@ class Stripe
 	public function updateSync( \Psr\Http\Message\ServerRequestInterface $request,
 		\Aimeos\MShop\Order\Item\Iface $order ) : \Aimeos\MShop\Order\Item\Iface
 	{
-		if( $order->getStatusPayment() === Status::PAY_UNFINISHED )
+		if( empty( $order->getStatusPayment() ) )
 		{
 			$response = $this->getProvider()->confirm( [
 				'paymentIntentReference' => $this->getOrderData( $order, 'Reference' )

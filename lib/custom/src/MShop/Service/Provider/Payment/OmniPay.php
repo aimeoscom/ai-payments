@@ -584,7 +584,7 @@ class OmniPay
 			}
 			else
 			{
-				if( $order->getStatusPayment() === Status::PAY_UNFINISHED ) {
+				if( empty( $order->getStatusPayment() ) ) {
 					$this->saveOrder( $order->setStatusPayment( Status::PAY_REFUSED ) );
 				}
 
