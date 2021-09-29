@@ -678,7 +678,7 @@ class OmniPay
 			'transactionId' => $orderid,
 			'amount' => $this->getAmount( $base->getPrice() ),
 			'currency' => $base->getLocale()->getCurrencyId(),
-			'description' => sprintf( $this->getContext()->getI18n()->dt( 'mshop', 'Order %1$s' ), $orderid ),
+			'description' => sprintf( $this->getContext()->translate( 'mshop', 'Order %1$s' ), $orderid ),
 			'clientIp' => $this->getValue( 'client.ipaddress' ),
 		);
 
