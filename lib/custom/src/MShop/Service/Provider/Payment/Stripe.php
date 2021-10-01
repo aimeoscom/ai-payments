@@ -299,7 +299,7 @@ class Stripe
 
 		$data['confirm'] = true;
 
-		return $data;
+		return $data + $this->getPaymentUrls();
 	}
 
 
