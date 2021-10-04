@@ -4,15 +4,13 @@
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 # 
 # Translators:
-# Aimeos, 2017
 # isabella carlin <isabella@vg7.it>, 2020
 # 
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: ai-payments\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-08-18 13:26+0200\n"
+"POT-Creation-Date: 2021-10-04 18:31+0200\n"
 "PO-Revision-Date: 2017-09-14 09:25+0000\n"
 "Last-Translator: isabella carlin <isabella@vg7.it>, 2020\n"
 "Language-Team: Italian (https://www.transifex.com/aimeos/teams/39015/it/)\n"
@@ -47,12 +45,6 @@ msgstr "Nessun token di pagamento disponibile per l'ID cliente \"%1$s\""
 msgid "No reoccurring payment data available for customer ID \"%1$s\""
 msgstr ""
 "Non sono disponibili dati di pagamento ricorrenti per l'ID cliente \"%1$s\""
-
-#: src/MShop/Service/Provider/Payment/NovalnetSepa.php:155
-#: src/MShop/Service/Provider/Payment/OmniPay.php:681
-#, php-format
-msgid "Order %1$s"
-msgstr "Ordine %1$s"
 
 #: src/MShop/Service/Provider/Payment/OmniPay.php:478
 #: src/MShop/Service/Provider/Payment/Mpay24.php:77
