@@ -1,0 +1,24 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# 
+# Translators:
+# Kevin Purwito, 2021
+# 
+msgid ""
+msgstr ""
+"Project-Id-Version: Aimeos ai-payments\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-07-07 00:00+0000\n"
+"PO-Revision-Date: 2017-09-14 09:24+0000\n"
+"Last-Translator: Kevin Purwito, 2021\n"
+"Language-Team: Indonesian (https://www.transifex.com/aimeos/teams/39015/id/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: id\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. Omnipay service provider
+msgid "payment.expirymonthyear"
+msgstr "Tanggal kadaluarsa (MMYY)"
