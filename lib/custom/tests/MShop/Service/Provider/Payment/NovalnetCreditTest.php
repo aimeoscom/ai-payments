@@ -28,11 +28,11 @@ class NovalnetCreditTest extends \PHPUnit\Framework\TestCase
 		$serviceManager = \Aimeos\MShop\Service\Manager\Factory::create( $this->context );
 		$this->serviceItem = $serviceManager->create();
 		$this->serviceItem->setConfig( array( 'type' => 'Dummy', 'address' => 1 ) );
-		$this->serviceItem->setCode( 'OGONE' );
+		$this->serviceItem->setCode( 'unitpaymentcode' );
 
 		$this->ordServItem = \Aimeos\MShop::create( $this->context, 'order/base/service' )->create();
 		$serviceItem = \Aimeos\MShop::create( $this->context, 'service' )->create();
-		$serviceItem->setCode( 'OGONE' );
+		$serviceItem->setCode( 'unitpaymentcode' );
 
 		$this->object = $this->getMockBuilder( '\\Aimeos\\MShop\\Service\\Provider\\Payment\\NovalnetCredit' )
 			->setMethods( ['getOrder', 'getOrderBase', 'saveOrder', 'saveOrderBase', 'getProvider', 'getValue', 'saveRepayData'] )
@@ -168,15 +168,9 @@ class NovalnetCreditTest extends \PHPUnit\Framework\TestCase
 	protected function getOrder()
 	{
 		$manager = \Aimeos\MShop\Order\Manager\Factory::create( $this->context );
+		$search = $manager->filter()->add( ['order.datepayment' => '2008-02-15 12:34:56'] );
 
-		$search = $manager->filter();
-		$search->setConditions( $search->compare( '==', 'order.datepayment', '2008-02-15 12:34:56' ) );
-
-		if( ( $item = $manager->search( $search )->first() ) === null ) {
-			throw new \RuntimeException( 'No order found' );
-		}
-
-		return $item;
+		return $manager->search( $search )->first( new \RuntimeException( 'No order found' ) );
 	}
 
 

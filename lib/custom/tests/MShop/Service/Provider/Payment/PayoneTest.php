@@ -21,7 +21,7 @@ class PayoneTest extends \PHPUnit\Framework\TestCase
 		$serviceManager = \Aimeos\MShop\Service\Manager\Factory::create( $this->context );
 		$this->serviceItem = $serviceManager->create();
 		$this->serviceItem->setConfig( array( 'type' => 'Dummy' ) );
-		$this->serviceItem->setCode( 'OGONE' );
+		$this->serviceItem->setCode( 'unitpaymentcode' );
 
 		$this->object = $this->getMockBuilder( \Aimeos\MShop\Service\Provider\Payment\Payone::class )
 			->setConstructorArgs( array( $this->context, $this->serviceItem ) )

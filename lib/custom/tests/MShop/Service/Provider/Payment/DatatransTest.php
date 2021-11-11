@@ -27,7 +27,7 @@ class DatatransTest extends \PHPUnit\Framework\TestCase
 		$serviceManager = \Aimeos\MShop\Service\Manager\Factory::create( $this->context );
 		$this->serviceItem = $serviceManager->create();
 		$this->serviceItem->setConfig( array( 'type' => 'Dummy' ) );
-		$this->serviceItem->setCode( 'OGONE' );
+		$this->serviceItem->setCode( 'unitpaymentcode' );
 
 		$methods = [
 			'getCustomerData', 'getOrder', 'getOrderBase', 'getTransactionReference', 'isImplemented',

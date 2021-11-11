@@ -27,7 +27,7 @@ class AuthorizeSIMTest extends \PHPUnit\Framework\TestCase
 		$serviceManager = \Aimeos\MShop\Service\Manager\Factory::create( $this->context );
 		$this->serviceItem = $serviceManager->create();
 		$this->serviceItem->setConfig( array( 'authorizenet.testmode' => true ) );
-		$this->serviceItem->setCode( 'OGONE' );
+		$this->serviceItem->setCode( 'unitpaymentcode' );
 
 		$this->object = $this->getMockBuilder( 'Aimeos\MShop\Service\Provider\Payment\AuthorizeSIM' )
 			->setMethods( array( 'getOrder', 'getOrderBase', 'saveOrder', 'saveOrderBase', 'getProvider' ) )
