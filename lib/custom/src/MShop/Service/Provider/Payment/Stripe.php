@@ -11,7 +11,7 @@
 namespace Aimeos\MShop\Service\Provider\Payment;
 
 use Aimeos\MShop\Order\Item\Base as Status;
-
+use Omnipay\Omnipay as OPay;
 
 /**
  * Payment provider for Stripe.
@@ -51,6 +51,15 @@ class Stripe
 			'internaltype'=> 'string',
 			'default'=> '',
 			'required'=> true,
+		),
+		'multiCurrency' => array(
+			'code' => 'multiCurrency',
+			'internalcode' => 'multiCurrency',
+			'label' => 'Multi Currency',
+			'type' => 'boolean',
+			'internaltype' => 'boolean',
+			'default' => '0',
+			'required' => true,
 		),
 	);
 
@@ -404,7 +413,7 @@ StripeProvider = {
 };
 
 document.addEventListener("DOMContentLoaded", function() {
-	StripeProvider.init("' . $this->getConfigValue( 'publishableKey', '' ) . '",
+	StripeProvider.init("' . $this->getPublishableKey() . '",
 		[
 			{"element": "cardNumber", "selector": "div[id=\"process-payment.cardno\"]"},
 			{"element": "cardExpiry", "selector": "div[id=\"process-payment.expiry\"]"},
@@ -440,5 +449,69 @@ document.addEventListener("DOMContentLoaded", function() {
 		}
 
 		return $response;
+	}
+
+	/**
+	 * Returns the Omnipay gateway provider object.
+	 *
+	 * @return \Omnipay\Common\GatewayInterface Gateway provider object
+	 */
+	protected function getProvider(): \Omnipay\Common\GatewayInterface
+	{
+		$this->provider = OPay::create($this->getValue('type'));
+		$this->provider->setTestMode((bool) $this->getValue('testmode', false));
+		$this->provider->initialize($this->getOptions());
+		return $this->provider;
+	}
+
+	/**
+	 * Get options value for initializing provider
+	 *
+	 * @return array of initializing options
+	 */
+
+	protected function getOptions()
+	{
+		$options = [
+			'testmode' => $this->getConfigValue('testmode',''),
+			'apiKey' => $this->getConfigValue('apiKey','')
+		];
+		
+		if ($this->getConfigValue('multiCurrency') == 0) {
+			return $options;
+		}
+
+		$currency = $this->getContext()->getLocale()->getCurrencyId();
+		$index = "apiKey_" . $currency;
+		// if array key exist return respective stripe secret key
+		if (array_key_exists($index, $this->getServiceItem()->getConfig())) {
+			$options['apiKey'] = $this->getConfigValue($index,'');
+			return $options;
+		}
+
+		// fallback if array key does not exist return to default value
+		
+		return $options;
+	}
+
+	/**
+	 * Get publishable key value  from current selected currency
+	 *
+	 * @return string publishable key value
+	 */
+	protected function getPublishableKey()
+	{
+		if($this->getConfigValue( 'multiCurrency') == 0){
+			return $this->getConfigValue('publishableKey','');
+		}
+
+		$currency = $this->getContext()->getLocale()->getCurrencyId();
+		$index = "publishableKey_" . $currency;
+		// if array key exist return respective stripe publishable key
+		if(array_key_exists($index, $this->getServiceItem()->getConfig())){
+			return $this->getConfigValue($index,'');
+		}
+		// fallback if array key does not exist to default value
+		return $this->getConfigValue('publishableKey','');
 	}
 }
