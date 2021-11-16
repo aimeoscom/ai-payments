@@ -23,7 +23,7 @@ class StripeTest extends \PHPUnit\Framework\TestCase
 
 		$this->context = \TestHelper::getContext();
 		$config = ['type' => 'Stripe_PaymentIntents', 'testmode' => true];
-		$item = \Aimeos\MShop::create( $this->context, 'service' )->create()->setConfig( $config )->setCode( 'OGONE' );
+		$item = \Aimeos\MShop::create( $this->context, 'service' )->create()->setConfig( $config )->setCode( 'unitpaymentcode' );
 
 		$this->object = new Stripe( $this->context, $item );
 	}
