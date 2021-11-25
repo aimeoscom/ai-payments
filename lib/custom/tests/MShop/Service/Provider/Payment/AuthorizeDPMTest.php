@@ -21,7 +21,7 @@ class AuthorizeDPMTest extends \PHPUnit\Framework\TestCase
 			$this->markTestSkipped( 'Omnipay library not available' );
 		}
 
-		$this->context = \TestHelper::getContext();
+		$this->context = \TestHelper::context();
 
 		$conf = array(
 			'address' => '1',

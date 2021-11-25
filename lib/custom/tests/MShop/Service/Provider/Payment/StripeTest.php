@@ -21,7 +21,7 @@ class StripeTest extends \PHPUnit\Framework\TestCase
 			$this->markTestSkipped( 'Omnipay library not available' );
 		}
 
-		$this->context = \TestHelper::getContext();
+		$this->context = \TestHelper::context();
 		$config = ['type' => 'Stripe_PaymentIntents', 'testmode' => true];
 		$item = \Aimeos\MShop::create( $this->context, 'service' )->create()->setConfig( $config )->setCode( 'unitpaymentcode' );
 

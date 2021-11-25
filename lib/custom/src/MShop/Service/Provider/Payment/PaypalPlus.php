@@ -147,17 +147,17 @@ class PaypalPlus
 
 		if( empty( $approvalUrl ) )
 		{
-			$msg = $this->getContext()->translate( 'mshop', 'PayPalPlus approval URL not available' );
+			$msg = $this->context()->translate( 'mshop', 'PayPalPlus approval URL not available' );
 			throw new \Aimeos\MShop\Service\Exception( $msg );
 		}
 
 		if( ( $address = current( $addresses ) ) === false )
 		{
-			$msg = $this->getContext()->translate( 'mshop', 'PayPalPlus requires the country ID of the user' );
+			$msg = $this->context()->translate( 'mshop', 'PayPalPlus requires the country ID of the user' );
 			throw new \Aimeos\MShop\Service\Exception( $msg );
 		}
 
-		$langid = $address->getLanguageId() ?: $this->getContext()->getLocale()->getLanguageId();
+		$langid = $address->getLanguageId() ?: $this->context()->getLocale()->getLanguageId();
 
 		$html = $this->getPayPalPlusJs( $approvalUrl, (string) $address->getCountryId(), (string) $langid );
 		return new \Aimeos\MShop\Common\Helper\Form\Standard( '', '', [], true, $html );
@@ -222,7 +222,7 @@ class PaypalPlus
 			}
 			elseif( method_exists( $response, 'isRedirect' ) && $response->isRedirect() )
 			{
-				$msg = $this->getContext()->translate( 'mshop', 'Unexpected redirect: %1$s' );
+				$msg = $this->context()->translate( 'mshop', 'Unexpected redirect: %1$s' );
 				throw new \Aimeos\MShop\Service\Exception( sprintf( $msg, $response->getRedirectUrl() ) );
 			}
 			else

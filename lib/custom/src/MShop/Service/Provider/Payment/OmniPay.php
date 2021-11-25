@@ -428,7 +428,7 @@ class OmniPay
 
 		if( !$this->isImplemented( \Aimeos\MShop\Service\Provider\Payment\Base::FEAT_REPAY ) )
 		{
-			$msg = $this->getContext()->translate( 'mshop', 'Method "%1$s" for provider not available' );
+			$msg = $this->context()->translate( 'mshop', 'Method "%1$s" for provider not available' );
 			throw new \Aimeos\MShop\Service\Exception( sprintf( $msg, 'repay' ) );
 		}
 
@@ -579,7 +579,7 @@ class OmniPay
 			}
 			elseif( method_exists( $response, 'isRedirect' ) && $response->isRedirect() )
 			{
-				$msg = $this->getContext()->translate( 'mshop', 'Unexpected redirect: %1$s' );
+				$msg = $this->context()->translate( 'mshop', 'Unexpected redirect: %1$s' );
 				throw new \Aimeos\MShop\Service\Exception( sprintf( $msg, $response->getRedirectUrl() ) );
 			}
 			else
@@ -668,7 +668,7 @@ class OmniPay
 		$addresses = $base->getAddress( \Aimeos\MShop\Order\Item\Base\Address\Base::TYPE_PAYMENT );
 
 		if( ( $address = current( $addresses ) ) === false ) {
-			$langid = $this->getContext()->getLocale()->getLanguageId();
+			$langid = $this->context()->getLocale()->getLanguageId();
 		} else {
 			$langid = $address->getLanguageId();
 		}
@@ -678,7 +678,7 @@ class OmniPay
 			'transactionId' => $orderid,
 			'amount' => $this->getAmount( $base->getPrice() ),
 			'currency' => $base->getLocale()->getCurrencyId(),
-			'description' => sprintf( $this->getContext()->translate( 'mshop', 'Order %1$s' ), $orderid ),
+			'description' => sprintf( $this->context()->translate( 'mshop', 'Order %1$s' ), $orderid ),
 			'clientIp' => $this->getValue( 'client.ipaddress' ),
 		);
 

@@ -104,13 +104,13 @@ class Datatrans
 		}
 		elseif( !$response->getTransactionReference() )
 		{
-			$msg = $this->getContext()->translate( 'mshop', 'Token based payment incomplete: %1$s' );
+			$msg = $this->context()->translate( 'mshop', 'Token based payment incomplete: %1$s' );
 			throw new \Aimeos\MShop\Service\Exception( sprintf( $msg, print_r( $response->getData(), true ) ), 1 );
 		}
 		else
 		{
 			$str = ( method_exists( $response, 'getMessage' ) ? $response->getMessage() : '' );
-			$msg = $this->getContext()->translate( 'mshop', 'Token based payment failed: %1$s' );
+			$msg = $this->context()->translate( 'mshop', 'Token based payment failed: %1$s' );
 			throw new \Aimeos\MShop\Service\Exception( sprintf( $msg, $str ), -1 );
 		}
 

@@ -22,7 +22,7 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 			$this->markTestSkipped( 'Omnipay library not available' );
 		}
 
-		$this->context = \TestHelper::getContext();
+		$this->context = \TestHelper::context();
 
 		$serviceManager = \Aimeos\MShop\Service\Manager\Factory::create( $this->context );
 		$this->serviceItem = $serviceManager->create();

@@ -141,7 +141,7 @@ class Stripe
 			return $this->getPaymentForm( $order, $params );
 		}
 
-		if( ( $userid = $this->getContext()->getUserId() ) !== null
+		if( ( $userid = $this->context()->getUserId() ) !== null
 			&& $this->getCustomerData( $userid, 'customer' ) === null
 			&& $this->getConfigValue( 'createtoken' )
 		) {
@@ -211,13 +211,13 @@ class Stripe
 		}
 		elseif( !$response->getTransactionReference() )
 		{
-			$msg = $this->getContext()->translate( 'mshop', 'Token based payment incomplete: %1$s' );
+			$msg = $this->context()->translate( 'mshop', 'Token based payment incomplete: %1$s' );
 			throw new \Aimeos\MShop\Service\Exception( sprintf( $msg, print_r( $response->getData(), true ) ), 1 );
 		}
 		else
 		{
 			$str = ( method_exists( $response, 'getMessage' ) ? $response->getMessage() : '' );
-			$msg = $this->getContext()->translate( 'mshop', 'Token based payment failed: %1$s' );
+			$msg = $this->context()->translate( 'mshop', 'Token based payment failed: %1$s' );
 			throw new \Aimeos\MShop\Service\Exception( sprintf( $msg, $str ), -1 );
 		}
 
@@ -248,7 +248,7 @@ class Stripe
 				$this->setOrderData( $order, ['Transaction' => $response->getTransactionReference()] );
 
 				if( $paymethod = $response->getCardReference() ) {
-					$this->setCustomerData( $this->getContext()->getUserId(), 'repay', ['token' => $paymethod] );
+					$this->setCustomerData( $this->context()->getUserId(), 'repay', ['token' => $paymethod] );
 				}
 			}
 			else
@@ -273,7 +273,7 @@ class Stripe
 	 */
 	protected function getData( \Aimeos\MShop\Order\Item\Base\Iface $base, string $orderid, array $params ) : array
 	{
-		$session = $this->getContext()->getSession();
+		$session = $this->context()->getSession();
 		$data = parent::getData( $base, $orderid, $params );
 
 		if( isset( $params['paymenttoken'] ) ) {
@@ -284,8 +284,8 @@ class Stripe
 			$data['token'] = $token;
 		}
 
-		if( $this->getContext()->getUserId() && $this->getConfigValue( 'createtoken' )
-			&& $custid = $this->getCustomerData( $this->getContext()->getUserId(), 'customer' )
+		if( $this->context()->getUserId() && $this->getConfigValue( 'createtoken' )
+			&& $custid = $this->getCustomerData( $this->context()->getUserId(), 'customer' )
 		) {
 			$data['customerReference'] = $custid;
 		}
@@ -333,7 +333,7 @@ class Stripe
 	{
 		return '
 <script src="https://js.stripe.com/v3/"></script>
-<script type="text/javascript" nonce="' . $this->getContext()->nonce() . '">
+<script type="text/javascript" nonce="' . $this->context()->nonce() . '">
 
 StripeProvider = {
 	stripe: "",
