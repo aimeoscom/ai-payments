@@ -668,7 +668,7 @@ class OmniPay
 		$addresses = $base->getAddress( \Aimeos\MShop\Order\Item\Base\Address\Base::TYPE_PAYMENT );
 
 		if( ( $address = current( $addresses ) ) === false ) {
-			$langid = $this->context()->getLocale()->getLanguageId();
+			$langid = $this->context()->locale()->getLanguageId();
 		} else {
 			$langid = $address->getLanguageId();
 		}
@@ -677,7 +677,7 @@ class OmniPay
 			'language' => $langid,
 			'transactionId' => $orderid,
 			'amount' => $this->getAmount( $base->getPrice() ),
-			'currency' => $base->getLocale()->getCurrencyId(),
+			'currency' => $base->locale()->getCurrencyId(),
 			'description' => sprintf( $this->context()->translate( 'mshop', 'Order %1$s' ), $orderid ),
 			'clientIp' => $this->getValue( 'client.ipaddress' ),
 		);

@@ -158,7 +158,7 @@ class NovalnetSepa
 		if( ( $address = current( $addresses ) ) !== false ) {
 			$langid = $address->getLanguageId();
 		} else {
-			$langid = $context->getLocale()->getLanguageId();
+			$langid = $context->locale()->getLanguageId();
 		}
 
 		$data = array(
@@ -168,7 +168,7 @@ class NovalnetSepa
 			'transactionId' => $orderid,
 			'description' => sprintf( $desc, $orderid ),
 			'amount' => $this->getAmount( $base->getPrice() ),
-			'currency' => $base->getLocale()->getCurrencyId(),
+			'currency' => $base->locale()->getCurrencyId(),
 			'clientIp' => $this->getValue( 'client.ipaddress' ),
 			'bic' => ( isset( $params['novalnetsepa.bic'] ) ? $params['novalnetsepa.bic'] : '' ),
 			'iban' => ( isset( $params['novalnetsepa.iban'] ) ? $params['novalnetsepa.iban'] : '' ),

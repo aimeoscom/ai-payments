@@ -157,7 +157,7 @@ class PaypalPlus
 			throw new \Aimeos\MShop\Service\Exception( $msg );
 		}
 
-		$langid = $address->getLanguageId() ?: $this->context()->getLocale()->getLanguageId();
+		$langid = $address->getLanguageId() ?: $this->context()->locale()->getLanguageId();
 
 		$html = $this->getPayPalPlusJs( $approvalUrl, (string) $address->getCountryId(), (string) $langid );
 		return new \Aimeos\MShop\Common\Helper\Form\Standard( '', '', [], true, $html );
