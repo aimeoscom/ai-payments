@@ -273,7 +273,7 @@ class Stripe
 	 */
 	protected function getData( \Aimeos\MShop\Order\Item\Base\Iface $base, string $orderid, array $params ) : array
 	{
-		$session = $this->context()->getSession();
+		$session = $this->context()->session();
 		$data = parent::getData( $base, $orderid, $params );
 
 		if( isset( $params['paymenttoken'] ) ) {
