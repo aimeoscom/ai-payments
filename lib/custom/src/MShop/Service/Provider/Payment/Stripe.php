@@ -141,7 +141,7 @@ class Stripe
 			return $this->getPaymentForm( $order, $params );
 		}
 
-		if( ( $userid = $this->context()->getUserId() ) !== null
+		if( ( $userid = $this->context()->user() ) !== null
 			&& $this->getCustomerData( $userid, 'customer' ) === null
 			&& $this->getConfigValue( 'createtoken' )
 		) {
@@ -248,7 +248,7 @@ class Stripe
 				$this->setOrderData( $order, ['Transaction' => $response->getTransactionReference()] );
 
 				if( $paymethod = $response->getCardReference() ) {
-					$this->setCustomerData( $this->context()->getUserId(), 'repay', ['token' => $paymethod] );
+					$this->setCustomerData( $this->context()->user(), 'repay', ['token' => $paymethod] );
 				}
 			}
 			else
@@ -284,8 +284,8 @@ class Stripe
 			$data['token'] = $token;
 		}
 
-		if( $this->context()->getUserId() && $this->getConfigValue( 'createtoken' )
-			&& $custid = $this->getCustomerData( $this->context()->getUserId(), 'customer' )
+		if( $this->context()->user() && $this->getConfigValue( 'createtoken' )
+			&& $custid = $this->getCustomerData( $this->context()->user(), 'customer' )
 		) {
 			$data['customerReference'] = $custid;
 		}
