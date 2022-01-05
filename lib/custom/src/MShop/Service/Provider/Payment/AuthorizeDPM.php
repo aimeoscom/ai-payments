@@ -151,7 +151,7 @@ class AuthorizeDPM
 	{
 		$list = [];
 		$feConfig = $this->feConfig;
-		$baseItem = $this->getOrderBase( $order->getBaseId(), \Aimeos\MShop\Order\Item\Base\Base::PARTS_ADDRESS );
+		$baseItem = $this->getOrderBase( $order->getBaseId(), ['order/base/address'] );
 		$addresses = $baseItem->getAddress( \Aimeos\MShop\Order\Item\Base\Address\Base::TYPE_PAYMENT );
 
 		if( ( $address = current( $addresses ) ) !== false )

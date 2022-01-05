@@ -47,12 +47,8 @@ class PayoneTest extends \PHPUnit\Framework\TestCase
 
 		$this->serviceItem->setConfig( array( 'type' => 'Dummy', 'address' => '1' ) );
 
-		$parts = \Aimeos\MShop\Order\Item\Base\Base::PARTS_ADDRESS
-			| \Aimeos\MShop\Order\Item\Base\Base::PARTS_SERVICE
-			| \Aimeos\MShop\Order\Item\Base\Base::PARTS_PRODUCT;
-
 		$this->object->expects( $this->exactly( 2 ) )->method( 'getOrderBase' )
-			->will( $this->returnValue( $this->getOrderBase( $parts ) ) );
+			->will( $this->returnValue( $this->getOrderBase() ) );
 
 		$params = array(
 			'number' => '4929000000006',
@@ -107,14 +103,9 @@ class PayoneTest extends \PHPUnit\Framework\TestCase
 	}
 
 
-	protected function getOrderBase( $parts = null )
+	protected function getOrderBase()
 	{
-		if( $parts === null ) {
-			$parts = \Aimeos\MShop\Order\Item\Base\Base::PARTS_ADDRESS | \Aimeos\MShop\Order\Item\Base\Base::PARTS_SERVICE;
-		}
-
 		$manager = \Aimeos\MShop\Order\Manager\Factory::create( $this->context )->getSubmanager( 'base' );
-
-		return $manager->load( $this->getOrder()->getBaseId(), $parts );
+		return $manager->load( $this->getOrder()->getBaseId(), ['order/base/address', 'order/base/product', 'order/base/service'] );
 	}
 }

@@ -158,7 +158,7 @@ class NovalnetSepa
 		if( ( $address = current( $addresses ) ) !== false ) {
 			$langid = $address->getLanguageId();
 		} else {
-			$langid = $context->locale()->getLanguageId();
+			$langid = $this->context()->locale()->getLanguageId();
 		}
 
 		$data = array(

@@ -53,15 +53,15 @@ class NovalnetSepaTest extends \PHPUnit\Framework\TestCase
 		$orderBaseManager = $orderManager->getSubManager( 'base' );
 		$search = $orderManager->filter();
 		$expr = array(
-			$search->compare( '==', 'order.type', \Aimeos\MShop\Order\Item\Base::TYPE_WEB ),
+			$search->compare( '==', 'order.channel', 'web' ),
 			$search->compare( '==', 'order.statuspayment', \Aimeos\MShop\Order\Item\Base::PAY_AUTHORIZED )
 		);
 		$search->setConditions( $search->and( $expr ) );
 
 		if( ( $item = $orderManager->search( $search )->first() ) === null )
 		{
-			$msg = 'No Order found with statuspayment "%1$s" and type "%2$s"';
-			throw new \RuntimeException( sprintf( $msg, \Aimeos\MShop\Order\Item\Base::PAY_AUTHORIZED, \Aimeos\MShop\Order\Item\Base::TYPE_WEB ) );
+			$msg = 'No Order found with statuspayment "%1$s" and channel "%2$s"';
+			throw new \RuntimeException( sprintf( $msg, \Aimeos\MShop\Order\Item\Base::PAY_AUTHORIZED, 'web' ) );
 		}
 
 		$basket = $orderBaseManager->load( $item->getBaseId() );
@@ -110,8 +110,7 @@ class NovalnetSepaTest extends \PHPUnit\Framework\TestCase
 
 	public function testProcess()
 	{
-		$parts = \Aimeos\MShop\Order\Item\Base\Base::PARTS_ADDRESS | \Aimeos\MShop\Order\Item\Base\Base::PARTS_SERVICE;
-		$baseItem = $this->getOrderBase( $parts );
+		$baseItem = $this->getOrderBase();
 
 
 		$provider = $this->getMockBuilder( 'Omnipay\Dummy\Gateway' )
@@ -170,12 +169,7 @@ class NovalnetSepaTest extends \PHPUnit\Framework\TestCase
 
 	protected function getOrderBase( $parts = null )
 	{
-		if( $parts === null ) {
-			$parts = \Aimeos\MShop\Order\Item\Base\Base::PARTS_ADDRESS | \Aimeos\MShop\Order\Item\Base\Base::PARTS_SERVICE;
-		}
-
 		$manager = \Aimeos\MShop\Order\Manager\Factory::create( $this->context )->getSubmanager( 'base' );
-
-		return $manager->load( $this->getOrder()->getBaseId(), $parts );
+		return $manager->load( $this->getOrder()->getBaseId(), ['order/base/product', 'order/base/service'] );
 	}
 }

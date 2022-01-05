@@ -139,15 +139,10 @@ class StripeTest extends \PHPUnit\Framework\TestCase
 	}
 
 
-	protected function getOrderBase( $parts = null )
+	protected function getOrderBase()
 	{
-		if( $parts === null ) {
-			$parts = \Aimeos\MShop\Order\Item\Base\Base::PARTS_ADDRESS | \Aimeos\MShop\Order\Item\Base\Base::PARTS_SERVICE;
-		}
-
 		$manager = \Aimeos\MShop\Order\Manager\Factory::create( $this->context )->getSubmanager( 'base' );
-
-		return $manager->load( $this->getOrder()->getBaseId(), $parts );
+		return $manager->load( $this->getOrder()->getBaseId(), ['order/base/product', 'order/base/service'] );
 	}
 
 

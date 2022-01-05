@@ -113,13 +113,10 @@ class PaypalPlus
 	 */
 	public function process( \Aimeos\MShop\Order\Item\Iface $order, array $params = [] ) : ?\Aimeos\MShop\Common\Helper\Form\Iface
 	{
-		$baseItem = $this->getOrderBase( $order->getBaseId(), \Aimeos\MShop\Order\Item\Base\Base::PARTS_ADDRESS );
+		$baseItem = $this->getOrderBase( $order->getBaseId(), ['order/base/address'] );
 		$addresses = $baseItem->getAddress( \Aimeos\MShop\Order\Item\Base\Address\Base::TYPE_PAYMENT );
 
-		$parts = \Aimeos\MShop\Order\Item\Base\Base::PARTS_SERVICE
-			| \Aimeos\MShop\Order\Item\Base\Base::PARTS_PRODUCT
-			| \Aimeos\MShop\Order\Item\Base\Base::PARTS_ADDRESS;
-
+		$parts = ['order/base/address', 'order/base/product', 'order/base/service'];
 		$base = $this->getOrderBase( $order->getBaseId(), $parts );
 		$data = $this->getData( $base, $order->getId(), $params );
 

@@ -588,7 +588,8 @@ class OmniPay
 					$this->saveOrder( $order->setStatusPayment( Status::PAY_REFUSED ) );
 				}
 
-				throw new \Aimeos\MShop\Service\Exception( $response->getMessage() );
+				$msg = $this->context()->translate( 'mshop', 'No Omnipay method available' );
+				throw new \Aimeos\MShop\Service\Exception( $msg );
 			}
 
 			$this->setOrderData( $order, ['Transaction' => $response->getTransactionReference()] );
@@ -751,7 +752,7 @@ class OmniPay
 	{
 		$list = [];
 		$feConfig = $this->feConfig;
-		$baseItem = $this->getOrderBase( $order->getBaseId(), \Aimeos\MShop\Order\Item\Base\Base::PARTS_ADDRESS );
+		$baseItem = $this->getOrderBase( $order->getBaseId(), ['order/base/address'] );
 		$addresses = $baseItem->getAddress( \Aimeos\MShop\Order\Item\Base\Address\Base::TYPE_PAYMENT );
 
 		if( ( $address = current( $addresses ) ) !== false )
@@ -852,10 +853,7 @@ class OmniPay
 	protected function processOrder( \Aimeos\MShop\Order\Item\Iface $order,
 		array $params = [] ) : ?\Aimeos\MShop\Common\Helper\Form\Iface
 	{
-		$parts = \Aimeos\MShop\Order\Item\Base\Base::PARTS_SERVICE
-			| \Aimeos\MShop\Order\Item\Base\Base::PARTS_PRODUCT
-			| \Aimeos\MShop\Order\Item\Base\Base::PARTS_ADDRESS;
-
+		$parts = ['order/base/address', 'order/base/product', 'order/base/service'];
 		$base = $this->getOrderBase( $order->getBaseId(), $parts );
 		$data = $this->getData( $base, $order->getId(), $params );
 		$urls = $this->getPaymentUrls();

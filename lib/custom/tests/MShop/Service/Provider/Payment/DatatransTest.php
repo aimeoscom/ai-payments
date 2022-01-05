@@ -213,7 +213,7 @@ class DatatransTest extends \PHPUnit\Framework\TestCase
 	public function testRepay()
 	{
 		$orderItem = $this->getOrder();
-		$baseItem = $this->getOrderBase( \Aimeos\MShop\Order\Item\Base\Base::PARTS_SERVICE );
+		$baseItem = $this->getOrderBase();
 
 
 		$provider = $this->getMockBuilder( 'Omnipay\Dummy\Gateway' )
@@ -263,7 +263,7 @@ class DatatransTest extends \PHPUnit\Framework\TestCase
 
 	public function testRepayMissingData()
 	{
-		$baseItem = $this->getOrderBase( \Aimeos\MShop\Order\Item\Base\Base::PARTS_SERVICE );
+		$baseItem = $this->getOrderBase();
 
 
 		$this->object->expects( $this->once() )->method( 'getOrderBase' )
@@ -280,7 +280,7 @@ class DatatransTest extends \PHPUnit\Framework\TestCase
 
 	public function testRepayMissingToken()
 	{
-		$baseItem = $this->getOrderBase( \Aimeos\MShop\Order\Item\Base\Base::PARTS_SERVICE );
+		$baseItem = $this->getOrderBase();
 
 
 		$this->object->expects( $this->once() )->method( 'getOrderBase' )
@@ -324,15 +324,10 @@ class DatatransTest extends \PHPUnit\Framework\TestCase
 	}
 
 
-	protected function getOrderBase( $parts = null )
+	protected function getOrderBase()
 	{
-		if( $parts === null ) {
-			$parts = \Aimeos\MShop\Order\Item\Base\Base::PARTS_ADDRESS | \Aimeos\MShop\Order\Item\Base\Base::PARTS_SERVICE;
-		}
-
 		$manager = \Aimeos\MShop\Order\Manager\Factory::create( $this->context )->getSubmanager( 'base' );
-
-		return $manager->load( $this->getOrder()->getBaseId(), $parts );
+		return $manager->load( $this->getOrder()->getBaseId(), ['order/base/service'] );
 	}
 
 
