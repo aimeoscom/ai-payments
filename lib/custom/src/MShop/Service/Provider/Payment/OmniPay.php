@@ -952,26 +952,6 @@ class OmniPay
 
 
 	/**
-	 * Adds the transation reference to the order service attributes.
-	 *
-	 * @param \Aimeos\MShop\Order\Item\Base\Iface $baseItem Order base object with service items attached
-	 * @param string $ref Transaction reference from the payment gateway
-	 * @return \Aimeos\MShop\Order\Item\Base\Iface Updated order base item
-	 * @deprecated 2021.01 Use setOrderData() instead
-	 */
-	protected function saveTransationRef( \Aimeos\MShop\Order\Item\Base\Iface $baseItem,
-		string $ref ) : \Aimeos\MShop\Order\Item\Base\Iface
-	{
-		$type = \Aimeos\MShop\Order\Item\Base\Service\Base::TYPE_PAYMENT;
-		$serviceItem = $this->getBasketService( $baseItem, $type, $this->getServiceItem()->getCode() );
-
-		$attr = array( 'Transaction' => $ref );
-		$this->setAttributes( $serviceItem, $attr, 'payment/omnipay' );
-		return $this->saveOrderBase( $baseItem );
-	}
-
-
-	/**
 	 * Sends the given data for the order to the payment gateway
 	 *
 	 * @param \Aimeos\MShop\Order\Item\Iface $order Order item which should be paid
