@@ -11,10 +11,9 @@ return [
 		'aimeos-core',
 	],
 	'include' => [
-		'lib/custom/src',
+		'src',
 	],
 	'i18n' => [
-		'client/code' => 'client/i18n/code',
-		'mshop' => 'lib/custom/i18n',
+		'mshop' => 'i18n',
 	],
 ];

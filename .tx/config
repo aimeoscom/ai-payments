@@ -1,14 +1,8 @@
 [main]
 host = https://www.transifex.com
 
-[aimeos-extensions.ai-payments-lib-custom]
-file_filter = lib/custom/i18n/<lang>.po
-source_file = lib/custom/i18n/ai-payments-custom.pot
-source_lang = en
-type = PO
-
-[aimeos-extensions.ai-payments-client-code]
-file_filter = client/i18n/code/<lang>.po
-source_file = client/i18n/code/ai-payments-client-code.pot
+[aimeos-extensions.ai-payments]
+file_filter = i18n/<lang>.po
+source_file = i18n/ai-payments.pot
 source_lang = en
 type = PO

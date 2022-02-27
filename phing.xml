@@ -2,47 +2,64 @@
 
 <project name="ai-payments extension" default="test">
 
-	<target name="test" description="Executes all tests">
-		<phing target="test" haltonfailure="true" dir="lib/custom"/>
+	<target name="test" description="Executes unit tests" depends="clean">
+		<echo msg="Executing unit tests" />
+		<exec command="${bindir}phpunit -d memory_limit=-1 --include-path ${coredir} --configuration=phpunit.xml ."
+			  dir="tests" checkreturn="true" logoutput="true" passthru="true" />
 	</target>
 
-	<target name="testperf" description="Executes all performance tests">
-		<echo msg="No performance tests available" />
+	<target name="coverage" description="Generates code coverage report" depends="clean">
+		<echo msg="Generating code coverage report" />
+		<exec command="${bindir}phpunit -d memory_limit=-1 --include-path ${coredir} --configuration=phpunit-coverage.xml ."
+			  dir="tests" checkreturn="true" logoutput="true" passthru="true" />
 	</target>
 
-	<target name="coverage" description="Generates the code coverage report">
-		<phing target="coverage" haltonfailure="true" dir="lib/custom"/>
-	</target>
-
-	<target name="check" description="Executes all tests">
-		<phing target="check" haltonfailure="true" dir="lib/custom"/>
+	<target name="check" description="Executes code sniffer">
+		<echo msg="Executing code sniffer" />
+		<exec command="${bindir}phpcs -n --standard=${codestddir}/Aimeos src tests/*/"
+			  checkreturn="true" logoutput="true" passthru="true" />
 	</target>
 
 	<target name="clean" description="Cleans up temporary files">
-		<phing target="clean" haltonfailure="true" dir="lib/custom" />
+		<delete file="tests/coverage.xml" quiet="true" failonerror="false" />
+		<delete quiet="true" failonerror="false" >
+			<fileset dir="tests">
+				<include name="*.log" />
+			</fileset>
+		</delete>
 	</target>
 
-	<target name="i18n" description="Creates all translation files">
-		<phing target="i18n" haltonfailure="true" dir="lib/custom" />
+	<target name="i18n" description="Creates translation message files">
+		<exec command="find ./src/ -type f | xgettext -s --no-wrap --add-comments=/ --language=PHP --from-code=UTF-8 --keyword=sprintf:1 --keyword=dt:2,2t --keyword=dn:2,3,4t -o i18n/ai-payments-custom.pot -f -"
+			checkreturn="true" logoutput="true" />
+        <foreach param="po-fname" absparam="po-filename" target="i18n-update">
+            <fileset dir="./i18n">
+                <include name="*.po" />
+            </fileset>
+        </foreach>
 	</target>
 
-	<target name="build" description="Builds package for deployment">
-		<exec command="tx pull -a -f --minimum-perc=1" checkreturn="true" logoutput="true" />
-		<phing target="build" haltonfailure="true" dir="lib/custom" />
-		<phing target="build" haltonfailure="true" dir="client" />
+	<target name="i18n-update" description="Updates translation message files">
+		<fail unless="po-filename" message="Missing file name" />
+		<exec command="msgmerge -s --no-wrap -U --backup=none ${po-filename} i18n/ai-payments-custom.pot" checkreturn="true" logoutput="true" />
+		<exec command="msgattrib -s --no-wrap --clear-obsolete -o ${po-filename} ${po-filename}" checkreturn="true" logoutput="true" />
     </target>
 
-	<target name="release" description="Creates new release" depends="build">
-		<exec command="git add ." checkreturn="true" logoutput="true" />
-		<exec command="git commit -a" checkreturn="true" logoutput="true" />
-		<propertyprompt propertyName="version" promptText="Enter release version" promptCharacter=":" useExistingValue="true"/>
-		<exec command="git checkout -b ${version}" checkreturn="true" logoutput="true" />
-		<exec command="git tag -a ${version}.1 -m 'Release ${version}.1'" checkreturn="true" logoutput="true" />
-		<exec command="git push origin ${version}" checkreturn="true" logoutput="true" />
-		<exec command="git push --tags" checkreturn="true" logoutput="true" />
+	<target name="build" description="Builds package for deployment">
+		<foreach param="mo-fname" absparam="mo-filename" target="build-mo">
+            <fileset dir="./i18n">
+                <include name="*.po" />
+            </fileset>
+        </foreach>
 	</target>
 
-	<target name="all" depends="test,check,build" description="Builds all parts of the package">
+	<target name="build-mo" description="Generates binary translation files">
+		<fail unless="mo-filename" message="Missing file name" />
+		<exec command="msgfmt --statistics -c -o `echo ${mo-filename} | sed s/\.po//` ${mo-filename}"
+			checkreturn="true" logoutput="true" />
+    </target>
+
+	<target name="all" depends="test,check" description="Builds all parts of the package">
 	</target>
 
 </project>
