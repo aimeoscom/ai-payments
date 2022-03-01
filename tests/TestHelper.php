@@ -53,7 +53,7 @@ class TestHelper
 		$paths = $aimeos->getConfigPaths( 'mysql' );
 		$paths[] = dirname( __FILE__ ) . DIRECTORY_SEPARATOR . 'config';
 
-		$conf = new \Aimeos\MW\Config\PHPArray( [], $paths );
+		$conf = new \Aimeos\Base\Config\PHPArray( [], $paths );
 		$ctx->setConfig( $conf );
 
 
