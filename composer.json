@@ -1,6 +1,6 @@
 {
 	"name": "aimeos/ai-payments",
-	"description": "Payment extension for Aimeos web shops and e-commerce solutions",
+	"description": "Payment extension for Aimeos e-commerce solutions",
 	"keywords": ["aimeos", "payment", "shop", "e-commerce", "omnipay", "stripe", "mollie", "authorize", "cardsave", "sagepay"],
 	"homepage": "https://aimeos.org/",
 	"type": "aimeos-extension",
