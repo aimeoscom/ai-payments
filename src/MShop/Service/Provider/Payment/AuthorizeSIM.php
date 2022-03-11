@@ -47,7 +47,7 @@ class AuthorizeSIM
 		foreach( $this->beConfig as $key => $config )
 		{
 			$config['code'] = $config['code'];
-			$list[$key] = new \Aimeos\MW\Criteria\Attribute\Standard( $config );
+			$list[$key] = new \Aimeos\Base\Criteria\Attribute\Standard( $config );
 		}
 
 		return $list;

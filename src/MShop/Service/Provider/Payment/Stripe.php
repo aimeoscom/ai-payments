@@ -119,7 +119,7 @@ class Stripe
 		$list = parent::getConfigBE();
 
 		foreach( $this->beConfig as $key => $config ) {
-			$list[$key] = new \Aimeos\MW\Criteria\Attribute\Standard( $config );
+			$list[$key] = new \Aimeos\Base\Criteria\Attribute\Standard( $config );
 		}
 
 		return $list;
@@ -316,7 +316,7 @@ class Stripe
 		$feConfig = $this->feConfig;
 
 		foreach( $feConfig as $key => $config ) {
-			$list[$key] = new \Aimeos\MW\Criteria\Attribute\Standard( $config );
+			$list[$key] = new \Aimeos\Base\Criteria\Attribute\Standard( $config );
 		}
 
 		$url = $this->getConfigValue( 'payment.url-self', '' );

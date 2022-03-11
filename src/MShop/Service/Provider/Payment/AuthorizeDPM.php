@@ -181,7 +181,7 @@ class AuthorizeDPM
 		}
 
 		foreach( $feConfig as $key => $config ) {
-			$list[$key] = new \Aimeos\MW\Criteria\Attribute\Standard( $config );
+			$list[$key] = new \Aimeos\Base\Criteria\Attribute\Standard( $config );
 		}
 
 		$url = $this->getConfigValue( 'payment.url-self', '' );
