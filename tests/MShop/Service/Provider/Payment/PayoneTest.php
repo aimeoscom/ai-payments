@@ -65,7 +65,7 @@ class PayoneTest extends \PHPUnit\Framework\TestCase
 	{
 		$psr7stream = $this->getMockBuilder( \Psr\Http\Message\StreamInterface::class )->getMock();
 		$psr7request = $this->getMockBuilder( \Psr\Http\Message\ServerRequestInterface::class )->getMock();
-		$psr7response = $this->getMockBuilder( \Aimeos\MW\View\Helper\Response\Iface::class )->getMock();
+		$psr7response = $this->getMockBuilder( \Aimeos\Base\View\Helper\Response\Iface::class )->getMock();
 
 		$psr7request->expects( $this->exactly( 2 ) )->method( 'getAttributes' )
 			->will( $this->returnValue( ['reference' => 1] ) );
