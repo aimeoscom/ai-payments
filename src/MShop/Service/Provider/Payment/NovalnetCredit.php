@@ -73,10 +73,10 @@ class NovalnetCredit
 	/**
 	 * Initializes the service provider object.
 	 *
-	 * @param \Aimeos\MShop\Context\Item\Iface $context Context object with required objects
+	 * @param \Aimeos\MShop\ContextIface $context Context object with required objects
 	 * @param \Aimeos\MShop\Service\Item\Iface $serviceItem Service item with configuration for the provider
 	 */
-	public function __construct( \Aimeos\MShop\Context\Item\Iface $context, \Aimeos\MShop\Service\Item\Iface $serviceItem )
+	public function __construct( \Aimeos\MShop\ContextIface $context, \Aimeos\MShop\Service\Item\Iface $serviceItem )
 	{
 		parent::__construct( $context, $serviceItem );
 
