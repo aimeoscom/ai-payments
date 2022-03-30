@@ -297,6 +297,7 @@ class Stripe
 			$data['paymentIntentReference'] = $stripeIntentsRef;
 		}
 
+		$data['transferGroup'] = 'ORDER-' . $orderid;
 		$data['confirm'] = true;
 
 		return $data + $this->getPaymentUrls();
