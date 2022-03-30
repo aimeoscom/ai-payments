@@ -278,12 +278,13 @@ class OmniPay
 			return $order;
 		}
 
-		$base = $this->getOrderBase( $order->getBaseId() );
+		$ref = ['order/base/adress', 'order/base/product', 'order/base/service'];
+		$base = $this->getOrderBase( $order->getBaseId(), $ref );
 
 		$data = array(
 			'transactionReference' => $this->getTransactionReference( $base ),
 			'currency' => $base->getPrice()->getCurrencyId(),
-			'amount' => $this->getAmount( $base->getPrice() ),
+			'amount' => $this->call( 'cancelAmount', $order, $base ),
 			'transactionId' => $order->getId(),
 		);
 
@@ -311,12 +312,13 @@ class OmniPay
 			return $order;
 		}
 
-		$base = $this->getOrderBase( $order->getBaseId() );
+		$ref = ['order/base/adress', 'order/base/product', 'order/base/service'];
+		$base = $this->getOrderBase( $order->getBaseId(), $ref );
 
 		$data = array(
 			'transactionReference' => $this->getTransactionReference( $base ),
 			'currency' => $base->getPrice()->getCurrencyId(),
-			'amount' => $this->getAmount( $base->getPrice() ),
+			'amount' => $this->call( 'captureAmount', $order, $base ),
 			'transactionId' => $order->getId(),
 		);
 
@@ -389,14 +391,15 @@ class OmniPay
 			return $order;
 		}
 
-		$base = $this->getOrderBase( $order->getBaseId() );
+		$ref = ['order/base/adress', 'order/base/product', 'order/base/service'];
+		$base = $this->getOrderBase( $order->getBaseId(), $ref );
 		$type = \Aimeos\MShop\Order\Item\Base\Service\Base::TYPE_PAYMENT;
 		$service = $this->getBasketService( $base, $type, $this->getServiceItem()->getCode() );
 
 		$data = array(
 			'transactionReference' => $this->getTransactionReference( $base ),
 			'currency' => $base->getPrice()->getCurrencyId(),
-			'amount' => $this->getAmount( $base->getPrice() ),
+			'amount' => $this->call( 'refundAmount', $order, $base ),
 			'transactionId' => $order->getId(),
 		);
 
@@ -424,7 +427,8 @@ class OmniPay
 	 */
 	public function repay( \Aimeos\MShop\Order\Item\Iface $order ) : \Aimeos\MShop\Order\Item\Iface
 	{
-		$base = $this->getOrderBase( $order->getBaseId() );
+		$ref = ['order/base/adress', 'order/base/product', 'order/base/service'];
+		$base = $this->getOrderBase( $order->getBaseId(), $ref );
 
 		if( !$this->isImplemented( \Aimeos\MShop\Service\Provider\Payment\Base::FEAT_REPAY ) )
 		{
@@ -447,7 +451,7 @@ class OmniPay
 		$data = array(
 			'transactionId' => $order->getId(),
 			'currency' => $base->getPrice()->getCurrencyId(),
-			'amount' => $this->getAmount( $base->getPrice() ),
+			'amount' => $this->call( 'repayAmount', $order, $base ),
 			'cardReference' => $cfg['token'],
 			'paymentPage' => false,
 			'language' => 'en',
@@ -602,6 +606,32 @@ class OmniPay
 		}
 
 		return $order;
+	}
+
+
+	/**
+	 * Returns the amount when cancelling an order
+	 *
+	 * @param \Aimeos\MShop\Order\Item\Iface $order Order item
+	 * @param \Aimeos\MShop\Order\Item\Base\Iface $base Order base object with addresses, products and services
+	 * @return string Amount for cancellation, e.g. 100.00, 0.01 or 0.00
+	 */
+	protected function cancelAmount( \Aimeos\MShop\Order\Item\Iface $order, \Aimeos\MShop\Order\Item\Base\Iface $base ) : string
+	{
+		return $this->getAmount( $base->getPrice() );
+	}
+
+
+	/**
+	 * Returns the amount when capturing an order
+	 *
+	 * @param \Aimeos\MShop\Order\Item\Iface $order Order item
+	 * @param \Aimeos\MShop\Order\Item\Base\Iface $base Order base object with addresses, products and services
+	 * @return string Amount for cancellation, e.g. 100.00, 0.01 or 0.00
+	 */
+	protected function captureAmount( \Aimeos\MShop\Order\Item\Iface $order, \Aimeos\MShop\Order\Item\Base\Iface $base ) : string
+	{
+		return $this->getAmount( $base->getPrice() );
 	}
 
 
@@ -887,6 +917,32 @@ class OmniPay
 		}
 
 		return new \Aimeos\MShop\Common\Helper\Form\Standard( $urls['returnUrl'] ?? '', 'POST', [] );
+	}
+
+
+	/**
+	 * Returns the amount when refunding an order
+	 *
+	 * @param \Aimeos\MShop\Order\Item\Iface $order Order item
+	 * @param \Aimeos\MShop\Order\Item\Base\Iface $base Order base object with addresses, products and services
+	 * @return string Amount for cancellation, e.g. 100.00, 0.01 or 0.00
+	 */
+	protected function refundAmount( \Aimeos\MShop\Order\Item\Iface $order, \Aimeos\MShop\Order\Item\Base\Iface $base ) : string
+	{
+		return $this->getAmount( $base->getPrice() );
+	}
+
+
+	/**
+	 * Returns the amount when repaying an order
+	 *
+	 * @param \Aimeos\MShop\Order\Item\Iface $order Order item
+	 * @param \Aimeos\MShop\Order\Item\Base\Iface $base Order base object with addresses, products and services
+	 * @return string Amount for cancellation, e.g. 100.00, 0.01 or 0.00
+	 */
+	protected function repayAmount( \Aimeos\MShop\Order\Item\Iface $order, \Aimeos\MShop\Order\Item\Base\Iface $base ) : string
+	{
+		return $this->getAmount( $base->getPrice() );
 	}
 
 
