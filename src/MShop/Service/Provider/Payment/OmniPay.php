@@ -627,7 +627,7 @@ class OmniPay
 	 *
 	 * @param \Aimeos\MShop\Order\Item\Iface $order Order item
 	 * @param \Aimeos\MShop\Order\Item\Base\Iface $base Order base object with addresses, products and services
-	 * @return string Amount for cancellation, e.g. 100.00, 0.01 or 0.00
+	 * @return string Amount to capture, e.g. 100.00, 0.01 or 0.00
 	 */
 	protected function captureAmount( \Aimeos\MShop\Order\Item\Iface $order, \Aimeos\MShop\Order\Item\Base\Iface $base ) : string
 	{
@@ -925,7 +925,7 @@ class OmniPay
 	 *
 	 * @param \Aimeos\MShop\Order\Item\Iface $order Order item
 	 * @param \Aimeos\MShop\Order\Item\Base\Iface $base Order base object with addresses, products and services
-	 * @return string Amount for cancellation, e.g. 100.00, 0.01 or 0.00
+	 * @return string Amount to refund, e.g. 100.00, 0.01 or 0.00
 	 */
 	protected function refundAmount( \Aimeos\MShop\Order\Item\Iface $order, \Aimeos\MShop\Order\Item\Base\Iface $base ) : string
 	{
@@ -938,7 +938,7 @@ class OmniPay
 	 *
 	 * @param \Aimeos\MShop\Order\Item\Iface $order Order item
 	 * @param \Aimeos\MShop\Order\Item\Base\Iface $base Order base object with addresses, products and services
-	 * @return string Amount for cancellation, e.g. 100.00, 0.01 or 0.00
+	 * @return string Amount for subscription, e.g. 100.00, 0.01 or 0.00
 	 */
 	protected function repayAmount( \Aimeos\MShop\Order\Item\Iface $order, \Aimeos\MShop\Order\Item\Base\Iface $base ) : string
 	{
