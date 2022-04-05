@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ai-payments\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-10-04 18:31+0200\n"
+"POT-Creation-Date: 2022-04-05 09:19+0200\n"
 "PO-Revision-Date: 2017-09-14 09:25+0000\n"
 "Last-Translator: Aimeos, 2017\n"
 "Language-Team: Dutch (https://www.transifex.com/aimeos/teams/39015/nl/)\n"
@@ -31,14 +31,14 @@ msgid "No Stripe payment method available for customer ID \"%1$s\""
 msgstr ""
 
 #: src/MShop/Service/Provider/Payment/Stripe.php:193
-#: src/MShop/Service/Provider/Payment/OmniPay.php:443
+#: src/MShop/Service/Provider/Payment/OmniPay.php:447
 #: src/MShop/Service/Provider/Payment/Mpay24.php:43
 #: src/MShop/Service/Provider/Payment/Datatrans.php:78
 #, php-format
 msgid "No payment token available for customer ID \"%1$s\""
 msgstr ""
 
-#: src/MShop/Service/Provider/Payment/OmniPay.php:437
+#: src/MShop/Service/Provider/Payment/OmniPay.php:441
 #: src/MShop/Service/Provider/Payment/Mpay24.php:37
 #: src/MShop/Service/Provider/Payment/Datatrans.php:72
 #, php-format
@@ -48,7 +48,7 @@ msgstr ""
 msgid "Order %1$s"
 msgstr "Bestelling %1$s"
 
-#: src/MShop/Service/Provider/Payment/OmniPay.php:478
+#: src/MShop/Service/Provider/Payment/OmniPay.php:482
 #: src/MShop/Service/Provider/Payment/Mpay24.php:77
 #, php-format
 msgid "Token based payment failed with code \"%1$s\" and message \"%2$s\": %3$s"
