@@ -316,7 +316,7 @@ class OmniPay
 		$data = array(
 			'transactionReference' => $this->getTransactionReference( $base ),
 			'currency' => $base->getPrice()->getCurrencyId(),
-			'amount' => $this->getAmount( $base->getPrice() ),
+			'amount' => $this->call( 'captureAmount', $order, $base ),
 			'transactionId' => $order->getId(),
 		);
 
@@ -601,6 +601,19 @@ class OmniPay
 		}
 
 		return $order;
+	}
+
+
+	/**
+	 * Returns the amount when capturing an order
+	 *
+	 * @param \Aimeos\MShop\Order\Item\Iface $order Order item
+	 * @param \Aimeos\MShop\Order\Item\Base\Iface $base Order base object with addresses, products and services
+	 * @return string Amount to capture, e.g. 100.00, 0.01 or 0.00
+	 */
+	protected function captureAmount( \Aimeos\MShop\Order\Item\Iface $order, \Aimeos\MShop\Order\Item\Base\Iface $base ) : string
+	{
+		return $this->getAmount( $base->getPrice() );
 	}
 
 
