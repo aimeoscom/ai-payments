@@ -325,7 +325,7 @@ class OmniPay
 		$response = $provider->capture( $data )->send();
 
 		if( $response->isSuccessful() ) {
-			$order = $order->setStatusPayment( Status::PAY_RECEIVED );
+			$this->call( 'captureStatus', $order, $base );
 		}
 
 		return $order;
@@ -632,6 +632,18 @@ class OmniPay
 	protected function captureAmount( \Aimeos\MShop\Order\Item\Iface $order, \Aimeos\MShop\Order\Item\Base\Iface $base ) : string
 	{
 		return $this->getAmount( $base->getPrice() );
+	}
+
+
+	/**
+	 * Sets the payment status of of the captured order and products
+	 *
+	 * @param \Aimeos\MShop\Order\Item\Iface $order Order item
+	 * @param \Aimeos\MShop\Order\Item\Base\Iface $base Order base object with products
+	 */
+	protected function captureStatus( \Aimeos\MShop\Order\Item\Iface $order, \Aimeos\MShop\Order\Item\Base\Iface $base )
+	{
+		$order->setStatusPayment( Status::PAY_RECEIVED );
 	}
 
 
