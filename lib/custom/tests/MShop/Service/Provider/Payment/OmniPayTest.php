@@ -579,7 +579,7 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 
 	public function testUpdateSyncAuthorizeFailed()
 	{
-		$order = $this->getOrder();
+		$order = $this->getOrder()->setStatusPayment( -1 );
 		$baseItem = $this->getOrderBase( \Aimeos\MShop\Order\Item\Base\Base::PARTS_SERVICE );
 		$this->serviceItem->setConfig( array( 'type' => 'Dummy', 'authorize' => '1' ) );
 
@@ -609,6 +609,8 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 
 		$this->object->expects( $this->once() )->method( 'getProvider' )
 			->will( $this->returnValue( $provider ) );
+
+		$this->object->expects( $this->once() )->method( 'saveOrder' );
 
 		$provider->expects( $this->once() )->method( 'supportsCompleteAuthorize' )
 			->will( $this->returnValue( true ) );

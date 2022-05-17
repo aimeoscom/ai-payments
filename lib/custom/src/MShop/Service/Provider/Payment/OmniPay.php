@@ -583,7 +583,13 @@ class OmniPay
 				throw new \Aimeos\MShop\Service\Exception( sprintf( $msg, $response->getRedirectUrl() ) );
 			}
 			elseif( in_array( $order->getStatusPayment(), [null, Status::PAY_UNFINISHED], true )
-				&& in_array( $this->query( $order )->getStatusPayment(), [null, Status::PAY_UNFINISHED, Status::PAY_REFUSED], true )
+				&& (
+					!$this->isImplemented( \Aimeos\MShop\Service\Provider\Payment\Base::FEAT_QUERY )
+					|| (
+						$this->isImplemented( \Aimeos\MShop\Service\Provider\Payment\Base::FEAT_QUERY )
+						&& in_array( $this->query( $order )->getStatusPayment(), [null, Status::PAY_UNFINISHED, Status::PAY_REFUSED], true )
+					)
+				)
 			) {
 				$this->saveOrder( $order->setStatusPayment( Status::PAY_REFUSED ) );
 				throw new \Aimeos\MShop\Service\Exception( $response->getMessage() );
