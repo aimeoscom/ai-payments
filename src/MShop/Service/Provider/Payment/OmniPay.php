@@ -586,17 +586,23 @@ class OmniPay
 				$msg = $this->context()->translate( 'mshop', 'Unexpected redirect: %1$s' );
 				throw new \Aimeos\MShop\Service\Exception( sprintf( $msg, $response->getRedirectUrl() ) );
 			}
-			else
-			{
-				if( empty( $order->getStatusPayment() ) ) {
-					$this->saveOrder( $order->setStatusPayment( Status::PAY_REFUSED ) );
-				}
-
-				$msg = $this->context()->translate( 'mshop', 'No Omnipay method available' );
-				throw new \Aimeos\MShop\Service\Exception( $msg );
+			elseif( $order->getStatusPayment() === Status::PAY_UNFINISHED
+				&& (
+					!$this->isImplemented( \Aimeos\MShop\Service\Provider\Payment\Base::FEAT_QUERY )
+					|| (
+						$this->isImplemented( \Aimeos\MShop\Service\Provider\Payment\Base::FEAT_QUERY )
+						&& in_array( $this->query( $order )->getStatusPayment(), [Status::PAY_UNFINISHED, Status::PAY_REFUSED] )
+					)
+				)
+			) {
+				$this->saveOrder( $order->setStatusPayment( Status::PAY_REFUSED ) );
+				throw new \Aimeos\MShop\Service\Exception( $response->getMessage() );
 			}
 
-			$this->setOrderData( $order, ['Transaction' => $response->getTransactionReference()] );
+			if( !empty( $txId = $response->getTransactionReference() ) ) {
+				$this->setOrderData( $order, ['Transaction' => $txId] );
+			}
+
 			$this->saveRepayData( $response, $base->getCustomerId() );
 			$this->saveOrder( $order );
 		}
