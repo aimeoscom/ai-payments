@@ -24,7 +24,7 @@ class AuthorizeSIMTest extends \PHPUnit\Framework\TestCase
 
 		$this->context = \TestHelper::context();
 
-		$serviceManager = \Aimeos\MShop\Service\Manager\Factory::create( $this->context );
+		$serviceManager = \Aimeos\MShop::create( $this->context, 'service' );
 		$this->serviceItem = $serviceManager->create();
 		$this->serviceItem->setConfig( array( 'authorizenet.testmode' => true ) );
 		$this->serviceItem->setCode( 'unitpaymentcode' );

@@ -25,7 +25,7 @@ class NovalnetCreditTest extends \PHPUnit\Framework\TestCase
 
 		$this->context = \TestHelper::context();
 
-		$serviceManager = \Aimeos\MShop\Service\Manager\Factory::create( $this->context );
+		$serviceManager = \Aimeos\MShop::create( $this->context, 'service' );
 		$this->serviceItem = $serviceManager->create();
 		$this->serviceItem->setConfig( array( 'type' => 'Dummy', 'address' => 1 ) );
 		$this->serviceItem->setCode( 'unitpaymentcode' );
@@ -49,7 +49,7 @@ class NovalnetCreditTest extends \PHPUnit\Framework\TestCase
 
 	public function testGetConfigFE()
 	{
-		$orderManager = \Aimeos\MShop\Order\Manager\Factory::create( $this->context );
+		$orderManager = \Aimeos\MShop::create( $this->context, 'order' );
 		$orderBaseManager = $orderManager->getSubManager( 'base' );
 		$search = $orderManager->filter();
 		$expr = array(
@@ -165,7 +165,7 @@ class NovalnetCreditTest extends \PHPUnit\Framework\TestCase
 
 	protected function getOrder()
 	{
-		$manager = \Aimeos\MShop\Order\Manager\Factory::create( $this->context );
+		$manager = \Aimeos\MShop::create( $this->context, 'order' );
 		$search = $manager->filter()->add( ['order.datepayment' => '2008-02-15 12:34:56'] );
 
 		return $manager->search( $search )->first( new \RuntimeException( 'No order found' ) );
@@ -174,7 +174,7 @@ class NovalnetCreditTest extends \PHPUnit\Framework\TestCase
 
 	protected function getOrderBase()
 	{
-		$manager = \Aimeos\MShop\Order\Manager\Factory::create( $this->context )->getSubmanager( 'base' );
+		$manager = \Aimeos\MShop::create( $this->context, 'order/base' );
 		return $manager->load( $this->getOrder()->getBaseId(), ['order/base/product', 'order/base/service'] );
 	}
 

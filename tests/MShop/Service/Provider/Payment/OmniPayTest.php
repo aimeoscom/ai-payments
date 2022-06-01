@@ -24,7 +24,7 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 
 		$this->context = \TestHelper::context();
 
-		$serviceManager = \Aimeos\MShop\Service\Manager\Factory::create( $this->context );
+		$serviceManager = \Aimeos\MShop::create( $this->context, 'service' );
 		$this->serviceItem = $serviceManager->create();
 		$this->serviceItem->setConfig( array( 'type' => 'Dummy' ) );
 		$this->serviceItem->setCode( 'unitpaymentcode' );
@@ -936,7 +936,7 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 
 	protected function getOrder()
 	{
-		$manager = \Aimeos\MShop\Order\Manager\Factory::create( $this->context );
+		$manager = \Aimeos\MShop::create( $this->context, 'order' );
 
 		$search = $manager->filter();
 		$search->setConditions( $search->compare( '==', 'order.datepayment', '2008-02-15 12:34:56' ) );
@@ -951,7 +951,7 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 
 	protected function getOrderBase( array $parts = [] )
 	{
-		$manager = \Aimeos\MShop\Order\Manager\Factory::create( $this->context )->getSubmanager( 'base' );
+		$manager = \Aimeos\MShop::create( $this->context, 'order/base' );
 		return $manager->load( $this->getOrder()->getBaseId(), $parts );
 	}
 }

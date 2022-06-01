@@ -126,7 +126,7 @@ class StripeTest extends \PHPUnit\Framework\TestCase
 
 	protected function getOrder()
 	{
-		$manager = \Aimeos\MShop\Order\Manager\Factory::create( $this->context );
+		$manager = \Aimeos\MShop::create( $this->context, 'order' );
 
 		$search = $manager->filter();
 		$search->setConditions( $search->compare( '==', 'order.datepayment', '2008-02-15 12:34:56' ) );
@@ -141,7 +141,7 @@ class StripeTest extends \PHPUnit\Framework\TestCase
 
 	protected function getOrderBase()
 	{
-		$manager = \Aimeos\MShop\Order\Manager\Factory::create( $this->context )->getSubmanager( 'base' );
+		$manager = \Aimeos\MShop::create( $this->context, 'order/base' );
 		return $manager->load( $this->getOrder()->getBaseId(), ['order/base/product', 'order/base/service'] );
 	}
 
