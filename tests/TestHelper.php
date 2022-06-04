@@ -78,7 +78,7 @@ class TestHelper
 
 		$ctx->setLocale( $localeItem );
 
-		$ctx->setEditor( 'ai-payments:lib/custom' );
+		$ctx->setEditor( 'ai-payments' );
 
 		return $ctx;
 	}
