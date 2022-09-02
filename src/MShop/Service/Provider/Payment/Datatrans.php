@@ -24,6 +24,50 @@ class Datatrans
 	extends \Aimeos\MShop\Service\Provider\Payment\OmniPay
 	implements \Aimeos\MShop\Service\Provider\Payment\Iface
 {
+	private $beConfig = array(
+		'password' => array(
+			'code' => 'password',
+			'internalcode'=> 'password',
+			'label'=> 'Password for server to server connections',
+			'type'=> 'string',
+			'internaltype'=> 'string',
+			'default'=> '',
+			'required'=> false,
+		),
+	);
+
+
+	/**
+	 * Checks the backend configuration attributes for validity.
+	 *
+	 * @param array $attributes Attributes added by the shop owner in the administraton interface
+	 * @return array An array with the attribute keys as key and an error message as values for all attributes that are
+	 * 	known by the provider but aren't valid resp. null for attributes whose values are OK
+	 */
+	public function checkConfigBE( array $attributes ) : array
+	{
+		return array_merge( parent::checkConfigBE( $attributes ), $this->checkConfig( $this->beConfig, $attributes ) );
+	}
+
+
+	/**
+	 * Returns the configuration attribute definitions of the provider to generate a list of available fields and
+	 * rules for the value of each field in the administration interface.
+	 *
+	 * @return array List of attribute definitions implementing \Aimeos\MW\Common\Critera\Attribute\Iface
+	 */
+	public function getConfigBE() : array
+	{
+		$list = parent::getConfigBE();
+
+		foreach( $this->beConfig as $key => $config ) {
+			$list[$key] = new \Aimeos\Base\Criteria\Attribute\Standard( $config );
+		}
+
+		return $list;
+	}
+
+
 	/**
 	 * Queries for status updates for the given order compare with the responseCode
 	 *

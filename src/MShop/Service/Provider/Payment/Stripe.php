@@ -23,7 +23,6 @@ class Stripe
 	extends \Aimeos\MShop\Service\Provider\Payment\OmniPay
 	implements \Aimeos\MShop\Service\Provider\Payment\Iface
 {
-
 	private $beConfig = array(
 		'type' => array(
 			'code' => 'type',

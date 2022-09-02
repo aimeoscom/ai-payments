@@ -47,6 +47,44 @@ class DatatransTest extends \PHPUnit\Framework\TestCase
 	}
 
 
+	public function testGetConfigBE()
+	{
+		$result = $this->object->getConfigBE();
+
+		$this->assertIsArray( $result );
+		$this->assertArrayHasKey( 'password', $result );
+		$this->assertArrayHasKey( 'address', $result );
+		$this->assertArrayHasKey( 'authorize', $result );
+		$this->assertArrayHasKey( 'testmode', $result );
+		$this->assertArrayHasKey( 'createtoken', $result );
+		$this->assertArrayHasKey( 'onsite', $result );
+		$this->assertArrayHasKey( 'type', $result );
+	}
+
+
+	public function testCheckConfigBE()
+	{
+		$attributes = array(
+			'address' => '0',
+			'authorize' => '1',
+			'testmode' => '1',
+			'password' => 'test',
+			'type' => 'Datatrans',
+		);
+
+		$result = $this->object->checkConfigBE( $attributes );
+
+		$this->assertEquals( 7, count( $result ) );
+		$this->assertEquals( null, $result['password'] );
+		$this->assertEquals( null, $result['address'] );
+		$this->assertEquals( null, $result['authorize'] );
+		$this->assertEquals( null, $result['createtoken'] );
+		$this->assertEquals( null, $result['testmode'] );
+		$this->assertEquals( null, $result['onsite'] );
+		$this->assertEquals( null, $result['type'] );
+	}
+
+
 	public function testQuerySuccess()
 	{
 		$provider = $this->getMockBuilder( 'Omnipay\Dummy\Gateway' )
