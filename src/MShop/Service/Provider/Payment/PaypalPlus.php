@@ -138,7 +138,7 @@ class PaypalPlus
 		if( !$response->isSuccessful() )
 		{
 			$this->saveOrder( $order->setStatusPayment( Status::PAY_REFUSED ) );
-			throw new \Aimeos\MShop\Service\Exception( $response->getMessage() );
+			throw new \Aimeos\MShop\Service\Exception( (string) $response->getMessage() );
 		}
 
 		$approvalUrl = '';
@@ -241,7 +241,7 @@ class PaypalPlus
 					$this->saveOrder( $order->setStatusPayment( Status::PAY_REFUSED ) );
 				}
 
-				throw new \Aimeos\MShop\Service\Exception( $response->getMessage() );
+				throw new \Aimeos\MShop\Service\Exception( (string) $response->getMessage() );
 			}
 
 			$this->setOrderData( $order, ['Transaction' => $response->getTransactionReference()] );

@@ -596,7 +596,7 @@ class OmniPay
 				)
 			) {
 				$this->saveOrder( $order->setStatusPayment( Status::PAY_REFUSED ) );
-				throw new \Aimeos\MShop\Service\Exception( $response->getMessage() );
+				throw new \Aimeos\MShop\Service\Exception( (string) $response->getMessage() );
 			}
 
 			if( !empty( $txId = $response->getTransactionReference() ) ) {
@@ -926,7 +926,7 @@ class OmniPay
 			else
 			{
 				$this->saveOrder( $order->setStatusPayment( Status::PAY_REFUSED ) );
-				throw new \Aimeos\MShop\Service\Exception( $response->getMessage() );
+				throw new \Aimeos\MShop\Service\Exception( (string) $response->getMessage() );
 			}
 		}
 		catch( \Exception $e )
