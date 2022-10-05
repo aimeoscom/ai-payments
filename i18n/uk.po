@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ai-payments\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-04-05 09:19+0200\n"
+"POT-Creation-Date: 2022-10-05 07:41+0200\n"
 "PO-Revision-Date: 2022-02-27 11:04+0000\n"
 "Last-Translator: Aimeos, 2022\n"
 "Language-Team: Ukrainian (https://www.transifex.com/aimeos/teams/39015/uk/)\n"
@@ -20,27 +20,27 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=4; plural=(n % 1 == 0 && n % 10 == 1 && n % 100 != 11 ? 0 : n % 1 == 0 && n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14) ? 1 : n % 1 == 0 && (n % 10 ==0 || (n % 10 >=5 && n % 10 <=9) || (n % 100 >=11 && n % 100 <=14 )) ? 2: 3);\n"
 
-#: src/MShop/Service/Provider/Payment/Stripe.php:181
+#: src/MShop/Service/Provider/Payment/Stripe.php:180
 #, php-format
 msgid "No Stripe customer data available for customer ID \"%1$s\""
 msgstr ""
 
-#: src/MShop/Service/Provider/Payment/Stripe.php:187
+#: src/MShop/Service/Provider/Payment/Stripe.php:186
 #, php-format
 msgid "No Stripe payment method available for customer ID \"%1$s\""
 msgstr ""
 
-#: src/MShop/Service/Provider/Payment/Stripe.php:193
+#: src/MShop/Service/Provider/Payment/Stripe.php:192
 #: src/MShop/Service/Provider/Payment/OmniPay.php:447
 #: src/MShop/Service/Provider/Payment/Mpay24.php:43
-#: src/MShop/Service/Provider/Payment/Datatrans.php:78
+#: src/MShop/Service/Provider/Payment/Datatrans.php:122
 #, php-format
 msgid "No payment token available for customer ID \"%1$s\""
 msgstr "Жоден платіжний токен не доступний для ID клієнта \"%1$s\""
 
 #: src/MShop/Service/Provider/Payment/OmniPay.php:441
 #: src/MShop/Service/Provider/Payment/Mpay24.php:37
-#: src/MShop/Service/Provider/Payment/Datatrans.php:72
+#: src/MShop/Service/Provider/Payment/Datatrans.php:116
 #, php-format
 msgid "No reoccurring payment data available for customer ID \"%1$s\""
 msgstr "Немає даних про платежі, що повторюються, для ID клієнта \"%1$s\""
