@@ -2,50 +2,50 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
+# 
 # Translators:
 # Aimeos, 2022
-#
+# 
 msgid ""
 msgstr ""
 "Project-Id-Version: ai-payments\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-10-05 07:41+0200\n"
+"POT-Creation-Date: 2021-10-04 18:31+0200\n"
 "PO-Revision-Date: 2022-02-27 11:04+0000\n"
 "Last-Translator: Aimeos, 2022\n"
 "Language-Team: French (https://www.transifex.com/aimeos/teams/39015/fr/)\n"
-"Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"Language: fr\n"
+"Plural-Forms: nplurals=3; plural=(n == 0 || n == 1) ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;\n"
 
-#: src/MShop/Service/Provider/Payment/Stripe.php:180
+#: src/MShop/Service/Provider/Payment/Stripe.php:181
 #, php-format
 msgid "No Stripe customer data available for customer ID \"%1$s\""
 msgstr ""
 
-#: src/MShop/Service/Provider/Payment/Stripe.php:186
+#: src/MShop/Service/Provider/Payment/Stripe.php:187
 #, php-format
 msgid "No Stripe payment method available for customer ID \"%1$s\""
 msgstr ""
 
-#: src/MShop/Service/Provider/Payment/Stripe.php:192
-#: src/MShop/Service/Provider/Payment/OmniPay.php:447
+#: src/MShop/Service/Provider/Payment/Stripe.php:193
+#: src/MShop/Service/Provider/Payment/OmniPay.php:443
 #: src/MShop/Service/Provider/Payment/Mpay24.php:43
-#: src/MShop/Service/Provider/Payment/Datatrans.php:122
+#: src/MShop/Service/Provider/Payment/Datatrans.php:78
 #, php-format
 msgid "No payment token available for customer ID \"%1$s\""
 msgstr "Aucun jeton de paiement disponible pour l'ID client \"%1$s\""
 
-#: src/MShop/Service/Provider/Payment/OmniPay.php:441
+#: src/MShop/Service/Provider/Payment/OmniPay.php:437
 #: src/MShop/Service/Provider/Payment/Mpay24.php:37
-#: src/MShop/Service/Provider/Payment/Datatrans.php:116
+#: src/MShop/Service/Provider/Payment/Datatrans.php:72
 #, php-format
 msgid "No reoccurring payment data available for customer ID \"%1$s\""
 msgstr "Aucune donnée de paiement récurrent disponible pour l'ID client \"%1$s\""
 
-#: src/MShop/Service/Provider/Payment/OmniPay.php:482
+#: src/MShop/Service/Provider/Payment/OmniPay.php:478
 #: src/MShop/Service/Provider/Payment/Mpay24.php:77
 #, php-format
 msgid "Token based payment failed with code \"%1$s\" and message \"%2$s\": %3$s"
