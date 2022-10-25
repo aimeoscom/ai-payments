@@ -314,13 +314,7 @@ class OmniPay
 
 		$ref = ['order/base/adress', 'order/base/product', 'order/base/service'];
 		$base = $this->getOrderBase( $order->getBaseId(), $ref );
-
-		$data = array(
-			'transactionReference' => $this->getTransactionReference( $base ),
-			'currency' => $base->getPrice()->getCurrencyId(),
-			'amount' => $this->call( 'captureAmount', $order, $base ),
-			'transactionId' => $order->getId(),
-		);
+		$data = $this->captureData( $order, $base );
 
 		$response = $provider->capture( $data )->send();
 
@@ -638,6 +632,24 @@ class OmniPay
 	protected function captureAmount( \Aimeos\MShop\Order\Item\Iface $order, \Aimeos\MShop\Order\Item\Base\Iface $base ) : string
 	{
 		return $this->getAmount( $base->getPrice() );
+	}
+
+
+	/**
+	 * Returns the data sent to the payment gateway for capturing
+	 *
+	 * @param \Aimeos\MShop\Order\Item\Iface $order Order item
+	 * @param \Aimeos\MShop\Order\Item\Base\Iface $base Order base object with addresses, products and services
+	 * @return array Associative list of key/value pairs
+	 */
+	protected function captureData( \Aimeos\MShop\Order\Item\Iface $order, \Aimeos\MShop\Order\Item\Base\Iface $base ) : array
+	{
+		return [
+			'transactionReference' => $this->getTransactionReference( $base ),
+			'currency' => $base->getPrice()->getCurrencyId(),
+			'amount' => $this->call( 'captureAmount', $order, $base ),
+			'transactionId' => $order->getId(),
+		];
 	}
 
 
