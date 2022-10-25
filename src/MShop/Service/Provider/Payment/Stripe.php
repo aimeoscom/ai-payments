@@ -263,6 +263,22 @@ class Stripe
 
 
 	/**
+	 * Returns the data sent to the payment gateway for capturing
+	 *
+	 * @param \Aimeos\MShop\Order\Item\Iface $order Order item
+	 * @param \Aimeos\MShop\Order\Item\Base\Iface $base Order base object with addresses, products and services
+	 * @return array Associative list of key/value pairs
+	 */
+	protected function captureData( \Aimeos\MShop\Order\Item\Iface $order, \Aimeos\MShop\Order\Item\Base\Iface $base ) : array
+	{
+		$map = parent::captureData( $order, $base );
+		$map['paymentIntentReference'] = $this->service( $base )->getAttribute( 'Reference', 'payment/omnipay' );
+
+		return $map;
+	}
+
+
+	/**
 	 * Returns the data passed to the Omnipay library
 	 *
 	 * @param \Aimeos\MShop\Order\Item\Base\Iface $base Basket object
@@ -440,5 +456,24 @@ document.addEventListener("DOMContentLoaded", function() {
 		}
 
 		return $response;
+	}
+
+
+	/**
+	 * Returns the Stripe service
+	 *
+	 * @param \Aimeos\MShop\Order\Item\Base\Iface $basket Basket object with services
+	 * @return \Aimeos\MShop\Order\Item\Base\Service\Iface Stripe service item
+	 */
+	protected function service( \Aimeos\MShop\Order\Item\Base\Iface $basket ) : \Aimeos\MShop\Order\Item\Base\Service\Iface
+	{
+		foreach( $basket->getService( 'payment' ) as $service )
+		{
+			if( $service->getCode() === $this->getItem()->getCode() ) {
+				return $service;
+			}
+		}
+
+		$this->throw( 'No Stripe service in basket', 'mshop' );
 	}
 }
