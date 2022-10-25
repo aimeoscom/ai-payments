@@ -469,7 +469,7 @@ document.addEventListener("DOMContentLoaded", function() {
 	{
 		foreach( $basket->getService( 'payment' ) as $service )
 		{
-			if( $service->getCode() === $this->getItem()->getCode() ) {
+			if( $service->getCode() === $this->getServiceItem()->getCode() ) {
 				return $service;
 			}
 		}
