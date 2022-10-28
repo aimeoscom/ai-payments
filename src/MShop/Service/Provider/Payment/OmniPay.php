@@ -322,6 +322,7 @@ class OmniPay
 			$this->call( 'captureStatus', $order, $base );
 		}
 
+		$this->saveOrderBase( $base );
 		return $order;
 	}
 
