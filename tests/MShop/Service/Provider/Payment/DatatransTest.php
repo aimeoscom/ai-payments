@@ -129,7 +129,7 @@ class DatatransTest extends \PHPUnit\Framework\TestCase
 		$this->serviceItem->setConfig( array( 'type' => 'Dummy', 'authorize' => '1' ) );
 
 		$provider = $this->getMockBuilder( \Omnipay\Dummy\Gateway::class )
-			->setMethods( array( 'supportsCompleteAuthorize', 'completeAuthorize','getTransaction' ) )
+			->setMethods( array( 'supportsCompleteAuthorize', 'completeAuthorize', 'getTransaction' ) )
 			->disableOriginalConstructor()
 			->getMock();
 
@@ -158,7 +158,7 @@ class DatatransTest extends \PHPUnit\Framework\TestCase
 		$response->expects( $this->once() )->method( 'getTransactionReference' )
 			->will( $this->returnValue( '' ) );
 
-		$this->object->query( $this->getOrder());
+		$this->object->query( $this->getOrder() );
 	}
 
 
@@ -193,7 +193,7 @@ class DatatransTest extends \PHPUnit\Framework\TestCase
 		$response->expects( $this->once() )->method( 'getTransactionReference' )
 			->will( $this->returnValue( '' ) );
 
-		$order = $this->object->query($this->getOrder());
+		$order = $this->object->query( $this->getOrder() );
 
 		$this->assertEquals( \Aimeos\MShop\Order\Item\Base::PAY_PENDING, $order->getStatusPayment() );
 	}
