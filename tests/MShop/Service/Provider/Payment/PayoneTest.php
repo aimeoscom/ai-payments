@@ -25,7 +25,7 @@ class PayoneTest extends \PHPUnit\Framework\TestCase
 
 		$this->object = $this->getMockBuilder( \Aimeos\MShop\Service\Provider\Payment\Payone::class )
 			->setConstructorArgs( array( $this->context, $this->serviceItem ) )
-			->setMethods( ['getOrderBase', 'getProvider', 'saveOrder', 'updateSync', 'saveRepayData'] )
+			->setMethods( ['getProvider', 'save', 'updateSync', 'saveRepayData'] )
 			->getMock();
 	}
 
@@ -46,9 +46,6 @@ class PayoneTest extends \PHPUnit\Framework\TestCase
 			->will( $this->returnValue( $provider ) );
 
 		$this->serviceItem->setConfig( array( 'type' => 'Dummy', 'address' => '1' ) );
-
-		$this->object->expects( $this->exactly( 2 ) )->method( 'getOrderBase' )
-			->will( $this->returnValue( $this->getOrderBase() ) );
 
 		$params = array(
 			'number' => '4929000000006',
@@ -91,21 +88,9 @@ class PayoneTest extends \PHPUnit\Framework\TestCase
 	protected function getOrder()
 	{
 		$manager = \Aimeos\MShop::create( $this->context, 'order' );
+		$search = $manager->filter()->add( 'order.datepayment', '==', '2008-02-15 12:34:56' );
 
-		$search = $manager->filter();
-		$search->setConditions( $search->compare( '==', 'order.datepayment', '2008-02-15 12:34:56' ) );
-
-		if( ( $item = $manager->search( $search )->first() ) === null ) {
-			throw new \RuntimeException( 'No order found' );
-		}
-
-		return $item;
-	}
-
-
-	protected function getOrderBase()
-	{
-		$manager = \Aimeos\MShop::create( $this->context, 'order/base' );
-		return $manager->load( $this->getOrder()->getBaseId(), ['order/base/address', 'order/base/product', 'order/base/service'] );
+		return $manager->search( $search, ['order/base', 'order/base/address', 'order/base/product', 'order/base/service'] )
+			->first( new \RuntimeException( 'No order found' ) );
 	}
 }

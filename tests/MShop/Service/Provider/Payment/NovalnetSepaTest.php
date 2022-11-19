@@ -35,7 +35,7 @@ class NovalnetSepaTest extends \PHPUnit\Framework\TestCase
 		$serviceItem->setCode( 'unitpaymentcode' );
 
 		$this->object = $this->getMockBuilder( '\\Aimeos\\MShop\\Service\\Provider\\Payment\\NovalnetSepa' )
-			->setMethods( ['getOrder', 'getOrderBase', 'saveOrder', 'saveOrderBase', 'getProvider', 'saveRepayData'] )
+			->setMethods( ['save', 'getProvider', 'saveRepayData'] )
 			->setConstructorArgs( array( $this->context, $serviceItem ) )
 			->getMock();
 	}
@@ -49,24 +49,17 @@ class NovalnetSepaTest extends \PHPUnit\Framework\TestCase
 
 	public function testGetConfigFE()
 	{
+		$status = \Aimeos\MShop\Order\Item\Base::PAY_AUTHORIZED;
 		$orderManager = \Aimeos\MShop::create( $this->context, 'order' );
-		$orderBaseManager = $orderManager->getSubManager( 'base' );
-		$search = $orderManager->filter();
-		$expr = array(
-			$search->compare( '==', 'order.channel', 'web' ),
-			$search->compare( '==', 'order.statuspayment', \Aimeos\MShop\Order\Item\Base::PAY_AUTHORIZED )
-		);
-		$search->setConditions( $search->and( $expr ) );
+		$search = $orderManager->filter()->add( [
+			'order.channel' => 'web',
+			'order.statuspayment' => $status
+		] );
 
-		if( ( $item = $orderManager->search( $search )->first() ) === null )
-		{
-			$msg = 'No Order found with statuspayment "%1$s" and channel "%2$s"';
-			throw new \RuntimeException( sprintf( $msg, \Aimeos\MShop\Order\Item\Base::PAY_AUTHORIZED, 'web' ) );
-		}
+		$item = $orderManager->search( $search, ['order/base', 'order/base/address'] )
+			->first( new \RuntimeException( sprintf( 'No order found with status "%1$s" and channel "%2$s"', $status, 'web' ) ) );
 
-		$basket = $orderBaseManager->load( $item->getBaseId() );
-
-		$config = $this->object->getConfigFE( $basket );
+		$config = $this->object->getConfigFE( $item->getBaseItem() );
 
 		$this->assertArrayHasKey( 'novalnetsepa.iban', $config );
 	}
@@ -110,9 +103,6 @@ class NovalnetSepaTest extends \PHPUnit\Framework\TestCase
 
 	public function testProcess()
 	{
-		$baseItem = $this->getOrderBase();
-
-
 		$provider = $this->getMockBuilder( 'Omnipay\Dummy\Gateway' )
 			->setMethods( array( 'purchase' ) )
 			->getMock();
@@ -126,9 +116,6 @@ class NovalnetSepaTest extends \PHPUnit\Framework\TestCase
 			->setMethods( array( 'getTransactionReference', 'isSuccessful' ) )
 			->disableOriginalConstructor()
 			->getMock();
-
-		$this->object->expects( $this->exactly( 2 ) )->method( 'getOrderBase' )
-			->will( $this->returnValue( $baseItem ) );
 
 		$this->object->expects( $this->once() )->method( 'getProvider' )
 			->will( $this->returnValue( $provider ) );
@@ -155,21 +142,9 @@ class NovalnetSepaTest extends \PHPUnit\Framework\TestCase
 	protected function getOrder()
 	{
 		$manager = \Aimeos\MShop::create( $this->context, 'order' );
+		$search = $manager->filter()->add( 'order.datepayment', '==', '2008-02-15 12:34:56' );
 
-		$search = $manager->filter();
-		$search->setConditions( $search->compare( '==', 'order.datepayment', '2008-02-15 12:34:56' ) );
-
-		if( ( $item = $manager->search( $search )->first() ) === null ) {
-			throw new \RuntimeException( 'No order found' );
-		}
-
-		return $item;
-	}
-
-
-	protected function getOrderBase( $parts = null )
-	{
-		$manager = \Aimeos\MShop::create( $this->context, 'order/base' );
-		return $manager->load( $this->getOrder()->getBaseId(), ['order/base/product', 'order/base/service'] );
+		return $manager->search( $search, ['order/base', 'order/base/product', 'order/base/service'] )
+			->first( new \RuntimeException( 'No order found' ) );
 	}
 }

@@ -96,7 +96,7 @@ class Datatrans
 		}
 
 		$this->setOrderData( $order, ['TRANSACTIONID' => $response->getTransactionReference()] );
-		return $this->saveOrder( $order );
+		return $order;
 	}
 
 
@@ -109,7 +109,7 @@ class Datatrans
 	 */
 	public function repay( \Aimeos\MShop\Order\Item\Iface $order ) : \Aimeos\MShop\Order\Item\Iface
 	{
-		$base = $this->getOrderBase( $order->getBaseId() );
+		$base = $order->getBaseItem();
 
 		if( ( $cfg = $this->getCustomerData( $base->getCustomerId(), 'repay' ) ) === null )
 		{
@@ -144,7 +144,7 @@ class Datatrans
 		if( $response->isSuccessful() || $response->isPending() )
 		{
 			$this->setOrderData( $order, ['TRANSACTIONID' => $response->getTransactionReference()] );
-			$order = $this->saveOrder( $order->setStatusPayment( \Aimeos\MShop\Order\Item\Base::PAY_RECEIVED ) );
+			$order->setStatusPayment( \Aimeos\MShop\Order\Item\Base::PAY_RECEIVED );
 		}
 		elseif( !$response->getTransactionReference() )
 		{

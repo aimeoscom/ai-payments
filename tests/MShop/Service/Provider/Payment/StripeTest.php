@@ -77,20 +77,20 @@ class StripeTest extends \PHPUnit\Framework\TestCase
 
 	public function testGetData()
 	{
-		$basket = $this->getOrderBase();
-		$orderId = $this->getOrder()->getId();
+		$order = $this->getOrder();
+		$basket = $order->getBaseItem();
 
-		$result = $this->access( 'getData' )->invokeArgs( $this->object, [$basket, $orderId, []] );
+		$result = $this->access( 'getData' )->invokeArgs( $this->object, [$basket, $order->getId(), []] );
 		$this->assertArrayNotHasKey( 'token', $result );
 	}
 
 
 	public function testGetDataToken()
 	{
-		$basket = $this->getOrderBase();
-		$orderId = $this->getOrder()->getId();
+		$order = $this->getOrder();
+		$basket = $order->getBaseItem();
 
-		$result = $this->access( 'getData' )->invokeArgs( $this->object, [$basket, $orderId, ['paymenttoken' => 'abc']] );
+		$result = $this->access( 'getData' )->invokeArgs( $this->object, [$basket, $order->getId(), ['paymenttoken' => 'abc']] );
 		$this->assertArrayHasKey( 'token', $result );
 	}
 
@@ -127,22 +127,10 @@ class StripeTest extends \PHPUnit\Framework\TestCase
 	protected function getOrder()
 	{
 		$manager = \Aimeos\MShop::create( $this->context, 'order' );
+		$search = $manager->filter()->add( 'order.datepayment', '==', '2008-02-15 12:34:56' );
 
-		$search = $manager->filter();
-		$search->setConditions( $search->compare( '==', 'order.datepayment', '2008-02-15 12:34:56' ) );
-
-		if( ( $item = $manager->search( $search )->first() ) === null ) {
-			throw new \RuntimeException( 'No order found' );
-		}
-
-		return $item;
-	}
-
-
-	protected function getOrderBase()
-	{
-		$manager = \Aimeos\MShop::create( $this->context, 'order/base' );
-		return $manager->load( $this->getOrder()->getBaseId(), ['order/base/product', 'order/base/service'] );
+		return $manager->search( $search, ['order/base', 'order/base/product', 'order/base/service'] )
+			->first( new \RuntimeException( 'No order found' ) );
 	}
 
 

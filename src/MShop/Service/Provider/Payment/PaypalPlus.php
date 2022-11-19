@@ -126,18 +126,15 @@ class PaypalPlus
 	 */
 	public function process( \Aimeos\MShop\Order\Item\Iface $order, array $params = [] ) : ?\Aimeos\MShop\Common\Helper\Form\Iface
 	{
-		$baseItem = $this->getOrderBase( $order->getBaseId(), ['order/base/address'] );
-		$addresses = $baseItem->getAddress( \Aimeos\MShop\Order\Item\Base\Address\Base::TYPE_PAYMENT );
+		$base = $order->getBaseItem();
+		$addresses = $base->getAddress( \Aimeos\MShop\Order\Item\Base\Address\Base::TYPE_PAYMENT );
 
-		$parts = ['order/base/address', 'order/base/product', 'order/base/service'];
-		$base = $this->getOrderBase( $order->getBaseId(), $parts );
 		$data = $this->getData( $base, $order->getId(), $params );
-
 		$response = $this->sendRequest( $order, $data );
 
 		if( !$response->isSuccessful() )
 		{
-			$this->saveOrder( $order->setStatusPayment( Status::PAY_REFUSED ) );
+			\Aimeos\MShop::create( $this->context(), 'order' )->save( $order->setStatusPayment( Status::PAY_REFUSED ) );
 			throw new \Aimeos\MShop\Service\Exception( (string) $response->getMessage() );
 		}
 
@@ -146,7 +143,6 @@ class PaypalPlus
 
 		$this->setOrderData( $order, ['Transaction' => $response->getTransactionReference()] );
 		$this->saveRepayData( $response, $base->getCustomerId() );
-		$this->saveOrder( $order );
 
 		foreach( $response->getData()['links'] ?? [] as $entry )
 		{
@@ -186,13 +182,13 @@ class PaypalPlus
 		\Aimeos\MShop\Order\Item\Iface $order ) : \Aimeos\MShop\Order\Item\Iface
 	{
 		if( empty( $request->getQueryParams()['PayerID'] ) ) {
-			return $this->saveOrder( $order->setStatusPayment( Status::PAY_CANCELED ) );
+			return $order->setStatusPayment( Status::PAY_CANCELED );
 		}
 
 		try
 		{
+			$base = $order->getBaseItem();
 			$provider = $this->getProvider();
-			$base = $this->getOrderBase( $order->getBaseId() );
 
 			$params = (array) $request->getAttributes() + (array) $request->getParsedBody() + (array) $request->getQueryParams();
 			$params = $this->getData( $base, $order->getId(), $params );
@@ -238,7 +234,7 @@ class PaypalPlus
 			else
 			{
 				if( empty( $order->getStatusPayment() ) ) {
-					$this->saveOrder( $order->setStatusPayment( Status::PAY_REFUSED ) );
+					\Aimeos\MShop::create( $this->context(), 'order' )->save( $order->setStatusPayment( Status::PAY_REFUSED ) );
 				}
 
 				throw new \Aimeos\MShop\Service\Exception( (string) $response->getMessage() );
@@ -246,7 +242,6 @@ class PaypalPlus
 
 			$this->setOrderData( $order, ['Transaction' => $response->getTransactionReference()] );
 			$this->saveRepayData( $response, $base->getCustomerId() );
-			$this->saveOrder( $order );
 		}
 		catch( \Exception $e )
 		{

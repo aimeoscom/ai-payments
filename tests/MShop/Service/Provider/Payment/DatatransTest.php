@@ -30,8 +30,8 @@ class DatatransTest extends \PHPUnit\Framework\TestCase
 		$this->serviceItem->setCode( 'unitpaymentcode' );
 
 		$methods = [
-			'getCustomerData', 'getOrder', 'getOrderBase', 'getTransactionReference', 'isImplemented',
-			'saveOrder', 'saveOrderBase', 'getProvider', 'getXmlProvider', 'setOrderData', 'setCustomerData'
+			'getCustomerData', 'getTransactionReference', 'isImplemented',
+			'save', 'getProvider', 'getXmlProvider', 'setOrderData', 'setCustomerData'
 		];
 
 		$this->object = $this->getMockBuilder( \Aimeos\MShop\Service\Provider\Payment\Datatrans::class )
@@ -118,13 +118,9 @@ class DatatransTest extends \PHPUnit\Framework\TestCase
 
 		$this->object->expects( $this->once() )->method( 'setOrderData' );
 
-		$cmpFcn = function( $subject ) {
-			return $subject->getStatusPayment() === \Aimeos\MShop\Order\Item\Base::PAY_RECEIVED;
-		};
+		$order = $this->object->query( $this->getOrder() );
 
-		$this->object->expects( $this->once() )->method( 'saveOrder' )->with( $this->callback( $cmpFcn ) );
-
-		$this->object->query( $this->getOrder() );
+		$this->assertEquals( \Aimeos\MShop\Order\Item\Base::PAY_RECEIVED, $order->getStatusPayment() );
 	}
 
 
@@ -197,13 +193,9 @@ class DatatransTest extends \PHPUnit\Framework\TestCase
 		$response->expects( $this->once() )->method( 'getTransactionReference' )
 			->will($this->returnValue(''));
 
-		$cmpFcn = function( $subject ) {
-			return $subject->getStatusPayment() === \Aimeos\MShop\Order\Item\Base::PAY_PENDING;
-		};
+		$order = $this->object->query($this->getOrder());
 
-		$this->object->expects( $this->once() )->method( 'saveOrder' )->with( $this->callback( $cmpFcn ) );
-
-		$this->object->query($this->getOrder());
+		$this->assertEquals( \Aimeos\MShop\Order\Item\Base::PAY_PENDING, $order->getStatusPayment() );
 	}
 
 
@@ -238,21 +230,15 @@ class DatatransTest extends \PHPUnit\Framework\TestCase
 		$response->expects( $this->once() )->method( 'getTransactionReference' )
 			->will($this->returnValue(''));
 
-		$cmpFcn = function( $subject ) {
-			return $subject->getStatusPayment() === \Aimeos\MShop\Order\Item\Base::PAY_CANCELED;
-		};
+		$order = $this->object->query($this->getOrder());
 
-		$this->object->expects( $this->once() )->method( 'saveOrder' )->with( $this->callback( $cmpFcn ) );
-
-		$this->object->query($this->getOrder());
+		$this->assertEquals( \Aimeos\MShop\Order\Item\Base::PAY_CANCELED, $order->getStatusPayment() );
 	}
 
 
 	public function testRepay()
 	{
 		$orderItem = $this->getOrder();
-		$baseItem = $this->getOrderBase();
-
 
 		$provider = $this->getMockBuilder( 'Omnipay\Dummy\Gateway' )
 			->setMethods( array( 'getCard', 'purchase' ) )
@@ -268,9 +254,6 @@ class DatatransTest extends \PHPUnit\Framework\TestCase
 			->setMethods( array( 'isSuccessful', 'getTransactionReference' ) )
 			->getMock();
 
-
-		$this->object->expects( $this->once() )->method( 'getOrderBase' )
-			->will( $this->returnValue( $baseItem ) );
 
 		$this->object->expects( $this->once() )->method( 'getXmlProvider' )
 			->will( $this->returnValue( $provider ) );
@@ -292,8 +275,6 @@ class DatatransTest extends \PHPUnit\Framework\TestCase
 
 		$this->object->expects( $this->once() )->method( 'setOrderData' );
 
-		$this->object->expects( $this->once() )->method( 'saveOrder' );
-
 
 		$this->object->repay( $this->getOrder() );
 	}
@@ -301,12 +282,6 @@ class DatatransTest extends \PHPUnit\Framework\TestCase
 
 	public function testRepayMissingData()
 	{
-		$baseItem = $this->getOrderBase();
-
-
-		$this->object->expects( $this->once() )->method( 'getOrderBase' )
-			->will( $this->returnValue( $baseItem ) );
-
 		$this->object->expects( $this->once() )->method( 'getCustomerData' )
 			->will( $this->returnValue( null ) );
 
@@ -318,12 +293,6 @@ class DatatransTest extends \PHPUnit\Framework\TestCase
 
 	public function testRepayMissingToken()
 	{
-		$baseItem = $this->getOrderBase();
-
-
-		$this->object->expects( $this->once() )->method( 'getOrderBase' )
-			->will( $this->returnValue( $baseItem ) );
-
 		$this->object->expects( $this->once() )->method( 'getCustomerData' )
 			->will( $this->returnValue( [] ) );
 
@@ -350,22 +319,10 @@ class DatatransTest extends \PHPUnit\Framework\TestCase
 	protected function getOrder()
 	{
 		$manager = \Aimeos\MShop::create( $this->context, 'order' );
+		$search = $manager->filter()->add( 'order.datepayment', '==', '2008-02-15 12:34:56' );
 
-		$search = $manager->filter();
-		$search->setConditions( $search->compare( '==', 'order.datepayment', '2008-02-15 12:34:56' ) );
-
-		if( ( $item = $manager->search( $search )->first() ) === null ) {
-			throw new \RuntimeException( 'No order found' );
-		}
-
-		return $item;
-	}
-
-
-	protected function getOrderBase()
-	{
-		$manager = \Aimeos\MShop::create( $this->context, 'order/base' );
-		return $manager->load( $this->getOrder()->getBaseId(), ['order/base/service'] );
+		return $manager->search( $search, ['order/base', 'order/base/service'] )
+			->first( new \RuntimeException( 'No order found' ) );
 	}
 
 

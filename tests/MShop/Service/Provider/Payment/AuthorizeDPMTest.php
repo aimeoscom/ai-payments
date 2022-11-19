@@ -35,7 +35,7 @@ class AuthorizeDPMTest extends \PHPUnit\Framework\TestCase
 		$item->setConfig( $conf );
 
 		$this->object = $this->getMockBuilder( 'Aimeos\MShop\Service\Provider\Payment\AuthorizeDPM' )
-			->setMethods( array( 'getOrder', 'getOrderBase', 'saveOrder', 'saveOrderBase', 'getProvider' ) )
+			->setMethods( array( 'save', 'getProvider' ) )
 			->setConstructorArgs( array( $this->context, $item ) )
 			->getMock();
 	}
@@ -67,9 +67,6 @@ class AuthorizeDPMTest extends \PHPUnit\Framework\TestCase
 
 	public function testProcessOnsiteAddress()
 	{
-		$this->object->expects( $this->any() )->method( 'getOrderBase' )
-			->will( $this->returnValue( $this->getOrderBase() ) );
-
 		$result = $this->object->process( $this->getOrder(), [] );
 
 		$this->assertInstanceOf( \Aimeos\MShop\Common\Helper\Form\Iface::class, $result );
@@ -89,21 +86,9 @@ class AuthorizeDPMTest extends \PHPUnit\Framework\TestCase
 	protected function getOrder()
 	{
 		$manager = \Aimeos\MShop::create( $this->context, 'order' );
+		$search = $manager->filter()->add( 'order.datepayment', '==', '2008-02-15 12:34:56' );
 
-		$search = $manager->filter();
-		$search->setConditions( $search->compare( '==', 'order.datepayment', '2008-02-15 12:34:56' ) );
-
-		if( ( $item = $manager->search( $search )->first() ) === null ) {
-			throw new \RuntimeException( 'No order found' );
-		}
-
-		return $item;
-	}
-
-
-	protected function getOrderBase()
-	{
-		$manager = \Aimeos\MShop::create( $this->context, 'order/base' );
-		return $manager->load( $this->getOrder()->getBaseId(), ['order/base/address', 'order/base/service'] );
+		return $manager->search( $search, ['order/base', 'order/base/address', 'order/base/service'] )
+			->first( new \RuntimeException( 'No order found' ) );
 	}
 }

@@ -145,7 +145,7 @@ class Stripe
 			&& $this->getConfigValue( 'createtoken' )
 		) {
 			$data = [];
-			$base = $this->getOrderBase( $order->getBaseId() );
+			$base = $order->getBaseItem();
 
 			if( $addr = current( $base->getAddress( 'payment' ) ) )
 			{
@@ -173,7 +173,7 @@ class Stripe
 	 */
 	public function repay( \Aimeos\MShop\Order\Item\Iface $order ) : \Aimeos\MShop\Order\Item\Iface
 	{
-		$base = $this->getOrderBase( $order->getBaseId() );
+		$base = $order->getBaseItem();
 
 		if( ( $custid = $this->getCustomerData( $base->getCustomerId(), 'customer' ) ) === null )
 		{
@@ -206,7 +206,7 @@ class Stripe
 		if( $response->isSuccessful() || $response->isPending() )
 		{
 			$this->setOrderData( $order, ['Transaction' => $response->getTransactionReference()] );
-			$order = $this->saveOrder( $order->setStatusPayment( Status::PAY_RECEIVED ) );
+			$order = $order->setStatusPayment( Status::PAY_RECEIVED );
 		}
 		elseif( !$response->getTransactionReference() )
 		{
@@ -255,7 +255,7 @@ class Stripe
 				$status = Status::PAY_REFUSED;
 			}
 
-			$this->saveOrder( $order->setStatusPayment( $status ) );
+			$order->setStatusPayment( $status );
 		}
 
 		return $order;

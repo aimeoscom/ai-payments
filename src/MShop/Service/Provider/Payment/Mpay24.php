@@ -30,7 +30,7 @@ class Mpay24
 	 */
 	public function repay( \Aimeos\MShop\Order\Item\Iface $order ): \Aimeos\MShop\Order\Item\Iface
 	{
-		$base = $this->getOrderBase( $order->getBaseId(), ['order/base/address'] );
+		$base = $order->getBaseItem();
 
 		if( ( $cfg = $this->getCustomerData( $base->getCustomerId(), 'repay' ) ) === null )
 		{
@@ -65,7 +65,7 @@ class Mpay24
 		if( $response->isSuccessful() || $response->isPending() )
 		{
 			$this->setOrderData( $order, ['TRANSACTIONID' => $response->getTransactionReference()] );
-			$this->saveOrder( $order->setStatusPayment( \Aimeos\MShop\Order\Item\Base::PAY_RECEIVED ) );
+			$order->setStatusPayment( \Aimeos\MShop\Order\Item\Base::PAY_RECEIVED );
 		}
 		elseif( !$response->getTransactionReference() )
 		{
