@@ -102,19 +102,19 @@ class DatatransTest extends \PHPUnit\Framework\TestCase
 			->getMock();
 
 		$this->object->expects( $this->once() )->method( 'getProvider' )
-			->will($this->returnValue($provider));
+			->will( $this->returnValue( $provider ) );
 
 		$provider->expects( $this->once() )->method( 'getTransaction' )
-			->will($this->returnValue($request));
+			->will( $this->returnValue( $request ) );
 
 		$request->expects( $this->once() )->method( 'send' )
-			->will($this->returnValue($response));
+			->will( $this->returnValue( $response ) );
 
 		$response->expects( $this->once() )->method( 'isSuccessful' )
-			->will($this->returnValue(true));
+			->will( $this->returnValue( true ) );
 
 		$response->expects( $this->once() )->method( 'getTransactionReference' )
-			->will($this->returnValue(''));
+			->will( $this->returnValue( '' ) );
 
 		$this->object->expects( $this->once() )->method( 'setOrderData' );
 
@@ -156,7 +156,7 @@ class DatatransTest extends \PHPUnit\Framework\TestCase
 			->will( $this->returnValue( false ) );
 
 		$response->expects( $this->once() )->method( 'getTransactionReference' )
-			->will($this->returnValue(''));
+			->will( $this->returnValue( '' ) );
 
 		$this->object->query( $this->getOrder());
 	}
@@ -191,7 +191,7 @@ class DatatransTest extends \PHPUnit\Framework\TestCase
 			->will( $this->returnValue( true ) );
 
 		$response->expects( $this->once() )->method( 'getTransactionReference' )
-			->will($this->returnValue(''));
+			->will( $this->returnValue( '' ) );
 
 		$order = $this->object->query($this->getOrder());
 
@@ -228,9 +228,9 @@ class DatatransTest extends \PHPUnit\Framework\TestCase
 			->will( $this->returnValue( true ) );
 
 		$response->expects( $this->once() )->method( 'getTransactionReference' )
-			->will($this->returnValue(''));
+			->will( $this->returnValue( '' ) );
 
-		$order = $this->object->query($this->getOrder());
+		$order = $this->object->query( $this->getOrder() );
 
 		$this->assertEquals( \Aimeos\MShop\Order\Item\Base::PAY_CANCELED, $order->getStatusPayment() );
 	}
@@ -271,7 +271,7 @@ class DatatransTest extends \PHPUnit\Framework\TestCase
 			->will( $this->returnValue( true ) );
 
 		$response->expects( $this->once() )->method( 'getTransactionReference' )
-			->will($this->returnValue(''));
+			->will( $this->returnValue( '' ) );
 
 		$this->object->expects( $this->once() )->method( 'setOrderData' );
 

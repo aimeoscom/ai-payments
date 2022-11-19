@@ -230,7 +230,6 @@ class OmniPay
 	);
 
 	private $provider;
-	private $basket;
 
 
 	/**
@@ -398,7 +397,7 @@ class OmniPay
 
 		if( $response->isSuccessful() )
 		{
-			$this->setAttributes( $service, ['REFUNDID' => $response->getTransactionReference()], 'payment/omnipay' );
+			$service->addAttributeItems( $this->attributes( ['REFUNDID' => $response->getTransactionReference()], 'payment/omnipay' ) );
 			$order->setStatusPayment( Status::PAY_REFUND );
 		}
 
@@ -1000,21 +999,36 @@ class OmniPay
 	}
 
 
-	protected function getOrderData( \Aimeos\MShop\Order\Item\Iface $order, $key )
+	/**
+	 * Returns the value or values from the given order and passed code
+	 *
+	 * @param \Aimeos\MShop\Order\Item\Iface $order Order including basket content
+	 * @param string $code Attribute code to retrieve the value for
+	 * @return array|string|null Value or list of values from the order service attribute
+	 */
+	protected function getOrderData( \Aimeos\MShop\Order\Item\Iface $order, string $code )
 	{
 		$type = \Aimeos\MShop\Order\Item\Base\Service\Base::TYPE_PAYMENT;
-		$serviceItem = $this->getBasketService( $order->getBaseItem(), $type, $this->getServiceItem()->getCode() );
 
-		return $serviceItem->getAttribute( $key, 'payment/omnipay' );
+		return $this->getBasketService( $order->getBaseItem(), $type, $this->getServiceItem()->getCode() )
+			->getAttribute( $code, 'payment/omnipay' );
 	}
 
 
+	/**
+	 * Adds or overwrites the attribute pairs in the given order
+	 *
+	 * @param \Aimeos\MShop\Order\Item\Iface $order Order including basket content
+	 * @param array $data Associative list of key/value pairs to store
+	 * @return \Aimeos\MShop\Service\Provider\Payment\Iface Same object for fluid interface
+	 */
 	protected function setOrderData( \Aimeos\MShop\Order\Item\Iface $order, array $data ) : Iface
 	{
 		$type = \Aimeos\MShop\Order\Item\Base\Service\Base::TYPE_PAYMENT;
-		$serviceItem = $this->getBasketService( $order->getBaseItem(), $type, $this->getServiceItem()->getCode() );
 
-		$this->setAttributes( $serviceItem, $data, 'payment/omnipay' );
+		$this->getBasketService( $order->getBaseItem(), $type, $this->getServiceItem()->getCode() )
+			->addAttributeItems( $this->attributes( $data, 'payment/omnipay' ) );
+
 		return $this;
 	}
 

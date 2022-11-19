@@ -121,7 +121,7 @@ class NovalnetSepa
 	public function setConfigFE( \Aimeos\MShop\Order\Item\Base\Service\Iface $orderServiceItem,
 		array $attributes ) : \Aimeos\MShop\Order\Item\Base\Service\Iface
 	{
-		return $this->setAttributes( $orderServiceItem, $attributes, 'session' );
+		return $orderServiceItem->addAttributeItems( $this->attributes( $attributes, 'session' ) );
 	}
 
 
