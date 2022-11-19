@@ -30,8 +30,8 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 		$this->serviceItem->setCode( 'unitpaymentcode' );
 
 		$methods = [
-			'getCustomerData', 'getTransactionReference', 'isImplemented',
-			'save', 'getProvider', 'getOrderData', 'setOrderData', 'setCustomerData'
+			'data', 'getTransactionReference', 'isImplemented',
+			'save', 'getProvider', 'getOrderData', 'setOrderData', 'setData'
 		];
 
 		$this->object = $this->getMockBuilder( '\\Aimeos\\MShop\\Service\\Provider\\Payment\\OmniPay' )
@@ -812,7 +812,7 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 		$this->object->expects( $this->once() )->method( 'getProvider' )
 			->will( $this->returnValue( $provider ) );
 
-		$this->object->expects( $this->once() )->method( 'getCustomerData' )
+		$this->object->expects( $this->once() )->method( 'data' )
 			->will( $this->returnValue( ['token' => '123', 'month' => '01', 'year' => '99'] ) );
 
 		$provider->expects( $this->once() )->method( 'purchase' )

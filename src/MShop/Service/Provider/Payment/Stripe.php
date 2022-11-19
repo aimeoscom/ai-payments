@@ -141,7 +141,7 @@ class Stripe
 		}
 
 		if( ( $userid = $this->context()->user() ) !== null
-			&& $this->getCustomerData( $userid, 'customer' ) === null
+			&& $this->data( $userid, 'customer' ) === null
 			&& $this->getConfigValue( 'createtoken' )
 		) {
 			$data = [];
@@ -156,7 +156,7 @@ class Stripe
 			$response = $this->getProvider()->createCustomer( $data )->send();
 
 			if( $response->isSuccessful() ) {
-				$this->setCustomerData( $userid, 'customer', $response->getCustomerReference() );
+				$this->setData( $userid, 'customer', $response->getCustomerReference() );
 			}
 		}
 
@@ -175,13 +175,13 @@ class Stripe
 	{
 		$base = $order->getBaseItem();
 
-		if( ( $custid = $this->getCustomerData( $base->getCustomerId(), 'customer' ) ) === null )
+		if( ( $custid = $this->data( $base->getCustomerId(), 'customer' ) ) === null )
 		{
 			$msg = sprintf( 'No Stripe customer data available for customer ID "%1$s"', $base->getCustomerId() );
 			throw new \Aimeos\MShop\Service\Exception( $msg );
 		}
 
-		if( ( $cfg = $this->getCustomerData( $base->getCustomerId(), 'repay' ) ) === null )
+		if( ( $cfg = $this->data( $base->getCustomerId(), 'repay' ) ) === null )
 		{
 			$msg = sprintf( 'No Stripe payment method available for customer ID "%1$s"', $base->getCustomerId() );
 			throw new \Aimeos\MShop\Service\Exception( $msg );
@@ -247,7 +247,7 @@ class Stripe
 				$this->setOrderData( $order, ['Transaction' => $response->getTransactionReference()] );
 
 				if( $paymethod = $response->getCardReference() ) {
-					$this->setCustomerData( $this->context()->user(), 'repay', ['token' => $paymethod] );
+					$this->setData( $this->context()->user(), 'repay', ['token' => $paymethod] );
 				}
 			}
 			else
@@ -300,7 +300,7 @@ class Stripe
 		}
 
 		if( $this->context()->user() && $this->getConfigValue( 'createtoken' )
-			&& $custid = $this->getCustomerData( $this->context()->user(), 'customer' )
+			&& $custid = $this->data( $this->context()->user(), 'customer' )
 		) {
 			$data['customerReference'] = $custid;
 		}

@@ -30,8 +30,8 @@ class DatatransTest extends \PHPUnit\Framework\TestCase
 		$this->serviceItem->setCode( 'unitpaymentcode' );
 
 		$methods = [
-			'getCustomerData', 'getTransactionReference', 'isImplemented',
-			'save', 'getProvider', 'getXmlProvider', 'setOrderData', 'setCustomerData'
+			'data', 'getTransactionReference', 'isImplemented',
+			'save', 'getProvider', 'getXmlProvider', 'setOrderData', 'setData'
 		];
 
 		$this->object = $this->getMockBuilder( \Aimeos\MShop\Service\Provider\Payment\Datatrans::class )
@@ -258,7 +258,7 @@ class DatatransTest extends \PHPUnit\Framework\TestCase
 		$this->object->expects( $this->once() )->method( 'getXmlProvider' )
 			->will( $this->returnValue( $provider ) );
 
-		$this->object->expects( $this->once() )->method( 'getCustomerData' )
+		$this->object->expects( $this->once() )->method( 'data' )
 			->will( $this->returnValue( ['token' => '123', 'month' => '01', 'year' => '99'] ) );
 
 		$provider->expects( $this->once() )->method( 'purchase' )
@@ -282,7 +282,7 @@ class DatatransTest extends \PHPUnit\Framework\TestCase
 
 	public function testRepayMissingData()
 	{
-		$this->object->expects( $this->once() )->method( 'getCustomerData' )
+		$this->object->expects( $this->once() )->method( 'data' )
 			->will( $this->returnValue( null ) );
 
 
@@ -293,7 +293,7 @@ class DatatransTest extends \PHPUnit\Framework\TestCase
 
 	public function testRepayMissingToken()
 	{
-		$this->object->expects( $this->once() )->method( 'getCustomerData' )
+		$this->object->expects( $this->once() )->method( 'data' )
 			->will( $this->returnValue( [] ) );
 
 

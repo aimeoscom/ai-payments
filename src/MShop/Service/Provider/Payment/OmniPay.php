@@ -423,7 +423,7 @@ class OmniPay
 			throw new \Aimeos\MShop\Service\Exception( sprintf( $msg, 'repay' ) );
 		}
 
-		if( ( $cfg = $this->getCustomerData( $base->getCustomerId(), 'repay' ) ) === null )
+		if( ( $cfg = $this->data( $base->getCustomerId(), 'repay' ) ) === null )
 		{
 			$msg = sprintf( 'No reoccurring payment data available for customer ID "%1$s"', $base->getCustomerId() );
 			throw new \Aimeos\MShop\Service\Exception( $msg );
@@ -993,7 +993,7 @@ class OmniPay
 		}
 
 		if( !empty( $data ) ) {
-			$this->setCustomerData( $customerId, 'repay', $data );
+			$this->setData( $customerId, 'repay', $data );
 		}
 
 		return $this;
