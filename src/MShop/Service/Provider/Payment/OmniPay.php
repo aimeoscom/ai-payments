@@ -372,9 +372,11 @@ class OmniPay
 	 * Refunds the money for the given order if supported.
 	 *
 	 * @param \Aimeos\MShop\Order\Item\Iface $order Order invoice object
+	 * @param \Aimeos\MShop\Price\Item\Iface|null $price Price item with the amount to refund or NULL for whole order
 	 * @return \Aimeos\MShop\Order\Item\Iface Updated order item object
 	 */
-	public function refund( \Aimeos\MShop\Order\Item\Iface $order ) : \Aimeos\MShop\Order\Item\Iface
+	public function refund( \Aimeos\MShop\Order\Item\Iface $order, \Aimeos\MShop\Price\Item\Iface $price = null
+		) : \Aimeos\MShop\Order\Item\Iface
 	{
 		$provider = $this->getProvider();
 
@@ -383,22 +385,32 @@ class OmniPay
 		}
 
 		$base = $order->getBaseItem();
+		$price = $price ?: $this->call( 'refundAmount', $order );
+		$amount = $price->getValue() + $price->getCosts();
+
 		$type = \Aimeos\MShop\Order\Item\Base\Service\Base::TYPE_PAYMENT;
 		$service = $this->getBasketService( $base, $type, $this->getServiceItem()->getCode() );
 
 		$data = array(
 			'transactionReference' => $this->getTransactionReference( $base ),
-			'currency' => $base->getPrice()->getCurrencyId(),
-			'amount' => $this->call( 'refundAmount', $order, $base ),
+			'currency' => $price->getCurrencyId(),
 			'transactionId' => $order->getId(),
+			'amount' => $amount,
 		);
 
 		$response = $provider->refund( $data )->send();
 
 		if( $response->isSuccessful() )
 		{
-			$service->addAttributeItems( $this->attributes( ['REFUNDID' => $response->getTransactionReference()], 'payment/omnipay' ) );
-			$order->setStatusPayment( Status::PAY_REFUND );
+			$tx = \Aimeos\MShop::create( $this->context(), 'order/base/service/transaction' )->create()
+				->setPrice( $price )->setType( 'refund' )->setStatus( Status::PAY_REFUND )
+				->setConfigValue( 'REFUNDID', $response->getTransactionReference() );
+
+			$service->addTransaction( $tx );
+
+			if( $amount == $base->getPrice()->getValue() + $base->getPrice()->getCosts() ) {
+				$order->setStatusPayment( Status::PAY_REFUND );
+			}
 		}
 
 		return $order;
@@ -945,12 +957,11 @@ class OmniPay
 	 * Returns the amount when refunding an order
 	 *
 	 * @param \Aimeos\MShop\Order\Item\Iface $order Order item
-	 * @param \Aimeos\MShop\Order\Item\Base\Iface $base Order base object with addresses, products and services
 	 * @return string Amount to refund, e.g. 100.00, 0.01 or 0.00
 	 */
-	protected function refundAmount( \Aimeos\MShop\Order\Item\Iface $order, \Aimeos\MShop\Order\Item\Base\Iface $base ) : string
+	protected function refundAmount( \Aimeos\MShop\Order\Item\Iface $order ) : \Aimeos\MShop\Price\Item\Iface
 	{
-		return $this->getAmount( $base->getPrice() );
+		return $order->getBaseItem()->getPrice();
 	}
 
 
