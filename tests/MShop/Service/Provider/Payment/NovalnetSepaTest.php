@@ -30,7 +30,7 @@ class NovalnetSepaTest extends \PHPUnit\Framework\TestCase
 		$this->serviceItem->setConfig( array( 'type' => 'Dummy' ) );
 		$this->serviceItem->setCode( 'unitpaymentcode' );
 
-		$this->ordServItem = \Aimeos\MShop::create( $this->context, 'order/base/service' )->create();
+		$this->ordServItem = \Aimeos\MShop::create( $this->context, 'order/service' )->create();
 		$serviceItem = \Aimeos\MShop::create( $this->context, 'service' )->create();
 		$serviceItem->setCode( 'unitpaymentcode' );
 
@@ -56,10 +56,10 @@ class NovalnetSepaTest extends \PHPUnit\Framework\TestCase
 			'order.statuspayment' => $status
 		] );
 
-		$item = $orderManager->search( $search, ['order/base', 'order/base/address'] )
+		$item = $orderManager->search( $search, ['order', 'order/address'] )
 			->first( new \RuntimeException( sprintf( 'No order found with status "%1$s" and channel "%2$s"', $status, 'web' ) ) );
 
-		$config = $this->object->getConfigFE( $item->getBaseItem() );
+		$config = $this->object->getConfigFE( $item );
 
 		$this->assertArrayHasKey( 'novalnetsepa.iban', $config );
 	}
@@ -96,7 +96,7 @@ class NovalnetSepaTest extends \PHPUnit\Framework\TestCase
 		$this->object->setConfigFE( $this->ordServItem, $params );
 
 		$attrItem = $this->ordServItem->getAttributeItem( 'novalnetsepa.iban', 'session' );
-		$this->assertInstanceOf( '\\Aimeos\\MShop\\Order\\Item\\Base\\Service\\Attribute\\Iface', $attrItem );
+		$this->assertInstanceOf( '\\Aimeos\\MShop\\Order\\Item\\Service\\Attribute\\Iface', $attrItem );
 		$this->assertEquals( 'DE00102030405060708090', $attrItem->getValue() );
 	}
 
@@ -144,7 +144,7 @@ class NovalnetSepaTest extends \PHPUnit\Framework\TestCase
 		$manager = \Aimeos\MShop::create( $this->context, 'order' );
 		$search = $manager->filter()->add( 'order.datepayment', '==', '2008-02-15 12:34:56' );
 
-		return $manager->search( $search, ['order/base', 'order/base/product', 'order/base/service'] )
+		return $manager->search( $search, ['order', 'order/product', 'order/service'] )
 			->first( new \RuntimeException( 'No order found' ) );
 	}
 }

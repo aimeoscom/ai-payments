@@ -277,12 +277,10 @@ class OmniPay
 			return $order;
 		}
 
-		$base = $order->getBaseItem();
-
 		$data = array(
-			'transactionReference' => $this->getTransactionReference( $base ),
-			'currency' => $base->getPrice()->getCurrencyId(),
-			'amount' => $this->call( 'cancelAmount', $order, $base ),
+			'transactionReference' => $this->getTransactionReference( $order ),
+			'currency' => $order->getPrice()->getCurrencyId(),
+			'amount' => $this->call( 'cancelAmount', $order ),
 			'transactionId' => $order->getId(),
 		);
 
@@ -310,13 +308,11 @@ class OmniPay
 			return $order;
 		}
 
-		$base = $order->getBaseItem();
-		$data = $this->captureData( $order, $base );
-
+		$data = $this->captureData( $order );
 		$response = $provider->capture( $data )->send();
 
 		if( $response->isSuccessful() ) {
-			$this->call( 'captureStatus', $order, $base );
+			$this->call( 'captureStatus', $order );
 		}
 
 		return $order;
@@ -384,15 +380,14 @@ class OmniPay
 			return $order;
 		}
 
-		$base = $order->getBaseItem();
 		$price = $price ?: $this->call( 'refundAmount', $order );
 		$amount = $price->getValue() + $price->getCosts();
 
-		$type = \Aimeos\MShop\Order\Item\Base\Service\Base::TYPE_PAYMENT;
-		$service = $this->getBasketService( $base, $type, $this->getServiceItem()->getCode() );
+		$type = \Aimeos\MShop\Order\Item\Service\Base::TYPE_PAYMENT;
+		$service = $this->getBasketService( $order, $type, $this->getServiceItem()->getCode() );
 
 		$data = array(
-			'transactionReference' => $this->getTransactionReference( $base ),
+			'transactionReference' => $this->getTransactionReference( $order ),
 			'currency' => $price->getCurrencyId(),
 			'transactionId' => $order->getId(),
 			'amount' => $amount,
@@ -402,13 +397,13 @@ class OmniPay
 
 		if( $response->isSuccessful() )
 		{
-			$tx = \Aimeos\MShop::create( $this->context(), 'order/base/service/transaction' )->create()
+			$tx = \Aimeos\MShop::create( $this->context(), 'order/service/transaction' )->create()
 				->setPrice( $price )->setType( 'refund' )->setStatus( Status::PAY_REFUND )
 				->setConfigValue( 'REFUNDID', $response->getTransactionReference() );
 
 			$service->addTransaction( $tx );
 
-			if( $amount == $base->getPrice()->getValue() + $base->getPrice()->getCosts() ) {
+			if( $amount == $order->getPrice()->getValue() + $order->getPrice()->getCosts() ) {
 				$order->setStatusPayment( Status::PAY_REFUND );
 			}
 		}
@@ -426,30 +421,28 @@ class OmniPay
 	 */
 	public function repay( \Aimeos\MShop\Order\Item\Iface $order ) : \Aimeos\MShop\Order\Item\Iface
 	{
-		$base = $order->getBaseItem();
-
 		if( !$this->isImplemented( \Aimeos\MShop\Service\Provider\Payment\Base::FEAT_REPAY ) )
 		{
 			$msg = $this->context()->translate( 'mshop', 'Method "%1$s" for provider not available' );
 			throw new \Aimeos\MShop\Service\Exception( sprintf( $msg, 'repay' ) );
 		}
 
-		if( ( $cfg = $this->data( $base->getCustomerId(), 'repay' ) ) === null )
+		if( ( $cfg = $this->data( $order->getCustomerId(), 'repay' ) ) === null )
 		{
-			$msg = sprintf( 'No reoccurring payment data available for customer ID "%1$s"', $base->getCustomerId() );
+			$msg = sprintf( 'No reoccurring payment data available for customer ID "%1$s"', $order->getCustomerId() );
 			throw new \Aimeos\MShop\Service\Exception( $msg );
 		}
 
 		if( !isset( $cfg['token'] ) )
 		{
-			$msg = sprintf( 'No payment token available for customer ID "%1$s"', $base->getCustomerId() );
+			$msg = sprintf( 'No payment token available for customer ID "%1$s"', $order->getCustomerId() );
 			throw new \Aimeos\MShop\Service\Exception( $msg );
 		}
 
 		$data = array(
 			'transactionId' => $order->getId(),
-			'currency' => $base->getPrice()->getCurrencyId(),
-			'amount' => $this->call( 'repayAmount', $order, $base ),
+			'currency' => $order->getPrice()->getCurrencyId(),
+			'amount' => $this->call( 'repayAmount', $order ),
 			'cardReference' => $cfg['token'],
 			'paymentPage' => false,
 			'language' => 'en',
@@ -510,7 +503,7 @@ class OmniPay
 			}
 
 			$manager = \Aimeos\MShop::create( $this->context(), 'order' );
-			$order = $manager->get( $params['orderid'], ['order/base', 'order/base/service'] );
+			$order = $manager->get( $params['orderid'], ['order', 'order/service'] );
 
 			$omniRequest = $provider->acceptNotification();
 
@@ -543,11 +536,10 @@ class OmniPay
 		try
 		{
 			$provider = $this->getProvider();
-			$base = $order->getBaseItem();
 
 			$params = (array) $request->getAttributes() + (array) $request->getParsedBody() + (array) $request->getQueryParams();
-			$params = $this->getData( $base, $order->getId(), $params );
-			$params['transactionReference'] = $this->getTransactionReference( $base );
+			$params = $this->getData( $order, $order->getId(), $params );
+			$params['transactionReference'] = $this->getTransactionReference( $order );
 
 			if( $this->getValue( 'authorize', false ) && $provider->supportsCompleteAuthorize() )
 			{
@@ -602,7 +594,7 @@ class OmniPay
 				$this->setOrderData( $order, ['Transaction' => $txId] );
 			}
 
-			$this->saveRepayData( $response, $base->getCustomerId() );
+			$this->saveRepayData( $response, $order->getCustomerId() );
 		}
 		catch( \Exception $e )
 		{
@@ -617,12 +609,11 @@ class OmniPay
 	 * Returns the amount when cancelling an order
 	 *
 	 * @param \Aimeos\MShop\Order\Item\Iface $order Order item
-	 * @param \Aimeos\MShop\Order\Item\Base\Iface $base Order base object with addresses, products and services
 	 * @return string Amount for cancellation, e.g. 100.00, 0.01 or 0.00
 	 */
-	protected function cancelAmount( \Aimeos\MShop\Order\Item\Iface $order, \Aimeos\MShop\Order\Item\Base\Iface $base ) : string
+	protected function cancelAmount( \Aimeos\MShop\Order\Item\Iface $order ) : string
 	{
-		return $this->getAmount( $base->getPrice() );
+		return $this->getAmount( $order->getPrice() );
 	}
 
 
@@ -630,12 +621,11 @@ class OmniPay
 	 * Returns the amount when capturing an order
 	 *
 	 * @param \Aimeos\MShop\Order\Item\Iface $order Order item
-	 * @param \Aimeos\MShop\Order\Item\Base\Iface $base Order base object with addresses, products and services
 	 * @return string Amount to capture, e.g. 100.00, 0.01 or 0.00
 	 */
-	protected function captureAmount( \Aimeos\MShop\Order\Item\Iface $order, \Aimeos\MShop\Order\Item\Base\Iface $base ) : string
+	protected function captureAmount( \Aimeos\MShop\Order\Item\Iface $order ) : string
 	{
-		return $this->getAmount( $base->getPrice() );
+		return $this->getAmount( $order->getPrice() );
 	}
 
 
@@ -643,15 +633,14 @@ class OmniPay
 	 * Returns the data sent to the payment gateway for capturing
 	 *
 	 * @param \Aimeos\MShop\Order\Item\Iface $order Order item
-	 * @param \Aimeos\MShop\Order\Item\Base\Iface $base Order base object with addresses, products and services
 	 * @return array Associative list of key/value pairs
 	 */
-	protected function captureData( \Aimeos\MShop\Order\Item\Iface $order, \Aimeos\MShop\Order\Item\Base\Iface $base ) : array
+	protected function captureData( \Aimeos\MShop\Order\Item\Iface $order ) : array
 	{
 		return [
-			'transactionReference' => $this->getTransactionReference( $base ),
-			'currency' => $base->getPrice()->getCurrencyId(),
-			'amount' => $this->call( 'captureAmount', $order, $base ),
+			'transactionReference' => $this->getTransactionReference( $order ),
+			'currency' => $order->getPrice()->getCurrencyId(),
+			'amount' => $this->call( 'captureAmount', $order ),
 			'transactionId' => $order->getId(),
 		];
 	}
@@ -661,26 +650,25 @@ class OmniPay
 	 * Sets the payment status of of the captured order and products
 	 *
 	 * @param \Aimeos\MShop\Order\Item\Iface $order Order item
-	 * @param \Aimeos\MShop\Order\Item\Base\Iface $base Order base object with products
 	 */
-	protected function captureStatus( \Aimeos\MShop\Order\Item\Iface $order, \Aimeos\MShop\Order\Item\Base\Iface $base )
+	protected function captureStatus( \Aimeos\MShop\Order\Item\Iface $order )
 	{
-		$order->setStatusPayment( Status::PAY_RECEIVED );
+		return $order->setStatusPayment( Status::PAY_RECEIVED );
 	}
 
 
 	/**
 	 * Returns an Omnipay credit card object
 	 *
-	 * @param \Aimeos\MShop\Order\Item\Base\Iface $base Order base object with addresses and services
+	 * @param \Aimeos\MShop\Order\Item\Iface $order Order object with addresses and services
 	 * @param array $params POST parameters passed to the provider
 	 * @return \Omnipay\Common\CreditCard Credit card object
 	 */
-	protected function getCardDetails( \Aimeos\MShop\Order\Item\Base\Iface $base, array $params ) : \Omnipay\Common\CreditCard
+	protected function getCardDetails( \Aimeos\MShop\Order\Item\Iface $order, array $params ) : \Omnipay\Common\CreditCard
 	{
 		if( $this->getValue( 'address' ) )
 		{
-			$addresses = $base->getAddress( \Aimeos\MShop\Order\Item\Base\Address\Base::TYPE_PAYMENT );
+			$addresses = $order->getAddress( \Aimeos\MShop\Order\Item\Address\Base::TYPE_PAYMENT );
 
 			if( ( $addr = current( $addresses ) ) !== false )
 			{
@@ -698,8 +686,8 @@ class OmniPay
 				$params['billingFax'] = $addr->getTelefax();
 				$params['email'] = $addr->getEmail();
 
-				$type = \Aimeos\MShop\Order\Item\Base\Address\Base::TYPE_DELIVERY;
-				$addr = current( $base->getAddress( $type ) ) ?: $addr;
+				$type = \Aimeos\MShop\Order\Item\Address\Base::TYPE_DELIVERY;
+				$addr = current( $order->getAddress( $type ) ) ?: $addr;
 
 				$params['shippingName'] = $addr->getFirstname() . ' ' . $addr->getLastname();
 				$params['shippingFirstName'] = $addr->getFirstname();
@@ -723,14 +711,14 @@ class OmniPay
 	/**
 	 * Returns the data passed to the Omnipay library
 	 *
-	 * @param \Aimeos\MShop\Order\Item\Base\Iface $base Basket object
+	 * @param \Aimeos\MShop\Order\Item\Iface $order Basket object
 	 * @param string $orderid string Unique order ID
 	 * @param array $params Request parameter if available
 	 * @return array Associative list of key/value pairs
 	 */
-	protected function getData( \Aimeos\MShop\Order\Item\Base\Iface $base, string $orderid, array $params ) : array
+	protected function getData( \Aimeos\MShop\Order\Item\Iface $order, string $orderid, array $params ) : array
 	{
-		$addresses = $base->getAddress( \Aimeos\MShop\Order\Item\Base\Address\Base::TYPE_PAYMENT );
+		$addresses = $order->getAddress( \Aimeos\MShop\Order\Item\Address\Base::TYPE_PAYMENT );
 
 		if( ( $address = current( $addresses ) ) === false ) {
 			$langid = $this->context()->locale()->getLanguageId();
@@ -741,8 +729,8 @@ class OmniPay
 		$data = array(
 			'language' => $langid,
 			'transactionId' => $orderid,
-			'amount' => $this->getAmount( $base->getPrice() ),
-			'currency' => $base->locale()->getCurrencyId(),
+			'amount' => $this->getAmount( $order->getPrice() ),
+			'currency' => $order->locale()->getCurrencyId(),
 			'description' => sprintf( $this->context()->translate( 'mshop', 'Order %1$s' ), $orderid ),
 			'clientIp' => $this->getValue( 'client.ipaddress' ),
 		);
@@ -752,7 +740,7 @@ class OmniPay
 		}
 
 		if( $this->getValue( 'onsite', false ) || $this->getValue( 'address', false ) ) {
-			$data['card'] = $this->getCardDetails( $base, $params );
+			$data['card'] = $this->getCardDetails( $order, $params );
 		}
 
 		return $data + $this->getPaymentUrls();
@@ -816,8 +804,7 @@ class OmniPay
 	{
 		$list = [];
 		$feConfig = $this->feConfig;
-		$baseItem = $order->getBaseItem();
-		$addresses = $baseItem->getAddress( \Aimeos\MShop\Order\Item\Base\Address\Base::TYPE_PAYMENT );
+		$addresses = $order->getAddress( \Aimeos\MShop\Order\Item\Address\Base::TYPE_PAYMENT );
 
 		if( ( $address = current( $addresses ) ) !== false )
 		{
@@ -893,13 +880,13 @@ class OmniPay
 	/**
 	 * Returns the payment transaction ID stored in the basket
 	 *
-	 * @param \Aimeos\MShop\Order\Item\Base\Iface $base Basket including (payment) service items
+	 * @param \Aimeos\MShop\Order\Item\Iface $order Basket including (payment) service items
 	 * @return string|null Payment transaction ID or null if not available
 	 */
-	protected function getTransactionReference( \Aimeos\MShop\Order\Item\Base\Iface $base ) : ?string
+	protected function getTransactionReference( \Aimeos\MShop\Order\Item\Iface $order ) : ?string
 	{
-		$type = \Aimeos\MShop\Order\Item\Base\Service\Base::TYPE_PAYMENT;
-		$service = $this->getBasketService( $base, $type, $this->getServiceItem()->getCode() );
+		$type = \Aimeos\MShop\Order\Item\Service\Base::TYPE_PAYMENT;
+		$service = $this->getBasketService( $order, $type, $this->getServiceItem()->getCode() );
 
 		return $service->getAttribute( 'Transaction', 'payment/omnipay' );
 	}
@@ -917,8 +904,7 @@ class OmniPay
 	protected function processOrder( \Aimeos\MShop\Order\Item\Iface $order,
 		array $params = [] ) : ?\Aimeos\MShop\Common\Helper\Form\Iface
 	{
-		$base = $order->getBaseItem();
-		$data = $this->getData( $base, $order->getId(), $params );
+		$data = $this->getData( $order, $order->getId(), $params );
 		$urls = $this->getPaymentUrls();
 
 		try
@@ -928,7 +914,7 @@ class OmniPay
 			if( $response->isSuccessful() )
 			{
 				$this->setOrderData( $order, ['Transaction' => $response->getTransactionReference()] );
-				$this->saveRepayData( $response, $base->getCustomerId() );
+				$this->saveRepayData( $response, $order->getCustomerId() );
 
 				$status = $this->getValue( 'authorize', false ) ? Status::PAY_AUTHORIZED : Status::PAY_RECEIVED;
 				$order->setStatusPayment( $status );
@@ -961,7 +947,7 @@ class OmniPay
 	 */
 	protected function refundAmount( \Aimeos\MShop\Order\Item\Iface $order ) : \Aimeos\MShop\Price\Item\Iface
 	{
-		return $order->getBaseItem()->getPrice();
+		return $order->getPrice();
 	}
 
 
@@ -969,12 +955,11 @@ class OmniPay
 	 * Returns the amount when repaying an order
 	 *
 	 * @param \Aimeos\MShop\Order\Item\Iface $order Order item
-	 * @param \Aimeos\MShop\Order\Item\Base\Iface $base Order base object with addresses, products and services
 	 * @return string Amount for subscription, e.g. 100.00, 0.01 or 0.00
 	 */
-	protected function repayAmount( \Aimeos\MShop\Order\Item\Iface $order, \Aimeos\MShop\Order\Item\Base\Iface $base ) : string
+	protected function repayAmount( \Aimeos\MShop\Order\Item\Iface $order ) : string
 	{
-		return $this->getAmount( $base->getPrice() );
+		return $this->getAmount( $order->getPrice() );
 	}
 
 
@@ -1019,9 +1004,9 @@ class OmniPay
 	 */
 	protected function getOrderData( \Aimeos\MShop\Order\Item\Iface $order, string $code )
 	{
-		$type = \Aimeos\MShop\Order\Item\Base\Service\Base::TYPE_PAYMENT;
+		$type = \Aimeos\MShop\Order\Item\Service\Base::TYPE_PAYMENT;
 
-		return $this->getBasketService( $order->getBaseItem(), $type, $this->getServiceItem()->getCode() )
+		return $this->getBasketService( $order, $type, $this->getServiceItem()->getCode() )
 			->getAttribute( $code, 'payment/omnipay' );
 	}
 
@@ -1035,9 +1020,9 @@ class OmniPay
 	 */
 	protected function setOrderData( \Aimeos\MShop\Order\Item\Iface $order, array $data ) : Iface
 	{
-		$type = \Aimeos\MShop\Order\Item\Base\Service\Base::TYPE_PAYMENT;
+		$type = \Aimeos\MShop\Order\Item\Service\Base::TYPE_PAYMENT;
 
-		$this->getBasketService( $order->getBaseItem(), $type, $this->getServiceItem()->getCode() )
+		$this->getBasketService( $order, $type, $this->getServiceItem()->getCode() )
 			->addAttributeItems( $this->attributes( $data, 'payment/omnipay' ) );
 
 		return $this;

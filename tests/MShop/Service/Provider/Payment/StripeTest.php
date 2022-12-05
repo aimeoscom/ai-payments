@@ -78,9 +78,8 @@ class StripeTest extends \PHPUnit\Framework\TestCase
 	public function testGetData()
 	{
 		$order = $this->getOrder();
-		$basket = $order->getBaseItem();
+		$result = $this->access( 'getData' )->invokeArgs( $this->object, [$order, $order->getId(), []] );
 
-		$result = $this->access( 'getData' )->invokeArgs( $this->object, [$basket, $order->getId(), []] );
 		$this->assertArrayNotHasKey( 'token', $result );
 	}
 
@@ -88,9 +87,8 @@ class StripeTest extends \PHPUnit\Framework\TestCase
 	public function testGetDataToken()
 	{
 		$order = $this->getOrder();
-		$basket = $order->getBaseItem();
+		$result = $this->access( 'getData' )->invokeArgs( $this->object, [$order, $order->getId(), ['paymenttoken' => 'abc']] );
 
-		$result = $this->access( 'getData' )->invokeArgs( $this->object, [$basket, $order->getId(), ['paymenttoken' => 'abc']] );
 		$this->assertArrayHasKey( 'token', $result );
 	}
 
@@ -110,7 +108,7 @@ class StripeTest extends \PHPUnit\Framework\TestCase
 
 	public function testGetConfigFE()
 	{
-		$basket = \Aimeos\MShop::create( $this->context, 'order/base' )->create();
+		$basket = \Aimeos\MShop::create( $this->context, 'order' )->create();
 		$this->assertEquals( [], $this->object->getConfigFE( $basket ) );
 	}
 
@@ -129,7 +127,7 @@ class StripeTest extends \PHPUnit\Framework\TestCase
 		$manager = \Aimeos\MShop::create( $this->context, 'order' );
 		$search = $manager->filter()->add( 'order.datepayment', '==', '2008-02-15 12:34:56' );
 
-		return $manager->search( $search, ['order/base', 'order/base/product', 'order/base/service'] )
+		return $manager->search( $search, ['order', 'order/product', 'order/service'] )
 			->first( new \RuntimeException( 'No order found' ) );
 	}
 

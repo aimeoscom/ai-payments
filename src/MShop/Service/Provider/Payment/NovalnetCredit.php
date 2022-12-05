@@ -89,17 +89,17 @@ class NovalnetCredit
 	 * Returns the configuration attribute definitions of the provider to generate a list of available fields and
 	 * rules for the value of each field in the frontend.
 	 *
-	 * @param \Aimeos\MShop\Order\Item\Base\Iface $basket Basket object
+	 * @param \Aimeos\MShop\Order\Item\Iface $basket Basket object
 	 * @return array List of attribute definitions implementing \Aimeos\MW\Common\Critera\Attribute\Iface
 	 */
-	public function getConfigFE( \Aimeos\MShop\Order\Item\Base\Iface $basket ) : array
+	public function getConfigFE( \Aimeos\MShop\Order\Item\Iface $basket ) : array
 	{
 		$list = [];
 		$feconfig = $this->feConfig;
 
 		try
 		{
-			$service = $basket->getService( \Aimeos\MShop\Order\Item\Base\Service\Base::TYPE_PAYMENT, 0 );
+			$service = $basket->getService( \Aimeos\MShop\Order\Item\Service\Base::TYPE_PAYMENT, 0 );
 
 			foreach( $service->getAttributeItems() as $item )
 			{
@@ -116,7 +116,7 @@ class NovalnetCredit
 		catch( \Aimeos\MShop\Order\Exception $e ) {; } // If payment isn't available yet
 
 
-		$addresses = $basket->getAddress( \Aimeos\MShop\Order\Item\Base\Address\Base::TYPE_PAYMENT );
+		$addresses = $basket->getAddress( \Aimeos\MShop\Order\Item\Address\Base::TYPE_PAYMENT );
 
 		if( ( $address = current( $addresses ) ) !== false )
 		{
@@ -152,12 +152,12 @@ class NovalnetCredit
 	/**
 	 * Sets the payment attributes in the given service.
 	 *
-	 * @param \Aimeos\MShop\Order\Item\Base\Service\Iface $orderServiceItem Order service item that will be added to the basket
+	 * @param \Aimeos\MShop\Order\Item\Service\Iface $orderServiceItem Order service item that will be added to the basket
 	 * @param array $attributes Attribute key/value pairs entered by the customer during the checkout process
-	 * @return \Aimeos\MShop\Order\Item\Base\Service\Iface Order service item with attributes added
+	 * @return \Aimeos\MShop\Order\Item\Service\Iface Order service item with attributes added
 	 */
-	public function setConfigFE( \Aimeos\MShop\Order\Item\Base\Service\Iface $orderServiceItem,
-		array $attributes ) : \Aimeos\MShop\Order\Item\Base\Service\Iface
+	public function setConfigFE( \Aimeos\MShop\Order\Item\Service\Iface $orderServiceItem,
+		array $attributes ) : \Aimeos\MShop\Order\Item\Service\Iface
 	{
 		return $orderServiceItem->addAttributeItems( $this->attributes( $attributes, 'session' ) );
 	}
@@ -181,13 +181,13 @@ class NovalnetCredit
 	/**
 	 * Returns an Omnipay credit card object
 	 *
-	 * @param \Aimeos\MShop\Order\Item\Base\Iface $base Order base object with addresses and services
+	 * @param \Aimeos\MShop\Order\Item\Iface $order Order object with addresses and services
 	 * @param array $params POST parameters passed to the provider
 	 * @return \Omnipay\Common\CreditCard Credit card object
 	 */
-	protected function getCardDetails( \Aimeos\MShop\Order\Item\Base\Iface $base, array $params ) : \Omnipay\Common\CreditCard
+	protected function getCardDetails( \Aimeos\MShop\Order\Item\Iface $order, array $params ) : \Omnipay\Common\CreditCard
 	{
-		$addresses = $base->getAddress( \Aimeos\MShop\Order\Item\Base\Address\Base::TYPE_PAYMENT );
+		$addresses = $order->getAddress( \Aimeos\MShop\Order\Item\Address\Base::TYPE_PAYMENT );
 
 		if( $this->getValue( 'address' ) && ( $addr = current( $addresses ) ) !== false )
 		{

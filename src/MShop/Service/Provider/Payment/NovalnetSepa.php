@@ -56,17 +56,17 @@ class NovalnetSepa
 	 * Returns the configuration attribute definitions of the provider to generate a list of available fields and
 	 * rules for the value of each field in the frontend.
 	 *
-	 * @param \Aimeos\MShop\Order\Item\Base\Iface $basket Basket object
+	 * @param \Aimeos\MShop\Order\Item\Iface $basket Basket object
 	 * @return array List of attribute definitions implementing \Aimeos\MW\Common\Critera\Attribute\Iface
 	 */
-	public function getConfigFE( \Aimeos\MShop\Order\Item\Base\Iface $basket ) : array
+	public function getConfigFE( \Aimeos\MShop\Order\Item\Iface $basket ) : array
 	{
 		$list = [];
 		$feconfig = $this->feConfig;
 
 		try
 		{
-			$service = $basket->getService( \Aimeos\MShop\Order\Item\Base\Service\Base::TYPE_PAYMENT, 0 );
+			$service = $basket->getService( \Aimeos\MShop\Order\Item\Service\Base::TYPE_PAYMENT, 0 );
 
 			foreach( $service->getAttributeItems() as $item )
 			{
@@ -78,7 +78,7 @@ class NovalnetSepa
 		catch( \Aimeos\MShop\Order\Exception $e ) {; } // If payment isn't available yet
 
 
-		$addresses = $basket->getAddress( \Aimeos\MShop\Order\Item\Base\Address\Base::TYPE_PAYMENT );
+		$addresses = $basket->getAddress( \Aimeos\MShop\Order\Item\Address\Base::TYPE_PAYMENT );
 
 		if( ( $address = current( $addresses ) ) !== false )
 		{
@@ -114,12 +114,12 @@ class NovalnetSepa
 	/**
 	 * Sets the payment attributes in the given service.
 	 *
-	 * @param \Aimeos\MShop\Order\Item\Base\Service\Iface $orderServiceItem Order service item that will be added to the basket
+	 * @param \Aimeos\MShop\Order\Item\Service\Iface $orderServiceItem Order service item that will be added to the basket
 	 * @param array $attributes Attribute key/value pairs entered by the customer during the checkout process
-	 * @return \Aimeos\MShop\Order\Item\Base\Service\Iface Order service item with attributes added
+	 * @return \Aimeos\MShop\Order\Item\Service\Iface Order service item with attributes added
 	 */
-	public function setConfigFE( \Aimeos\MShop\Order\Item\Base\Service\Iface $orderServiceItem,
-		array $attributes ) : \Aimeos\MShop\Order\Item\Base\Service\Iface
+	public function setConfigFE( \Aimeos\MShop\Order\Item\Service\Iface $orderServiceItem,
+		array $attributes ) : \Aimeos\MShop\Order\Item\Service\Iface
 	{
 		return $orderServiceItem->addAttributeItems( $this->attributes( $attributes, 'session' ) );
 	}
@@ -143,17 +143,17 @@ class NovalnetSepa
 	/**
 	 * Returns the data passed to the Omnipay library
 	 *
-	 * @param \Aimeos\MShop\Order\Item\Base\Iface $base Basket object
+	 * @param \Aimeos\MShop\Order\Item\Iface $order Basket object
 	 * @param string $orderid Unique order ID
 	 * @param array $params Request parameter if available
 	 * @return array Associative list of key/value pairs
 	 */
-	protected function getData( \Aimeos\MShop\Order\Item\Base\Iface $base, string $orderid, array $params ) : array
+	protected function getData( \Aimeos\MShop\Order\Item\Iface $order, string $orderid, array $params ) : array
 	{
 		$urls = $this->getPaymentUrls();
-		$card = $this->getCardDetails( $base, $params );
+		$card = $this->getCardDetails( $order, $params );
 		$desc = $this->context()->translate( 'mshop', 'Order %1$s' );
-		$addresses = $base->getAddress( \Aimeos\MShop\Order\Item\Base\Address\Base::TYPE_PAYMENT );
+		$addresses = $order->getAddress( \Aimeos\MShop\Order\Item\Address\Base::TYPE_PAYMENT );
 
 		if( ( $address = current( $addresses ) ) !== false ) {
 			$langid = $address->getLanguageId();
@@ -167,8 +167,8 @@ class NovalnetSepa
 			'language' => $langid,
 			'transactionId' => $orderid,
 			'description' => sprintf( $desc, $orderid ),
-			'amount' => $this->getAmount( $base->getPrice() ),
-			'currency' => $base->locale()->getCurrencyId(),
+			'amount' => $this->getAmount( $order->getPrice() ),
+			'currency' => $order->locale()->getCurrencyId(),
 			'clientIp' => $this->getValue( 'client.ipaddress' ),
 			'bic' => ( isset( $params['novalnetsepa.bic'] ) ? $params['novalnetsepa.bic'] : '' ),
 			'iban' => ( isset( $params['novalnetsepa.iban'] ) ? $params['novalnetsepa.iban'] : '' ),

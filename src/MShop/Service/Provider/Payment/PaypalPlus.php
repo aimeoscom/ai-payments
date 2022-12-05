@@ -126,10 +126,9 @@ class PaypalPlus
 	 */
 	public function process( \Aimeos\MShop\Order\Item\Iface $order, array $params = [] ) : ?\Aimeos\MShop\Common\Helper\Form\Iface
 	{
-		$base = $order->getBaseItem();
-		$addresses = $base->getAddress( \Aimeos\MShop\Order\Item\Base\Address\Base::TYPE_PAYMENT );
+		$addresses = $order->getAddress( \Aimeos\MShop\Order\Item\Address\Base::TYPE_PAYMENT );
 
-		$data = $this->getData( $base, $order->getId(), $params );
+		$data = $this->getData( $order, $order->getId(), $params );
 		$response = $this->sendRequest( $order, $data );
 
 		if( !$response->isSuccessful() )
@@ -139,10 +138,10 @@ class PaypalPlus
 		}
 
 		$approvalUrl = '';
-		$addresses = $base->getAddress( \Aimeos\MShop\Order\Item\Base\Address\Base::TYPE_PAYMENT );
+		$addresses = $order->getAddress( \Aimeos\MShop\Order\Item\Address\Base::TYPE_PAYMENT );
 
 		$this->setOrderData( $order, ['Transaction' => $response->getTransactionReference()] );
-		$this->saveRepayData( $response, $base->getCustomerId() );
+		$this->saveRepayData( $response, $order->getCustomerId() );
 
 		foreach( $response->getData()['links'] ?? [] as $entry )
 		{
@@ -187,12 +186,11 @@ class PaypalPlus
 
 		try
 		{
-			$base = $order->getBaseItem();
 			$provider = $this->getProvider();
 
 			$params = (array) $request->getAttributes() + (array) $request->getParsedBody() + (array) $request->getQueryParams();
-			$params = $this->getData( $base, $order->getId(), $params );
-			$params['transactionReference'] = $this->getTransactionReference( $base );
+			$params = $this->getData( $order, $order->getId(), $params );
+			$params['transactionReference'] = $this->getTransactionReference( $order );
 
 			if( $this->getValue( 'authorize', false ) && $provider->supportsCompleteAuthorize() )
 			{
@@ -241,7 +239,7 @@ class PaypalPlus
 			}
 
 			$this->setOrderData( $order, ['Transaction' => $response->getTransactionReference()] );
-			$this->saveRepayData( $response, $base->getCustomerId() );
+			$this->saveRepayData( $response, $order->getCustomerId() );
 		}
 		catch( \Exception $e )
 		{
@@ -255,14 +253,14 @@ class PaypalPlus
 	/**
 	 * Returns the data passed to the Omnipay library
 	 *
-	 * @param \Aimeos\MShop\Order\Item\Base\Iface $base Basket object
+	 * @param \Aimeos\MShop\Order\Item\Iface $order Basket object
 	 * @param string $orderid string Unique order ID
 	 * @param array $params Request parameter if available
 	 * @return array Associative list of key/value pairs
 	 */
-	protected function getData( \Aimeos\MShop\Order\Item\Base\Iface $base, string $orderid, array $params ) : array
+	protected function getData( \Aimeos\MShop\Order\Item\Iface $order, string $orderid, array $params ) : array
 	{
-		return ['PayerID' => $params['PayerID'] ?? null] + parent::getData( $base, $orderid, $params );
+		return ['PayerID' => $params['PayerID'] ?? null] + parent::getData( $order, $orderid, $params );
 	}
 
 

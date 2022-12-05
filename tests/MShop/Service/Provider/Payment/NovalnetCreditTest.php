@@ -30,7 +30,7 @@ class NovalnetCreditTest extends \PHPUnit\Framework\TestCase
 		$this->serviceItem->setConfig( array( 'type' => 'Dummy', 'address' => 1 ) );
 		$this->serviceItem->setCode( 'unitpaymentcode' );
 
-		$this->ordServItem = \Aimeos\MShop::create( $this->context, 'order/base/service' )->create();
+		$this->ordServItem = \Aimeos\MShop::create( $this->context, 'order/service' )->create();
 		$serviceItem = \Aimeos\MShop::create( $this->context, 'service' )->create();
 		$serviceItem->setCode( 'unitpaymentcode' );
 
@@ -56,10 +56,10 @@ class NovalnetCreditTest extends \PHPUnit\Framework\TestCase
 			'order.statuspayment' => $status
 		] );
 
-		$item = $manager->search( $search, ['order/base', 'order/base/address'] )
+		$item = $manager->search( $search, ['order', 'order/address'] )
 			->first( new \RuntimeException( sprintf( 'No order found with status "%1$s" and channel "%2$s"', $status, 'web' ) ) );
 
-		$config = $this->object->getConfigFE( $item->getBaseItem() );
+		$config = $this->object->getConfigFE( $item );
 
 		$this->assertEquals( 'Our Unittest', $config['novalnetcredit.holder']->getDefault() );
 		$this->assertArrayHasKey( 'novalnetcredit.number', $config );
@@ -98,7 +98,7 @@ class NovalnetCreditTest extends \PHPUnit\Framework\TestCase
 		$this->object->setConfigFE( $this->ordServItem, array( 'novalnetcredit.number' => '4111111111111111' ) );
 
 		$attrItem = $this->ordServItem->getAttributeItem( 'novalnetcredit.number', 'session' );
-		$this->assertInstanceOf( '\\Aimeos\\MShop\\Order\\Item\\Base\\Service\\Attribute\\Iface', $attrItem );
+		$this->assertInstanceOf( '\\Aimeos\\MShop\\Order\\Item\\Service\\Attribute\\Iface', $attrItem );
 		$this->assertEquals( '4111111111111111', $attrItem->getValue() );
 	}
 
@@ -146,7 +146,7 @@ class NovalnetCreditTest extends \PHPUnit\Framework\TestCase
 		$this->object->expects( $this->once() )->method( 'getValue' )
 			->will( $this->returnValue( true ) );
 
-		$result = $this->access( 'getCardDetails' )->invokeArgs( $this->object, [$this->getOrder()->getBaseItem(), []] );
+		$result = $this->access( 'getCardDetails' )->invokeArgs( $this->object, [$this->getOrder(), []] );
 		$this->assertInstanceOf( \Omnipay\Common\CreditCard::class, $result );
 	}
 
@@ -156,7 +156,7 @@ class NovalnetCreditTest extends \PHPUnit\Framework\TestCase
 		$manager = \Aimeos\MShop::create( $this->context, 'order' );
 		$search = $manager->filter()->add( ['order.datepayment' => '2008-02-15 12:34:56'] );
 
-		return $manager->search( $search, ['order/base', 'order/base/product', 'order/base/service'] )
+		return $manager->search( $search, ['order', 'order/product', 'order/service'] )
 			->first( new \RuntimeException( 'No order found' ) );
 	}
 

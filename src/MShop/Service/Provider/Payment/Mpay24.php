@@ -30,31 +30,29 @@ class Mpay24
 	 */
 	public function repay( \Aimeos\MShop\Order\Item\Iface $order ): \Aimeos\MShop\Order\Item\Iface
 	{
-		$base = $order->getBaseItem();
-
-		if( ( $cfg = $this->data( $base->getCustomerId(), 'repay' ) ) === null )
+		if( ( $cfg = $this->data( $order->getCustomerId(), 'repay' ) ) === null )
 		{
-			$msg = sprintf( 'No reoccurring payment data available for customer ID "%1$s"', $base->getCustomerId() );
+			$msg = sprintf( 'No reoccurring payment data available for customer ID "%1$s"', $order->getCustomerId() );
 			throw new \Aimeos\MShop\Service\Exception( $msg );
 		}
 
 		if( !isset( $cfg['token'] ) )
 		{
-			$msg = sprintf( 'No payment token available for customer ID "%1$s"', $base->getCustomerId() );
+			$msg = sprintf( 'No payment token available for customer ID "%1$s"', $order->getCustomerId() );
 			throw new \Aimeos\MShop\Service\Exception( $msg );
 		}
 
 		$data = array(
 			'transactionId' => $order->getId(),
-			'currency' => $base->getPrice()->getCurrencyId(),
-			'amount' => $this->getAmount( $base->getPrice() ),
+			'currency' => $order->getPrice()->getCurrencyId(),
+			'amount' => $this->getAmount( $order->getPrice() ),
 			'cardReference' => $cfg['token'],
 			'paymentPage' => false,
 			'language' => 'en',
 		);
 
 		if( $this->getValue( 'address', false ) ) {
-			$data['card'] = $this->getCardDetails( $base, [] );
+			$data['card'] = $this->getCardDetails( $order, [] );
 		}
 
 		$provider = \Omnipay\Omnipay::create( 'Mpay24_Backend' );

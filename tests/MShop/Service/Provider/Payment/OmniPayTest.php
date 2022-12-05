@@ -839,7 +839,7 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 		$manager = \Aimeos\MShop::create( $this->context, 'order' );
 		$search = $manager->filter()->add( 'order.datepayment', '==', '2008-02-15 12:34:56' );
 
-		return $manager->search( $search, ['order/base', 'order/base/address', 'order/base/service'] )
+		return $manager->search( $search, ['order', 'order/address', 'order/service'] )
 			->first( new \RuntimeException( 'No order found' ) );
 	}
 }

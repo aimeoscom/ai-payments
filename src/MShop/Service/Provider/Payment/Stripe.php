@@ -145,9 +145,8 @@ class Stripe
 			&& $this->getConfigValue( 'createtoken' )
 		) {
 			$data = [];
-			$base = $order->getBaseItem();
 
-			if( $addr = current( $base->getAddress( 'payment' ) ) )
+			if( $addr = current( $order->getAddress( 'payment' ) ) )
 			{
 				$data['description'] = $addr->getFirstName() . ' ' . $addr->getLastName();
 				$data['email'] = $addr->getEmail();
@@ -173,30 +172,28 @@ class Stripe
 	 */
 	public function repay( \Aimeos\MShop\Order\Item\Iface $order ) : \Aimeos\MShop\Order\Item\Iface
 	{
-		$base = $order->getBaseItem();
-
-		if( ( $custid = $this->data( $base->getCustomerId(), 'customer' ) ) === null )
+		if( ( $custid = $this->data( $order->getCustomerId(), 'customer' ) ) === null )
 		{
-			$msg = sprintf( 'No Stripe customer data available for customer ID "%1$s"', $base->getCustomerId() );
+			$msg = sprintf( 'No Stripe customer data available for customer ID "%1$s"', $order->getCustomerId() );
 			throw new \Aimeos\MShop\Service\Exception( $msg );
 		}
 
-		if( ( $cfg = $this->data( $base->getCustomerId(), 'repay' ) ) === null )
+		if( ( $cfg = $this->data( $order->getCustomerId(), 'repay' ) ) === null )
 		{
-			$msg = sprintf( 'No Stripe payment method available for customer ID "%1$s"', $base->getCustomerId() );
+			$msg = sprintf( 'No Stripe payment method available for customer ID "%1$s"', $order->getCustomerId() );
 			throw new \Aimeos\MShop\Service\Exception( $msg );
 		}
 
 		if( !isset( $cfg['token'] ) )
 		{
-			$msg = sprintf( 'No payment token available for customer ID "%1$s"', $base->getCustomerId() );
+			$msg = sprintf( 'No payment token available for customer ID "%1$s"', $order->getCustomerId() );
 			throw new \Aimeos\MShop\Service\Exception( $msg );
 		}
 
 		$response = $this->getProvider()->purchase( [
 			'transactionId' => $order->getId(),
-			'currency' => $base->getPrice()->getCurrencyId(),
-			'amount' => $this->getAmount( $base->getPrice() ),
+			'currency' => $order->getPrice()->getCurrencyId(),
+			'amount' => $this->getAmount( $order->getPrice() ),
 			'cardReference' => $cfg['token'],
 			'customerReference' => $custid,
 			'off_session' => true,
@@ -266,13 +263,12 @@ class Stripe
 	 * Returns the data sent to the payment gateway for capturing
 	 *
 	 * @param \Aimeos\MShop\Order\Item\Iface $order Order item
-	 * @param \Aimeos\MShop\Order\Item\Base\Iface $base Order base object with addresses, products and services
 	 * @return array Associative list of key/value pairs
 	 */
-	protected function captureData( \Aimeos\MShop\Order\Item\Iface $order, \Aimeos\MShop\Order\Item\Base\Iface $base ) : array
+	protected function captureData( \Aimeos\MShop\Order\Item\Iface $order ) : array
 	{
-		$map = parent::captureData( $order, $base );
-		$map['paymentIntentReference'] = $this->service( $base )->getAttribute( 'Reference', 'payment/omnipay' );
+		$map = parent::captureData( $order );
+		$map['paymentIntentReference'] = $this->service( $order )->getAttribute( 'Reference', 'payment/omnipay' );
 
 		return $map;
 	}
@@ -281,15 +277,15 @@ class Stripe
 	/**
 	 * Returns the data passed to the Omnipay library
 	 *
-	 * @param \Aimeos\MShop\Order\Item\Base\Iface $base Basket object
+	 * @param \Aimeos\MShop\Order\Item\Iface $order Basket object
 	 * @param string $orderid Unique order ID
 	 * @param array $params Request parameter if available
 	 * @return array Associative list of key/value pairs
 	 */
-	protected function getData( \Aimeos\MShop\Order\Item\Base\Iface $base, string $orderid, array $params ) : array
+	protected function getData( \Aimeos\MShop\Order\Item\Iface $order, string $orderid, array $params ) : array
 	{
 		$session = $this->context()->session();
-		$data = parent::getData( $base, $orderid, $params );
+		$data = parent::getData( $order, $orderid, $params );
 
 		if( isset( $params['paymenttoken'] ) ) {
 			$session->set( 'aimeos/stripe_token', $params['paymenttoken'] );
@@ -305,8 +301,8 @@ class Stripe
 			$data['customerReference'] = $custid;
 		}
 
-		$type = \Aimeos\MShop\Order\Item\Base\Service\Base::TYPE_PAYMENT;
-		$serviceItem = $this->getBasketService( $base, $type, $this->getServiceItem()->getCode() );
+		$type = \Aimeos\MShop\Order\Item\Service\Base::TYPE_PAYMENT;
+		$serviceItem = $this->getBasketService( $order, $type, $this->getServiceItem()->getCode() );
 
 		if( $stripeIntentsRef = $serviceItem->getAttribute( 'Reference', 'payment/omnipay' ) ) {
 			$data['paymentIntentReference'] = $stripeIntentsRef;
@@ -462,10 +458,10 @@ document.addEventListener("DOMContentLoaded", function() {
 	/**
 	 * Returns the Stripe service
 	 *
-	 * @param \Aimeos\MShop\Order\Item\Base\Iface $basket Basket object with services
-	 * @return \Aimeos\MShop\Order\Item\Base\Service\Iface Stripe service item
+	 * @param \Aimeos\MShop\Order\Item\Iface $basket Basket object with services
+	 * @return \Aimeos\MShop\Order\Item\Service\Iface Stripe service item
 	 */
-	protected function service( \Aimeos\MShop\Order\Item\Base\Iface $basket ) : \Aimeos\MShop\Order\Item\Base\Service\Iface
+	protected function service( \Aimeos\MShop\Order\Item\Iface $basket ) : \Aimeos\MShop\Order\Item\Service\Iface
 	{
 		foreach( $basket->getService( 'payment' ) as $service )
 		{

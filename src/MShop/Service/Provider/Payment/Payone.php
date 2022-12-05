@@ -24,21 +24,21 @@ class Payone
 	/**
 	 * Returns the data passed to the Omnipay library
 	 *
-	 * @param \Aimeos\MShop\Order\Item\Base\Iface $base Basket object
+	 * @param \Aimeos\MShop\Order\Item\Iface $order Basket object
 	 * @param string $orderid Unique order ID
 	 * @param array $params Request parameter if available
 	 * @return array Associative list of key/value pairs
 	 */
-	protected function getData( \Aimeos\MShop\Order\Item\Base\Iface $base, string $orderid, array $params ) : array
+	protected function getData( \Aimeos\MShop\Order\Item\Iface $order, string $orderid, array $params ) : array
 	{
 		$lines = [];
 
-		foreach( $base->getProducts() as $product )
+		foreach( $order->getProducts() as $product )
 		{
 			$list = $product->toArray();
 
 			$lines[] = new \Omnipay\Payone\Extend\Item([
-				'id' => $list['order.base.product.prodcode'],
+				'id' => $list['order.product.prodcode'],
 				'name' => $product->getName(),
 				'itemType' => 'goods', // Available types: goods, shipping etc.
 				'quantity' => $product->getQuantity(),
@@ -47,7 +47,7 @@ class Payone
 			]);
 		}
 
-		foreach( $base->getService( 'delivery' ) as $delivery )
+		foreach( $order->getService( 'delivery' ) as $delivery )
 		{
 			if( $delivery->getPrice()->getCosts() != '0.00' )
 			{
@@ -62,7 +62,7 @@ class Payone
 			}
 		}
 
-		$data = parent::getData( $base, $orderid, $params );
+		$data = parent::getData( $order, $orderid, $params );
 		$data['items'] = new \Omnipay\Common\ItemBag( $lines );
 		$data['accessMethod'] = 'classic';
 
