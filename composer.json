@@ -39,5 +39,10 @@
 		"classmap": [
 			"tests"
 		]
+	},
+	"config": {
+		"allow-plugins": {
+			"php-http/discovery": true
+		}
 	}
 }
