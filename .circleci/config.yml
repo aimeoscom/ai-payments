@@ -21,6 +21,7 @@ jobs:
       - restore_cache:
           keys:
             - php80-{{ checksum "composer.json" }}
+      - run: composer config --no-plugins allow-plugins true
       - run: composer req --no-update "php-http/guzzle6-adapter" "omnipay/common:~3.0" "academe/omnipay-datatrans:~3.0" "omnipay/dummy:~3.0" "academe/omnipay-payone:~3.0" "omnipay/stripe:~3.0"
       - run: composer update -n --prefer-dist
       - save_cache:
@@ -46,6 +47,7 @@ jobs:
       - restore_cache:
           keys:
             - php81-{{ checksum "composer.json" }}
+      - run: composer config --no-plugins allow-plugins true
       - run: composer req --no-update "php-http/guzzle6-adapter" "omnipay/common:~3.0" "academe/omnipay-datatrans:~3.0" "omnipay/dummy:~3.0" "academe/omnipay-payone:~3.0" "omnipay/stripe:~3.0"
       - run: composer update -n --prefer-dist
       - save_cache:
@@ -71,6 +73,7 @@ jobs:
       - restore_cache:
           keys:
             - php82-{{ checksum "composer.json" }}
+      - run: composer config --no-plugins allow-plugins true
       - run: composer req --no-update "php-http/guzzle6-adapter" "omnipay/common:~3.0" "academe/omnipay-datatrans:~3.0" "omnipay/dummy:~3.0" "academe/omnipay-payone:~3.0" "omnipay/stripe:~3.0"
       - run: composer update -n --prefer-dist
       - save_cache:
