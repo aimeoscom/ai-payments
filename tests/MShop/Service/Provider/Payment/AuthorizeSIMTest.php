@@ -30,7 +30,7 @@ class AuthorizeSIMTest extends \PHPUnit\Framework\TestCase
 		$this->serviceItem->setCode( 'unitpaymentcode' );
 
 		$this->object = $this->getMockBuilder( 'Aimeos\MShop\Service\Provider\Payment\AuthorizeSIM' )
-			->setMethods( array( 'save', 'getProvider' ) )
+			->onlyMethods( array( 'save', 'getProvider' ) )
 			->setConstructorArgs( array( $this->context, $this->serviceItem ) )
 			->getMock();
 	}

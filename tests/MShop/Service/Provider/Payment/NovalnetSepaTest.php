@@ -35,7 +35,7 @@ class NovalnetSepaTest extends \PHPUnit\Framework\TestCase
 		$serviceItem->setCode( 'unitpaymentcode' );
 
 		$this->object = $this->getMockBuilder( '\\Aimeos\\MShop\\Service\\Provider\\Payment\\NovalnetSepa' )
-			->setMethods( ['save', 'getProvider', 'saveRepayData'] )
+			->onlyMethods( ['save', 'getProvider', 'saveRepayData'] )
 			->setConstructorArgs( array( $this->context, $serviceItem ) )
 			->getMock();
 	}
@@ -104,16 +104,15 @@ class NovalnetSepaTest extends \PHPUnit\Framework\TestCase
 	public function testProcess()
 	{
 		$provider = $this->getMockBuilder( 'Omnipay\Dummy\Gateway' )
-			->setMethods( array( 'purchase' ) )
+			->onlyMethods( array( 'purchase' ) )
 			->getMock();
 
-		$request = $this->getMockBuilder( \Omnipay\Dummy\Message\AuthorizeRequest::class )
-			->setMethods( array( 'send' ) )
+		$request = $this->getMockBuilder( \Omnipay\Common\Message\AbstractRequest::class )
 			->disableOriginalConstructor()
 			->getMock();
 
 		$response = $this->getMockBuilder( 'Omnipay\Dummy\Message\Response' )
-			->setMethods( array( 'getTransactionReference', 'isSuccessful' ) )
+			->onlyMethods( array( 'getTransactionReference', 'isSuccessful' ) )
 			->disableOriginalConstructor()
 			->getMock();
 

@@ -35,7 +35,7 @@ class AuthorizeDPMTest extends \PHPUnit\Framework\TestCase
 		$item->setConfig( $conf );
 
 		$this->object = $this->getMockBuilder( 'Aimeos\MShop\Service\Provider\Payment\AuthorizeDPM' )
-			->setMethods( array( 'save', 'getProvider' ) )
+			->onlyMethods( array( 'save', 'getProvider' ) )
 			->setConstructorArgs( array( $this->context, $item ) )
 			->getMock();
 	}

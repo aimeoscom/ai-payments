@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<phpunit bootstrap="bootstrap.php">
-	<testsuites>
-		<testsuite name="MShop suite">
-			<directory>MShop/</directory>
-		</testsuite>
-	</testsuites>
-	<logging>
-		<log type="coverage-clover" target="coverage.xml"/>
-	</logging>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" bootstrap="bootstrap.php" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.0/phpunit.xsd" cacheDirectory=".phpunit.cache">
+  <coverage>
+    <report>
+      <clover outputFile="coverage.xml"/>
+    </report>
+  </coverage>
+  <testsuites>
+    <testsuite name="MShop suite">
+      <directory>MShop/</directory>
+    </testsuite>
+  </testsuites>
+  <logging/>
 </phpunit>

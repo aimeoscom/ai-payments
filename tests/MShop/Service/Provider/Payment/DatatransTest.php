@@ -36,7 +36,7 @@ class DatatransTest extends \PHPUnit\Framework\TestCase
 
 		$this->object = $this->getMockBuilder( \Aimeos\MShop\Service\Provider\Payment\Datatrans::class )
 			->setConstructorArgs( array( $this->context, $this->serviceItem ) )
-			->setMethods( $methods )
+			->onlyMethods( $methods )
 			->getMock();
 	}
 
@@ -88,17 +88,17 @@ class DatatransTest extends \PHPUnit\Framework\TestCase
 	public function testQuerySuccess()
 	{
 		$provider = $this->getMockBuilder( 'Omnipay\Dummy\Gateway' )
-			->setMethods( ['getProvider', 'getTransaction'] )
+			->addMethods( ['getTransaction'] )
 			->getMock();
 
-		$request = $this->getMockBuilder( \Omnipay\Dummy\Message\AuthorizeRequest::class )
+		$request = $this->getMockBuilder( \Omnipay\Common\Message\AbstractRequest::class )
 			->disableOriginalConstructor()
-			->setMethods( ['send'] )
 			->getMock();
 
 		$response = $this->getMockBuilder( 'Omnipay\Dummy\Message\Response' )
 			->disableOriginalConstructor()
-			->setMethods( ['isSuccessful', 'getResponseCode', 'getTransactionReference'] )
+			->onlyMethods( ['isSuccessful', 'getTransactionReference'] )
+			->addMethods( ['getResponseCode'] )
 			->getMock();
 
 		$this->object->expects( $this->once() )->method( 'getProvider' )
@@ -129,18 +129,19 @@ class DatatransTest extends \PHPUnit\Framework\TestCase
 		$this->serviceItem->setConfig( array( 'type' => 'Dummy', 'authorize' => '1' ) );
 
 		$provider = $this->getMockBuilder( \Omnipay\Dummy\Gateway::class )
-			->setMethods( array( 'supportsCompleteAuthorize', 'completeAuthorize', 'getTransaction' ) )
+			->onlyMethods( ['supportsCompleteAuthorize', 'completeAuthorize'] )
+			->addMethods( ['getTransaction'] )
 			->disableOriginalConstructor()
 			->getMock();
 
-		$request = $this->getMockBuilder( \Omnipay\Dummy\Message\AuthorizeRequest::class )
+		$request = $this->getMockBuilder( \Omnipay\Common\Message\AbstractRequest::class )
 			->disableOriginalConstructor()
-			->setMethods( ['send'] )
 			->getMock();
 
 		$response = $this->getMockBuilder( 'Omnipay\Dummy\Message\Response' )
 			->disableOriginalConstructor()
-			->setMethods( ['isSuccessful', 'getResponseCode', 'getTransactionReference'] )
+			->onlyMethods( ['isSuccessful', 'getTransactionReference'] )
+			->addMethods( ['getResponseCode'] )
 			->getMock();
 
 		$this->object->expects( $this->once() )->method( 'getProvider' )
@@ -165,17 +166,16 @@ class DatatransTest extends \PHPUnit\Framework\TestCase
 	public function testQueryPending()
 	{
 		$provider = $this->getMockBuilder( 'Omnipay\Dummy\Gateway' )
-			->setMethods( ['getProvider', 'getTransaction'] )
+			->addMethods( ['getTransaction'] )
 			->getMock();
 
-		$request = $this->getMockBuilder( \Omnipay\Dummy\Message\AuthorizeRequest::class )
+		$request = $this->getMockBuilder( \Omnipay\Common\Message\AbstractRequest::class )
 			->disableOriginalConstructor()
-			->setMethods( ['send'] )
 			->getMock();
 
 		$response = $this->getMockBuilder( 'Omnipay\Dummy\Message\Response' )
 			->disableOriginalConstructor()
-			->setMethods( ['isPending', 'getTransactionReference'] )
+			->onlyMethods( ['isPending', 'getTransactionReference'] )
 			->getMock();
 
 		$this->object->expects( $this->once() )->method( 'getProvider' )
@@ -202,17 +202,16 @@ class DatatransTest extends \PHPUnit\Framework\TestCase
 	public function testQueryCancelled()
 	{
 		$provider = $this->getMockBuilder( 'Omnipay\Dummy\Gateway' )
-			->setMethods( ['getProvider', 'getTransaction'] )
+			->addMethods( ['getTransaction'] )
 			->getMock();
 
-		$request = $this->getMockBuilder( \Omnipay\Dummy\Message\AuthorizeRequest::class )
+		$request = $this->getMockBuilder( \Omnipay\Common\Message\AbstractRequest::class )
 			->disableOriginalConstructor()
-			->setMethods( ['send'] )
 			->getMock();
 
 		$response = $this->getMockBuilder( 'Omnipay\Dummy\Message\Response' )
 			->disableOriginalConstructor()
-			->setMethods( ['isCancelled', 'getTransactionReference'] )
+			->onlyMethods( ['isCancelled', 'getTransactionReference'] )
 			->getMock();
 
 		$this->object->expects( $this->once() )->method( 'getProvider' )
@@ -241,17 +240,17 @@ class DatatransTest extends \PHPUnit\Framework\TestCase
 		$orderItem = $this->getOrder();
 
 		$provider = $this->getMockBuilder( 'Omnipay\Dummy\Gateway' )
-			->setMethods( array( 'getCard', 'purchase' ) )
+			->onlyMethods( ['purchase'] )
+			->addMethods( ['getCard'] )
 			->getMock();
 
-		$request = $this->getMockBuilder( \Omnipay\Dummy\Message\AuthorizeRequest::class )
+		$request = $this->getMockBuilder( \Omnipay\Common\Message\AbstractRequest::class )
 			->disableOriginalConstructor()
-			->setMethods( array( 'send' ) )
 			->getMock();
 
 		$response = $this->getMockBuilder( 'Omnipay\Dummy\Message\Response' )
 			->disableOriginalConstructor()
-			->setMethods( array( 'isSuccessful', 'getTransactionReference' ) )
+			->onlyMethods( array( 'isSuccessful', 'getTransactionReference' ) )
 			->getMock();
 
 
