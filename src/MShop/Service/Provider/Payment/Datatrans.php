@@ -24,7 +24,7 @@ class Datatrans
 	extends \Aimeos\MShop\Service\Provider\Payment\OmniPay
 	implements \Aimeos\MShop\Service\Provider\Payment\Iface
 {
-	private $beConfig = array(
+	private array $beConfig = array(
 		'password' => array(
 			'code' => 'password',
 			'internalcode'=> 'password',

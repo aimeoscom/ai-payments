@@ -25,7 +25,7 @@ class OmniPay
 	extends \Aimeos\MShop\Service\Provider\Payment\Base
 	implements \Aimeos\MShop\Service\Provider\Payment\Iface
 {
-	private $beConfig = array(
+	private array $beConfig = array(
 		'type' => array(
 			'code' => 'type',
 			'internalcode'=> 'type',
@@ -82,7 +82,7 @@ class OmniPay
 		),
 	);
 
-	private $feConfig = array(
+	private array $feConfig = array(
 		'payment.firstname' => array(
 			'code' => 'payment.firstname',
 			'internalcode'=> 'firstName',

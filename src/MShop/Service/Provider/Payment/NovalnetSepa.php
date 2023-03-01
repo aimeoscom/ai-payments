@@ -21,7 +21,7 @@ class NovalnetSepa
 	extends \Aimeos\MShop\Service\Provider\Payment\OmniPay
 	implements \Aimeos\MShop\Service\Provider\Payment\Iface
 {
-	private $feConfig = array(
+	private array $feConfig = array(
 		'novalnetsepa.holder' => array(
 			'code' => 'novalnetsepa.holder',
 			'internalcode'=> 'holder',

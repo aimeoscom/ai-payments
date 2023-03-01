@@ -21,7 +21,7 @@ class AuthorizeDPM
 	extends \Aimeos\MShop\Service\Provider\Payment\AuthorizeSIM
 	implements \Aimeos\MShop\Service\Provider\Payment\Iface
 {
-	private $feConfig = array(
+	private array $feConfig = array(
 		'payment.firstname' => array(
 			'code' => 'payment.firstname',
 			'internalcode'=> 'x_first_name',

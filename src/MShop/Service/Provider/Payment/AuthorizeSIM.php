@@ -21,7 +21,7 @@ class AuthorizeSIM
 	extends \Aimeos\MShop\Service\Provider\Payment\OmniPay
 	implements \Aimeos\MShop\Service\Provider\Payment\Iface
 {
-	private $beConfig = array(
+	private array $beConfig = array(
 		'payment.url-success' => array(
 			'code' => 'payment.url-success',
 			'internalcode'=> 'payment.url-success',

@@ -21,7 +21,7 @@ class NovalnetCredit
 	extends \Aimeos\MShop\Service\Provider\Payment\OmniPay
 	implements \Aimeos\MShop\Service\Provider\Payment\Iface
 {
-	private $feConfig = array(
+	private array $feConfig = array(
 		'novalnetcredit.holder' => array(
 			'code' => 'novalnetcredit.holder',
 			'internalcode'=> 'ccholder',
