@@ -18,6 +18,7 @@
 		"aimeos/aimeos-core": "dev-master",
 		"omnipay/common": "~3.0",
 		"php-http/httplug": "~2.0",
+		"php-http/message": "~1.16",
 		"php-http/curl-client": "~2.0",
 		"php-http/message-factory": "~1.0"
 	},
