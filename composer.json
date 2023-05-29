@@ -18,7 +18,8 @@
 		"aimeos/aimeos-core": "2023.04.*",
 		"omnipay/common": "~3.0",
 		"php-http/httplug": "~2.0",
-		"php-http/curl-client": "~2.0"
+		"php-http/curl-client": "~2.0",
+		"php-http/message-factory": "~1.0"
 	},
 	"require-dev": {
 		"phpunit/phpunit": "~9.0||~10.0",
