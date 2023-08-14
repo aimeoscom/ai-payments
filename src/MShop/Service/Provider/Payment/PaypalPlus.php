@@ -237,7 +237,7 @@ class PaypalPlus
 			}
 			else
 			{
-				if( empty( $order->getStatusPayment() ) ) {
+				if( $order->getStatusPayment() === Status::PAY_UNFINISHED ) {
 					$this->saveOrder( $order->setStatusPayment( Status::PAY_REFUSED ) );
 				}
 
