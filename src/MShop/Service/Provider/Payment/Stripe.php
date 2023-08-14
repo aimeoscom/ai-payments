@@ -243,8 +243,11 @@ class Stripe
 				$status = $this->getValue( 'authorize', false ) ? Status::PAY_AUTHORIZED : Status::PAY_RECEIVED;
 				$this->setOrderData( $order, ['Transaction' => $response->getTransactionReference()] );
 
-				if( $paymethod = $response->getCardReference() ) {
-					$this->setData( $this->context()->user(), 'repay', ['token' => $paymethod] );
+				$user = $this->context()->user();
+				$paymethod = $response->getCardReference();
+
+				if( $user && $paymethod ) {
+					$this->setData( $user, 'repay', ['token' => $paymethod] );
 				}
 			}
 			else
