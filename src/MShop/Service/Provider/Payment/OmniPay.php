@@ -1023,7 +1023,7 @@ class OmniPay
 		$type = \Aimeos\MShop\Order\Item\Service\Base::TYPE_PAYMENT;
 
 		$this->getBasketService( $order, $type, $this->getServiceItem()->getCode() )
-			->addAttributeItems( $this->attributes( $data, 'payment/omnipay' ) );
+			->addAttributeItems( $this->attributes( $data, 'tx' ) );
 
 		return $this;
 	}
