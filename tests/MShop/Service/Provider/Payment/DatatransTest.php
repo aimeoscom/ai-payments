@@ -70,11 +70,13 @@ class DatatransTest extends \PHPUnit\Framework\TestCase
 			'testmode' => '1',
 			'password' => 'test',
 			'type' => 'Datatrans',
+			'merchantId' => 'abdc',
+			'sign' => '12345',
 		);
 
 		$result = $this->object->checkConfigBE( $attributes );
 
-		$this->assertEquals( 7, count( $result ) );
+		$this->assertEquals( 10, count( $result ) );
 		$this->assertEquals( null, $result['password'] );
 		$this->assertEquals( null, $result['address'] );
 		$this->assertEquals( null, $result['authorize'] );
@@ -82,6 +84,9 @@ class DatatransTest extends \PHPUnit\Framework\TestCase
 		$this->assertEquals( null, $result['testmode'] );
 		$this->assertEquals( null, $result['onsite'] );
 		$this->assertEquals( null, $result['type'] );
+		$this->assertEquals( null, $result['sign'] );
+		$this->assertEquals( null, $result['hmacKey1'] );
+		$this->assertEquals( null, $result['merchantId'] );
 	}
 
 

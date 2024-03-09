@@ -25,6 +25,42 @@ class Datatrans
 	implements \Aimeos\MShop\Service\Provider\Payment\Iface
 {
 	private array $beConfig = array(
+		'type' => array(
+			'code' => 'type',
+			'internalcode'=> 'type',
+			'label'=> 'Payment provider type',
+			'type'=> 'string',
+			'internaltype'=> 'string',
+			'default'=> 'Datatrans',
+			'required'=> true,
+		),
+		'merchantId' => array(
+			'code' => 'merchantId',
+			'internalcode'=> 'merchantId',
+			'label'=> 'Merchant ID from the Datatrans account',
+			'type'=> 'string',
+			'internaltype'=> 'string',
+			'default'=> '',
+			'required'=> true,
+		),
+		'sign' => array(
+			'code' => 'sign',
+			'internalcode'=> 'sign',
+			'label'=> 'Sign identifier available in the datatrans backend',
+			'type'=> 'string',
+			'internaltype'=> 'string',
+			'default'=> '',
+			'required'=> true,
+		),
+		'hmacKey1' => array(
+			'code' => 'hmacKey1',
+			'internalcode'=> 'hmacKey1',
+			'label'=> 'SHA256 pre-shared key for signing requests',
+			'type'=> 'string',
+			'internaltype'=> 'string',
+			'default'=> '',
+			'required'=> false,
+		),
 		'password' => array(
 			'code' => 'password',
 			'internalcode'=> 'password',
