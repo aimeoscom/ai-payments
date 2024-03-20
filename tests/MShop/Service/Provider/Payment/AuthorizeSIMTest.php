@@ -91,16 +91,16 @@ class AuthorizeSIMTest extends \PHPUnit\Framework\TestCase
 		$psr7response = $this->getMockBuilder( \Aimeos\Base\View\Helper\Response\Iface::class )->getMock();
 
 		$psr7request->expects( $this->exactly( 2 ) )->method( 'getAttributes' )
-			->will( $this->returnValue( ['x_MD5_Hash' => 1] ) );
+			->willReturn( ['x_MD5_Hash' => 1] );
 
 		$psr7response->expects( $this->once() )->method( 'withBody' )
-			->will( $this->returnValue( $psr7response ) );
+			->willReturn( $psr7response );
 
 		$psr7response->expects( $this->once() )->method( 'withHeader' )
-			->will( $this->returnValue( $psr7response ) );
+			->willReturn( $psr7response );
 
 		$psr7response->expects( $this->once() )->method( 'createStreamFromString' )
-			->will( $this->returnValue( $psr7stream ) );
+			->willReturn( $psr7stream );
 
 		$result = $this->object->updatePush( $psr7request, $psr7response );
 

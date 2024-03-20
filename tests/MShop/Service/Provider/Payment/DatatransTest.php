@@ -107,19 +107,19 @@ class DatatransTest extends \PHPUnit\Framework\TestCase
 			->getMock();
 
 		$this->object->expects( $this->once() )->method( 'getProvider' )
-			->will( $this->returnValue( $provider ) );
+			->willReturn( $provider );
 
 		$provider->expects( $this->once() )->method( 'getTransaction' )
-			->will( $this->returnValue( $request ) );
+			->willReturn( $request );
 
 		$request->expects( $this->once() )->method( 'send' )
-			->will( $this->returnValue( $response ) );
+			->willReturn( $response );
 
 		$response->expects( $this->once() )->method( 'isSuccessful' )
-			->will( $this->returnValue( true ) );
+			->willReturn( true );
 
 		$response->expects( $this->once() )->method( 'getTransactionReference' )
-			->will( $this->returnValue( '' ) );
+			->willReturn( '' );
 
 		$this->object->expects( $this->once() )->method( 'setOrderData' );
 
@@ -150,19 +150,19 @@ class DatatransTest extends \PHPUnit\Framework\TestCase
 			->getMock();
 
 		$this->object->expects( $this->once() )->method( 'getProvider' )
-			->will( $this->returnValue( $provider ) );
+			->willReturn( $provider );
 
 		$provider->expects( $this->once() )->method( 'getTransaction' )
-			->will( $this->returnValue( $request ) );
+			->willReturn( $request );
 
 		$request->expects( $this->once() )->method( 'send' )
-			->will( $this->returnValue( $response ) );
+			->willReturn( $response );
 
 		$response->expects( $this->once() )->method( 'isSuccessful' )
-			->will( $this->returnValue( false ) );
+			->willReturn( false );
 
 		$response->expects( $this->once() )->method( 'getTransactionReference' )
-			->will( $this->returnValue( '' ) );
+			->willReturn( '' );
 
 		$this->object->query( $this->getOrder() );
 	}
@@ -184,19 +184,19 @@ class DatatransTest extends \PHPUnit\Framework\TestCase
 			->getMock();
 
 		$this->object->expects( $this->once() )->method( 'getProvider' )
-			->will( $this->returnValue( $provider ) );
+			->willReturn( $provider );
 
 		$provider->expects( $this->once() )->method( 'getTransaction' )
-			->will( $this->returnValue( $request ) );
+			->willReturn( $request );
 
 		$request->expects( $this->once() )->method( 'send' )
-			->will( $this->returnValue( $response ) );
+			->willReturn( $response );
 
 		$response->expects( $this->once() )->method( 'isPending' )
-			->will( $this->returnValue( true ) );
+			->willReturn( true );
 
 		$response->expects( $this->once() )->method( 'getTransactionReference' )
-			->will( $this->returnValue( '' ) );
+			->willReturn( '' );
 
 		$order = $this->object->query( $this->getOrder() );
 
@@ -220,19 +220,19 @@ class DatatransTest extends \PHPUnit\Framework\TestCase
 			->getMock();
 
 		$this->object->expects( $this->once() )->method( 'getProvider' )
-			->will( $this->returnValue( $provider ) );
+			->willReturn( $provider );
 
 		$provider->expects( $this->once() )->method( 'getTransaction' )
-			->will( $this->returnValue( $request ) );
+			->willReturn( $request );
 
 		$request->expects( $this->once() )->method( 'send' )
-			->will( $this->returnValue( $response ) );
+			->willReturn( $response );
 
 		$response->expects( $this->once() )->method( 'isCancelled' )
-			->will( $this->returnValue( true ) );
+			->willReturn( true );
 
 		$response->expects( $this->once() )->method( 'getTransactionReference' )
-			->will( $this->returnValue( '' ) );
+			->willReturn( '' );
 
 		$order = $this->object->query( $this->getOrder() );
 
@@ -260,22 +260,22 @@ class DatatransTest extends \PHPUnit\Framework\TestCase
 
 
 		$this->object->expects( $this->once() )->method( 'getXmlProvider' )
-			->will( $this->returnValue( $provider ) );
+			->willReturn( $provider );
 
 		$this->object->expects( $this->once() )->method( 'data' )
-			->will( $this->returnValue( ['token' => '123', 'month' => '01', 'year' => '99'] ) );
+			->willReturn( ['token' => '123', 'month' => '01', 'year' => '99'] );
 
 		$provider->expects( $this->once() )->method( 'purchase' )
-			->will( $this->returnValue( $request ) );
+			->willReturn( $request );
 
 		$request->expects( $this->once() )->method( 'send' )
-			->will( $this->returnValue( $response ) );
+			->willReturn( $response );
 
 		$response->expects( $this->once() )->method( 'isSuccessful' )
-			->will( $this->returnValue( true ) );
+			->willReturn( true );
 
 		$response->expects( $this->once() )->method( 'getTransactionReference' )
-			->will( $this->returnValue( '' ) );
+			->willReturn( '' );
 
 		$this->object->expects( $this->once() )->method( 'setOrderData' );
 
@@ -287,7 +287,7 @@ class DatatransTest extends \PHPUnit\Framework\TestCase
 	public function testRepayMissingData()
 	{
 		$this->object->expects( $this->once() )->method( 'data' )
-			->will( $this->returnValue( null ) );
+			->willReturn( null );
 
 
 		$this->expectException( \Aimeos\MShop\Service\Exception::class );
@@ -298,7 +298,7 @@ class DatatransTest extends \PHPUnit\Framework\TestCase
 	public function testRepayMissingToken()
 	{
 		$this->object->expects( $this->once() )->method( 'data' )
-			->will( $this->returnValue( [] ) );
+			->willReturn( [] );
 
 
 		$this->expectException( \Aimeos\MShop\Service\Exception::class );

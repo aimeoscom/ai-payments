@@ -117,19 +117,19 @@ class NovalnetSepaTest extends \PHPUnit\Framework\TestCase
 			->getMock();
 
 		$this->object->expects( $this->once() )->method( 'getProvider' )
-			->will( $this->returnValue( $provider ) );
+			->willReturn( $provider );
 
 		$provider->expects( $this->once() )->method( 'purchase' )
-			->will( $this->returnValue( $request ) );
+			->willReturn( $request );
 
 		$request->expects( $this->once() )->method( 'send' )
-			->will( $this->returnValue( $response ) );
+			->willReturn( $response );
 
 		$response->expects( $this->once() )->method( 'isSuccessful' )
-			->will( $this->returnValue( true ) );
+			->willReturn( true );
 
 		$response->expects( $this->once() )->method( 'getTransactionReference' )
-			->will($this->returnValue(''));
+			->willReturn( '' );
 
 
 		$result = $this->object->process( $this->getOrder() );

@@ -119,8 +119,8 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 
 	public function testProcessOnsiteNoAddress()
 	{
-		$provider = $this->getMockBuilder( 'Omnipay\Gateway\Manual' )->onlyMethods( [] )->getMock();
-		$this->object->expects( $this->any() )->method( 'getProvider' )->will( $this->returnValue( $provider ) );
+		$provider = $this->createMock( \Omnipay\Common\GatewayInterface::class );
+		$this->object->expects( $this->any() )->method( 'getProvider' )->willReturn( $provider );
 
 		$conf = array(
 				'type' => 'Dummy',
@@ -139,7 +139,7 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 		$provider = new \Omnipay\Dummy\Gateway();
 
 		$this->object->expects( $this->once() )->method( 'getProvider' )
-			->will( $this->returnValue( $provider ) );
+			->willReturn( $provider );
 
 		$this->serviceItem->setConfig( array( 'type' => 'Dummy', 'address' => '1' ) );
 
@@ -159,7 +159,7 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 		$provider = new \Omnipay\Dummy\Gateway();
 
 		$this->object->expects( $this->once() )->method( 'getProvider' )
-			->will( $this->returnValue( $provider ) );
+			->willReturn( $provider );
 
 		$this->serviceItem->setConfig( array( 'type' => 'Dummy' ) );
 
@@ -179,7 +179,7 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 		$provider = new \Omnipay\Dummy\Gateway();
 
 		$this->object->expects( $this->once() )->method( 'getProvider' )
-			->will( $this->returnValue( $provider ) );
+			->willReturn( $provider );
 
 		$this->serviceItem->setConfig( array( 'type' => 'Dummy', 'authorize' => '1', 'onsite' => 1 ) );
 
@@ -207,7 +207,7 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 			->will( $this->throwException( new \RuntimeException() ) );
 
 		$this->object->expects( $this->once() )->method( 'getProvider' )
-			->will( $this->returnValue( $provider ) );
+			->willReturn( $provider );
 
 		$this->serviceItem->setConfig( array( 'type' => 'Dummy', 'authorize' => '1' ) );
 
@@ -233,18 +233,18 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 
 
 		$this->object->expects( $this->once() )->method( 'getProvider' )
-			->will( $this->returnValue( $provider ) );
+			->willReturn( $provider );
 
 		$this->object->expects( $this->once() )->method( 'setOrderData' );
 
 		$provider->expects( $this->once() )->method( 'purchase' )
-			->will( $this->returnValue( $request ) );
+			->willReturn( $request );
 
 		$request->expects( $this->once() )->method( 'send' )
-			->will( $this->returnValue( $response ) );
+			->willReturn( $response );
 
 		$response->expects( $this->once() )->method( 'getTransactionReference' )
-			->will( $this->returnValue( '1234' ) );
+			->willReturn( '1234' );
 
 
 		$params = array(
@@ -269,10 +269,10 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 			->getMock();
 
 		$this->object->expects( $this->once() )->method( 'getProvider' )
-			->will( $this->returnValue( $provider ) );
+			->willReturn( $provider );
 
 		$this->object->expects( $this->once() )->method( 'getTransactionReference' )
-			->will( $this->returnValue( '123' ) );
+			->willReturn( '123' );
 
 
 		$result = $this->object->updateSync( $psr7request, $this->getOrder() );
@@ -290,7 +290,7 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 		$psr7request = $this->getMockBuilder( \Psr\Http\Message\ServerRequestInterface::class )->getMock();
 
 		$this->object->expects( $this->once() )->method( 'getProvider' )
-			->will( $this->returnValue( $provider ) );
+			->willReturn( $provider );
 
 
 		$result = $this->object->updateSync( $psr7request, $this->getOrder() );
@@ -320,28 +320,28 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 
 
 		$this->object->expects( $this->once() )->method( 'getProvider' )
-			->will( $this->returnValue( $provider ) );
+			->willReturn( $provider );
 
 		$provider->expects( $this->once() )->method( 'supportsCompletePurchase' )
-			->will( $this->returnValue( true ) );
+			->willReturn( true );
 
 		$provider->expects( $this->once() )->method( 'completePurchase' )
-			->will( $this->returnValue( $request ) );
+			->willReturn( $request );
 
 		$request->expects( $this->once() )->method( 'send' )
-			->will( $this->returnValue( $response ) );
+			->willReturn( $response );
 
 		$request->expects( $this->once() )->method( 'getTransactionId' )
-			->will( $this->returnValue( $order->getId() ) );
+			->willReturn( $order->getId() );
 
 		$response->expects( $this->once() )->method( 'getRequest' )
-			->will( $this->returnValue( $request ) );
+			->willReturn( $request );
 
 		$response->expects( $this->once() )->method( 'isSuccessful' )
-			->will( $this->returnValue( true ) );
+			->willReturn( true );
 
 		$response->expects( $this->once() )->method( 'getTransactionReference' )
-			->will($this->returnValue(''));
+			->willReturn( '' );
 
 
 		$result = $this->object->updateSync( $psr7request, $order );
@@ -368,26 +368,26 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 		$psr7request = $this->getMockBuilder( \Psr\Http\Message\ServerRequestInterface::class )->getMock();
 		$psr7response = $this->getMockBuilder( \Psr\Http\Message\ResponseInterface::class )->getMock();
 
-		$psr7request->expects( $this->once() )->method( 'getQueryParams' )->will( $this->returnValue( ['orderid' => $order->getId()] ) );
+		$psr7request->expects( $this->once() )->method( 'getQueryParams' )->willReturn( ['orderid' => $order->getId()] );
 		$psr7response->expects( $this->once() )->method( 'withStatus' )
-			->will( $this->returnValue( $psr7response ) )
+			->willReturn( $psr7response )
 			->with( $this->equalTo( 200 ) );
 
 
 		$this->object->expects( $this->once() )->method( 'getProvider' )
-			->will( $this->returnValue( $provider ) );
+			->willReturn( $provider );
 
 		$provider->expects( $this->once() )->method( 'supportsAcceptNotification' )
-			->will( $this->returnValue( true ) );
+			->willReturn( true );
 
 		$provider->expects( $this->once() )->method( 'acceptNotification' )
-			->will( $this->returnValue( $request ) );
+			->willReturn( $request );
 
 		$request->expects( $this->once() )->method( 'getTransactionReference' )
-			->will( $this->returnValue( '123' ) );
+			->willReturn( '123' );
 
 		$request->expects( $this->once() )->method( 'getTransactionStatus' )
-			->will( $this->returnValue( \Omnipay\Common\Message\NotificationInterface::STATUS_COMPLETED ) );
+			->willReturn( \Omnipay\Common\Message\NotificationInterface::STATUS_COMPLETED );
 
 		$cmpFcn = function( $subject ) {
 			return $subject->getStatusPayment() === \Aimeos\MShop\Order\Item\Base::PAY_RECEIVED;
@@ -420,26 +420,26 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 		$psr7request = $this->getMockBuilder( \Psr\Http\Message\ServerRequestInterface::class )->getMock();
 		$psr7response = $this->getMockBuilder( \Psr\Http\Message\ResponseInterface::class )->getMock();
 
-		$psr7request->expects( $this->once() )->method( 'getQueryParams' )->will( $this->returnValue( ['orderid' => $order->getId()] ) );
+		$psr7request->expects( $this->once() )->method( 'getQueryParams' )->willReturn( ['orderid' => $order->getId()] );
 		$psr7response->expects( $this->once() )->method( 'withStatus' )
-			->will( $this->returnValue( $psr7response ) )
+			->willReturn( $psr7response )
 			->with( $this->equalTo( 200 ) );
 
 
 		$this->object->expects( $this->once() )->method( 'getProvider' )
-			->will( $this->returnValue( $provider ) );
+			->willReturn( $provider );
 
 		$provider->expects( $this->once() )->method( 'supportsAcceptNotification' )
-			->will( $this->returnValue( true ) );
+			->willReturn( true );
 
 		$provider->expects( $this->once() )->method( 'acceptNotification' )
-			->will( $this->returnValue( $request ) );
+			->willReturn( $request );
 
 		$request->expects( $this->once() )->method( 'getTransactionReference' )
-			->will( $this->returnValue( '123' ) );
+			->willReturn( '123' );
 
 		$request->expects( $this->once() )->method( 'getTransactionStatus' )
-			->will( $this->returnValue( \Omnipay\Common\Message\NotificationInterface::STATUS_PENDING ) );
+			->willReturn( \Omnipay\Common\Message\NotificationInterface::STATUS_PENDING );
 
 		$cmpFcn = function( $subject ) {
 			return $subject->getStatusPayment() === \Aimeos\MShop\Order\Item\Base::PAY_PENDING;
@@ -472,26 +472,26 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 		$psr7request = $this->getMockBuilder( \Psr\Http\Message\ServerRequestInterface::class )->getMock();
 		$psr7response = $this->getMockBuilder( \Psr\Http\Message\ResponseInterface::class )->getMock();
 
-		$psr7request->expects( $this->once() )->method( 'getQueryParams' )->will( $this->returnValue( ['orderid' => $order->getId()] ) );
+		$psr7request->expects( $this->once() )->method( 'getQueryParams' )->willReturn( ['orderid' => $order->getId()] );
 		$psr7response->expects( $this->once() )->method( 'withStatus' )
-			->will( $this->returnValue( $psr7response ) )
+			->willReturn( $psr7response )
 			->with( $this->equalTo( 200 ) );
 
 
 		$this->object->expects( $this->once() )->method( 'getProvider' )
-			->will( $this->returnValue( $provider ) );
+			->willReturn( $provider );
 
 		$provider->expects( $this->once() )->method( 'supportsAcceptNotification' )
-			->will( $this->returnValue( true ) );
+			->willReturn( true );
 
 		$provider->expects( $this->once() )->method( 'acceptNotification' )
-			->will( $this->returnValue( $request ) );
+			->willReturn( $request );
 
 		$request->expects( $this->once() )->method( 'getTransactionStatus' )
-			->will( $this->returnValue( \Omnipay\Common\Message\NotificationInterface::STATUS_FAILED ) );
+			->willReturn( \Omnipay\Common\Message\NotificationInterface::STATUS_FAILED );
 
 		$request->expects( $this->once() )->method( 'getTransactionReference' )
-			->will( $this->returnValue( '123' ) );
+			->willReturn( '123' );
 
 		$cmpFcn = function( $subject ) {
 			return $subject->getStatusPayment() === \Aimeos\MShop\Order\Item\Base::PAY_REFUSED;
@@ -529,30 +529,30 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 
 
 		$psr7request->expects( $this->once() )->method( 'getAttributes' )
-			->will( $this->returnValue( [] ) );
+			->willReturn( [] );
 
 		$this->object->expects( $this->once() )->method( 'getProvider' )
-			->will( $this->returnValue( $provider ) );
+			->willReturn( $provider );
 
 		$this->object->expects( $this->once() )->method( 'save' );
 
 		$provider->expects( $this->once() )->method( 'supportsCompleteAuthorize' )
-			->will( $this->returnValue( true ) );
+			->willReturn( true );
 
 		$provider->expects( $this->once() )->method( 'completeAuthorize' )
-			->will( $this->returnValue( $request ) );
+			->willReturn( $request );
 
 		$request->expects( $this->once() )->method( 'send' )
-			->will( $this->returnValue( $response ) );
+			->willReturn( $response );
 
 		$request->expects( $this->once() )->method( 'getTransactionId' )
-			->will( $this->returnValue( $order->getId() ) );
+			->willReturn( $order->getId() );
 
 		$response->expects( $this->once() )->method( 'getRequest' )
-			->will( $this->returnValue( $request ) );
+			->willReturn( $request );
 
 		$response->expects( $this->once() )->method( 'isSuccessful' )
-			->will( $this->returnValue( false ) );
+			->willReturn( false );
 
 
 		$this->expectException( '\\Aimeos\\MShop\\Service\\Exception' );
@@ -581,28 +581,28 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 
 
 		$psr7request->expects( $this->once() )->method( 'getAttributes' )
-			->will( $this->returnValue( [] ) );
+			->willReturn( [] );
 
 		$this->object->expects( $this->once() )->method( 'getProvider' )
-			->will( $this->returnValue( $provider ) );
+			->willReturn( $provider );
 
 		$provider->expects( $this->once() )->method( 'supportsCompletePurchase' )
-			->will( $this->returnValue( true ) );
+			->willReturn( true );
 
 		$provider->expects( $this->once() )->method( 'completePurchase' )
-			->will( $this->returnValue( $request ) );
+			->willReturn( $request );
 
 		$request->expects( $this->once() )->method( 'send' )
-			->will( $this->returnValue( $response ) );
+			->willReturn( $response );
 
 		$request->expects( $this->once() )->method( 'getTransactionId' )
-			->will( $this->returnValue( $order->getId() ) );
+			->willReturn( $order->getId() );
 
 		$response->expects( $this->once() )->method( 'getRequest' )
-			->will( $this->returnValue( $request ) );
+			->willReturn( $request );
 
 		$response->expects( $this->once() )->method( 'isRedirect' )
-			->will( $this->returnValue( true ) );
+			->willReturn( true );
 
 
 		$this->expectException( '\\Aimeos\\MShop\\Service\\Exception' );
@@ -629,19 +629,19 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 
 
 		$this->object->expects( $this->once() )->method( 'getProvider' )
-			->will( $this->returnValue( $provider ) );
+			->willReturn( $provider );
 
 		$provider->expects( $this->once() )->method( 'supportsVoid' )
-			->will( $this->returnValue( true ) );
+			->willReturn( true );
 
 		$provider->expects( $this->once() )->method( 'void' )
-			->will( $this->returnValue( $request ) );
+			->willReturn( $request );
 
 		$request->expects( $this->once() )->method( 'send' )
-			->will( $this->returnValue( $response ) );
+			->willReturn( $response );
 
 		$response->expects( $this->once() )->method( 'isSuccessful' )
-			->will( $this->returnValue( true ) );
+			->willReturn( true );
 
 
 		$this->object->cancel( $orderItem );
@@ -659,10 +659,10 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 
 
 		$this->object->expects( $this->once() )->method( 'getProvider' )
-			->will( $this->returnValue( $provider ) );
+			->willReturn( $provider );
 
 		$provider->expects( $this->once() )->method( 'supportsVoid' )
-			->will( $this->returnValue( false ) );
+			->willReturn( false );
 
 
 		$this->object->cancel( $orderItem );
@@ -688,19 +688,19 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 
 
 		$this->object->expects( $this->once() )->method( 'getProvider' )
-			->will( $this->returnValue( $provider ) );
+			->willReturn( $provider );
 
 		$provider->expects( $this->once() )->method( 'supportsCapture' )
-			->will( $this->returnValue( true ) );
+			->willReturn( true );
 
 		$provider->expects( $this->once() )->method( 'capture' )
-			->will( $this->returnValue( $request ) );
+			->willReturn( $request );
 
 		$request->expects( $this->once() )->method( 'send' )
-			->will( $this->returnValue( $response ) );
+			->willReturn( $response );
 
 		$response->expects( $this->once() )->method( 'isSuccessful' )
-			->will( $this->returnValue( true ) );
+			->willReturn( true );
 
 
 		$this->object->capture( $orderItem );
@@ -717,10 +717,10 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 			->getMock();
 
 		$this->object->expects( $this->once() )->method( 'getProvider' )
-			->will( $this->returnValue( $provider ) );
+			->willReturn( $provider );
 
 		$provider->expects( $this->once() )->method( 'supportsCapture' )
-		->will( $this->returnValue( false ) );
+		->willReturn( false );
 
 
 		$this->object->capture( $orderItem );
@@ -746,19 +746,19 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 
 
 		$this->object->expects( $this->once() )->method( 'getProvider' )
-			->will( $this->returnValue( $provider ) );
+			->willReturn( $provider );
 
 		$provider->expects( $this->once() )->method( 'supportsRefund' )
-			->will( $this->returnValue( true ) );
+			->willReturn( true );
 
 		$provider->expects( $this->once() )->method( 'refund' )
-			->will( $this->returnValue( $request ) );
+			->willReturn( $request );
 
 		$request->expects( $this->once() )->method( 'send' )
-			->will( $this->returnValue( $response ) );
+			->willReturn( $response );
 
 		$response->expects( $this->once() )->method( 'isSuccessful' )
-			->will( $this->returnValue( true ) );
+			->willReturn( true );
 
 
 		$this->object->refund( $orderItem );
@@ -775,10 +775,10 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 			->getMock();
 
 		$this->object->expects( $this->once() )->method( 'getProvider' )
-			->will( $this->returnValue( $provider ) );
+			->willReturn( $provider );
 
 		$provider->expects( $this->once() )->method( 'supportsRefund' )
-			->will( $this->returnValue( false ) );
+			->willReturn( false );
 
 
 		$this->object->refund( $orderItem );
@@ -805,25 +805,25 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 
 
 		$this->object->expects( $this->once() )->method( 'isImplemented' )
-			->will( $this->returnValue( true ) );
+			->willReturn( true );
 
 		$this->object->expects( $this->once() )->method( 'getProvider' )
-			->will( $this->returnValue( $provider ) );
+			->willReturn( $provider );
 
 		$this->object->expects( $this->once() )->method( 'data' )
-			->will( $this->returnValue( ['token' => '123', 'month' => '01', 'year' => '99'] ) );
+			->willReturn( ['token' => '123', 'month' => '01', 'year' => '99'] );
 
 		$provider->expects( $this->once() )->method( 'purchase' )
-			->will( $this->returnValue( $request ) );
+			->willReturn( $request );
 
 		$request->expects( $this->once() )->method( 'send' )
-			->will( $this->returnValue( $response ) );
+			->willReturn( $response );
 
 		$response->expects( $this->once() )->method( 'isSuccessful' )
-			->will( $this->returnValue( true ) );
+			->willReturn( true );
 
 		$response->expects( $this->once() )->method( 'getTransactionReference' )
-			->will($this->returnValue(''));
+			->willReturn( '' );
 
 		$this->object->expects( $this->once() )->method( 'setOrderData' );
 

@@ -43,7 +43,7 @@ class PayoneTest extends \PHPUnit\Framework\TestCase
 		$provider = new \Omnipay\Dummy\Gateway();
 
 		$this->object->expects( $this->once() )->method( 'getProvider' )
-			->will( $this->returnValue( $provider ) );
+			->willReturn( $provider );
 
 		$this->serviceItem->setConfig( array( 'type' => 'Dummy', 'address' => '1' ) );
 
@@ -65,19 +65,19 @@ class PayoneTest extends \PHPUnit\Framework\TestCase
 		$psr7response = $this->getMockBuilder( \Aimeos\Base\View\Helper\Response\Iface::class )->getMock();
 
 		$psr7request->expects( $this->exactly( 2 ) )->method( 'getAttributes' )
-			->will( $this->returnValue( ['reference' => 1] ) );
+			->willReturn( ['reference' => 1] );
 
 		$psr7request->expects( $this->once() )->method( 'withAttribute' )
-			->will( $this->returnValue( $psr7request ) );
+			->willReturn( $psr7request );
 
 		$psr7response->expects( $this->once() )->method( 'getStatusCode' )
-			->will( $this->returnValue( 200 ) );
+			->willReturn( 200 );
 
 		$psr7response->expects( $this->once() )->method( 'withBody' )
-			->will( $this->returnValue( $psr7response ) );
+			->willReturn( $psr7response );
 
 		$psr7response->expects( $this->once() )->method( 'createStreamFromString' )
-			->will( $this->returnValue( $psr7stream ) );
+			->willReturn( $psr7stream );
 
 		$result = $this->object->updatePush( $psr7request, $psr7response );
 
