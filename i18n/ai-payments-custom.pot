@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-09-26 15:48+0200\n"
+"POT-Creation-Date: 2024-04-04 16:08+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -30,14 +30,14 @@ msgstr ""
 #: src/MShop/Service/Provider/Payment/Stripe.php:189
 #: src/MShop/Service/Provider/Payment/OmniPay.php:438
 #: src/MShop/Service/Provider/Payment/Mpay24.php:41
-#: src/MShop/Service/Provider/Payment/Datatrans.php:120
+#: src/MShop/Service/Provider/Payment/Datatrans.php:156
 #, php-format
 msgid "No payment token available for customer ID \"%1$s\""
 msgstr ""
 
 #: src/MShop/Service/Provider/Payment/OmniPay.php:432
 #: src/MShop/Service/Provider/Payment/Mpay24.php:35
-#: src/MShop/Service/Provider/Payment/Datatrans.php:114
+#: src/MShop/Service/Provider/Payment/Datatrans.php:150
 #, php-format
 msgid "No reoccurring payment data available for customer ID \"%1$s\""
 msgstr ""

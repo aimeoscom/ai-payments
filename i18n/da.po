@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ai-payments\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-09-26 15:48+0200\n"
+"POT-Creation-Date: 2024-04-04 16:08+0200\n"
 "PO-Revision-Date: 2017-09-14 09:25+0000\n"
 "Last-Translator: Simon Boye <simon@t3cms.dk>, 2017\n"
 "Language-Team: Danish (https://www.transifex.com/aimeos/teams/39015/da/)\n"
@@ -33,14 +33,14 @@ msgstr ""
 #: src/MShop/Service/Provider/Payment/Stripe.php:189
 #: src/MShop/Service/Provider/Payment/OmniPay.php:438
 #: src/MShop/Service/Provider/Payment/Mpay24.php:41
-#: src/MShop/Service/Provider/Payment/Datatrans.php:120
+#: src/MShop/Service/Provider/Payment/Datatrans.php:156
 #, php-format
 msgid "No payment token available for customer ID \"%1$s\""
 msgstr ""
 
 #: src/MShop/Service/Provider/Payment/OmniPay.php:432
 #: src/MShop/Service/Provider/Payment/Mpay24.php:35
-#: src/MShop/Service/Provider/Payment/Datatrans.php:114
+#: src/MShop/Service/Provider/Payment/Datatrans.php:150
 #, php-format
 msgid "No reoccurring payment data available for customer ID \"%1$s\""
 msgstr ""
