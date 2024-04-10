@@ -1040,15 +1040,10 @@ class OmniPay
 	{
 		$provider = $this->getProvider();
 
-		if( $this->getValue( 'authorize', false ) && $provider->supportsAuthorize() )
-		{
+		if( $this->getValue( 'authorize', false ) && $provider->supportsAuthorize() ) {
 			$response = $provider->authorize( $data )->send();
-			$order->setStatusPayment( Status::PAY_AUTHORIZED );
-		}
-		else
-		{
+		} else {
 			$response = $provider->purchase( $data )->send();
-			$order->setStatusPayment( Status::PAY_RECEIVED );
 		}
 
 		return $response;
