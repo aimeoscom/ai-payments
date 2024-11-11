@@ -371,7 +371,7 @@ class OmniPay
 	 * @param \Aimeos\MShop\Price\Item\Iface|null $price Price item with the amount to refund or NULL for whole order
 	 * @return \Aimeos\MShop\Order\Item\Iface Updated order item object
 	 */
-	public function refund( \Aimeos\MShop\Order\Item\Iface $order, \Aimeos\MShop\Price\Item\Iface $price = null
+	public function refund( \Aimeos\MShop\Order\Item\Iface $order, ?\Aimeos\MShop\Price\Item\Iface $price = null
 		) : \Aimeos\MShop\Order\Item\Iface
 	{
 		$provider = $this->getProvider();
