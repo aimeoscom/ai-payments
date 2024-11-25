@@ -743,6 +743,39 @@ class OmniPay
 			$data['card'] = $this->getCardDetails( $order, $params );
 		}
 
+		$lines = [];
+
+	        foreach( $order->getProducts() as $product )
+	        {
+	            $list = $product->toArray();
+	
+	            $lines[] =[
+	                'id' => $list['order.product.prodcode'],
+	                'name' => $product->getName(),
+	                'itemType' => 'goods', // Available types: goods, shipping etc.
+	                'quantity' => $product->getQuantity(),
+	                'price' => $product->getPrice()->getValue(),
+	                'vat' => (int) $product->getPrice()->getTaxRate(),
+	            ];
+	        }
+	
+	        foreach( $order->getService( 'delivery' ) as $delivery )
+	        {
+	            if( $delivery->getPrice()->getCosts() != '0.00' )
+	            {
+	                $lines[] = [
+	                    'id' => $delivery->getId(),
+	                    'name' => $delivery->getName(),
+	                    'itemType' => 'shipment',
+	                    'quantity' => 1,
+	                    'price' => $delivery->getPrice()->getCosts(),
+	                    'vat' => (int) $delivery->getPrice()->getTaxRate(),
+	                ];
+	            }
+	        }
+	
+	        $data['items'] = new \Omnipay\Common\ItemBag( $lines );
+			
 		return $data + $this->getPaymentUrls();
 	}
 
