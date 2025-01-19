@@ -2,54 +2,68 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
+# 
 # Translators:
-# Simon Boye <simon@t3cms.dk>, 2017
-#
+# Aimeos, 2025
+# Simon Boye <simon@t3cms.dk>, 2025
+# 
+#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: ai-payments\n"
+"Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-04-04 16:08+0200\n"
-"PO-Revision-Date: 2017-09-14 09:25+0000\n"
-"Last-Translator: Simon Boye <simon@t3cms.dk>, 2017\n"
-"Language-Team: Danish (https://www.transifex.com/aimeos/teams/39015/da/)\n"
-"Language: da\n"
+"POT-Creation-Date: 2025-01-19 18:15+0100\n"
+"PO-Revision-Date: 2022-02-27 11:04+0000\n"
+"Last-Translator: Simon Boye <simon@t3cms.dk>, 2025\n"
+"Language-Team: Danish (https://app.transifex.com/aimeos/teams/39015/da/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: da\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: src/MShop/Service/Provider/Payment/Stripe.php:177
+#, php-format
+msgid "Method \"%1$s\" for provider not available"
+msgstr ""
+
 #, php-format
 msgid "No Stripe customer data available for customer ID \"%1$s\""
 msgstr ""
 
-#: src/MShop/Service/Provider/Payment/Stripe.php:183
 #, php-format
 msgid "No Stripe payment method available for customer ID \"%1$s\""
 msgstr ""
 
-#: src/MShop/Service/Provider/Payment/Stripe.php:189
-#: src/MShop/Service/Provider/Payment/OmniPay.php:438
-#: src/MShop/Service/Provider/Payment/Mpay24.php:41
-#: src/MShop/Service/Provider/Payment/Datatrans.php:156
 #, php-format
 msgid "No payment token available for customer ID \"%1$s\""
 msgstr ""
 
-#: src/MShop/Service/Provider/Payment/OmniPay.php:432
-#: src/MShop/Service/Provider/Payment/Mpay24.php:35
-#: src/MShop/Service/Provider/Payment/Datatrans.php:150
 #, php-format
 msgid "No reoccurring payment data available for customer ID \"%1$s\""
 msgstr ""
 
+#, php-format
 msgid "Order %1$s"
 msgstr "Ordre %1$s"
 
-#: src/MShop/Service/Provider/Payment/OmniPay.php:473
-#: src/MShop/Service/Provider/Payment/Mpay24.php:75
+msgid "PayPalPlus approval URL not available"
+msgstr ""
+
+msgid "PayPalPlus requires the country ID of the user"
+msgstr ""
+
 #, php-format
 msgid "Token based payment failed with code \"%1$s\" and message \"%2$s\": %3$s"
 msgstr ""
+
+#, php-format
+msgid "Token based payment failed: %1$s"
+msgstr ""
+
+#, php-format
+msgid "Token based payment incomplete: %1$s"
+msgstr ""
+
+#, php-format
+msgid "Unexpected redirect: %1$s"
+msgstr "Uforudset redirect: %1$s"

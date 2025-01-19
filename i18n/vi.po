@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ai-payments\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-04-04 16:08+0200\n"
+"POT-Creation-Date: 2025-01-18 15:17+0100\n"
 "PO-Revision-Date: 2015-07-20 09:55+0000\n"
 "Last-Translator: Aimeos <aimeos@aimeos.org>\n"
 "Language-Team: Vietnamese (http://www.transifex.com/aimeos/ai-payments/language/vi/)\n"
@@ -17,33 +17,48 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: src/MShop/Service/Provider/Payment/Stripe.php:177
+#, php-format
+msgid "Method \"%1$s\" for provider not available"
+msgstr ""
+
 #, php-format
 msgid "No Stripe customer data available for customer ID \"%1$s\""
 msgstr ""
 
-#: src/MShop/Service/Provider/Payment/Stripe.php:183
 #, php-format
 msgid "No Stripe payment method available for customer ID \"%1$s\""
 msgstr ""
 
-#: src/MShop/Service/Provider/Payment/Stripe.php:189
-#: src/MShop/Service/Provider/Payment/OmniPay.php:438
-#: src/MShop/Service/Provider/Payment/Mpay24.php:41
-#: src/MShop/Service/Provider/Payment/Datatrans.php:156
 #, php-format
 msgid "No payment token available for customer ID \"%1$s\""
 msgstr ""
 
-#: src/MShop/Service/Provider/Payment/OmniPay.php:432
-#: src/MShop/Service/Provider/Payment/Mpay24.php:35
-#: src/MShop/Service/Provider/Payment/Datatrans.php:150
 #, php-format
 msgid "No reoccurring payment data available for customer ID \"%1$s\""
 msgstr ""
 
-#: src/MShop/Service/Provider/Payment/OmniPay.php:473
-#: src/MShop/Service/Provider/Payment/Mpay24.php:75
+#, php-format
+msgid "Order %1$s"
+msgstr ""
+
+msgid "PayPalPlus approval URL not available"
+msgstr ""
+
+msgid "PayPalPlus requires the country ID of the user"
+msgstr ""
+
 #, php-format
 msgid "Token based payment failed with code \"%1$s\" and message \"%2$s\": %3$s"
+msgstr ""
+
+#, php-format
+msgid "Token based payment failed: %1$s"
+msgstr ""
+
+#, php-format
+msgid "Token based payment incomplete: %1$s"
+msgstr ""
+
+#, php-format
+msgid "Unexpected redirect: %1$s"
 msgstr ""
