@@ -397,7 +397,7 @@ class OmniPay
 
 		if( $response->isSuccessful() )
 		{
-			$tx = \Aimeos\MShop::create( $this->context(), 'order/service/transaction' )->create()
+			$tx = \Aimeos\MShop::create( $this->context(), 'order' )->createServiceTransaction()
 				->setPrice( $price )->setType( 'refund' )->setStatus( Status::PAY_REFUND )
 				->setConfigValue( 'REFUNDID', $response->getTransactionReference() );
 
