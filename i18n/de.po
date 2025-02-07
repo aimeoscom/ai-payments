@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-01-19 18:15+0100\n"
+"POT-Creation-Date: 2025-02-06 14:03+0100\n"
 "PO-Revision-Date: 2022-02-27 11:04+0000\n"
 "Last-Translator: Aimeos, 2025\n"
 "Language-Team: German (https://app.transifex.com/aimeos/teams/39015/de/)\n"
@@ -63,7 +63,7 @@ msgstr "Token-basierte Zahlung ist fehlgeschlagen: %1$s"
 
 #, php-format
 msgid "Token based payment incomplete: %1$s"
-msgstr ""
+msgstr "Token-basierte Zahlung unvollständig: %1$s"
 
 #, php-format
 msgid "Unexpected redirect: %1$s"

@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-01-19 18:15+0100\n"
+"POT-Creation-Date: 2025-02-06 14:03+0100\n"
 "PO-Revision-Date: 2022-02-27 11:04+0000\n"
 "Last-Translator: Aimeos, 2025\n"
 "Language-Team: Italian (https://app.transifex.com/aimeos/teams/39015/it/)\n"
@@ -48,10 +48,10 @@ msgid "Order %1$s"
 msgstr "Ordine %1$s"
 
 msgid "PayPalPlus approval URL not available"
-msgstr ""
+msgstr "URL di approvazione PayPalPlus non disponibile"
 
 msgid "PayPalPlus requires the country ID of the user"
-msgstr ""
+msgstr "PayPalPlus richiede l'ID del paese dell'utente"
 
 #, php-format
 msgid "Token based payment failed with code \"%1$s\" and message \"%2$s\": %3$s"
@@ -65,7 +65,7 @@ msgstr "Il pagamento basato su token non è andato a buon fine: %1$s"
 
 #, php-format
 msgid "Token based payment incomplete: %1$s"
-msgstr ""
+msgstr "Pagamento basato su token incompleto: %1$s"
 
 #, php-format
 msgid "Unexpected redirect: %1$s"

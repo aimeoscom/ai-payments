@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-01-19 18:15+0100\n"
+"POT-Creation-Date: 2025-02-06 14:03+0100\n"
 "PO-Revision-Date: 2022-02-27 11:04+0000\n"
 "Last-Translator: Aimeos, 2025\n"
 "Language-Team: Portuguese (https://app.transifex.com/aimeos/teams/39015/pt/)\n"
@@ -24,7 +24,7 @@ msgstr ""
 
 #, php-format
 msgid "Method \"%1$s\" for provider not available"
-msgstr ""
+msgstr "Método \"%1$s\" para o fornecedor não disponível"
 
 #, php-format
 msgid "No Stripe customer data available for customer ID \"%1$s\""
@@ -47,10 +47,10 @@ msgid "Order %1$s"
 msgstr "Pedido %1$s"
 
 msgid "PayPalPlus approval URL not available"
-msgstr ""
+msgstr "URL de aprovação do PayPalPlus não disponível"
 
 msgid "PayPalPlus requires the country ID of the user"
-msgstr ""
+msgstr "O PayPalPlus requer o ID do país do utilizador"
 
 #, php-format
 msgid "Token based payment failed with code \"%1$s\" and message \"%2$s\": %3$s"
@@ -60,11 +60,11 @@ msgstr ""
 
 #, php-format
 msgid "Token based payment failed: %1$s"
-msgstr ""
+msgstr "Falha no pagamento baseado em token: %1$s"
 
 #, php-format
 msgid "Token based payment incomplete: %1$s"
-msgstr ""
+msgstr "Pagamento baseado em token incompleto: %1$s"
 
 #, php-format
 msgid "Unexpected redirect: %1$s"
