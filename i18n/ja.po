@@ -1,0 +1,68 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# 
+# Translators:
+# Aimeos, 2025
+# 
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-02-08 13:38+0100\n"
+"PO-Revision-Date: 2022-02-27 11:04+0000\n"
+"Last-Translator: Aimeos, 2025\n"
+"Language-Team: Japanese (https://app.transifex.com/aimeos/teams/39015/ja/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: ja\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#, php-format
+msgid "Method \"%1$s\" for provider not available"
+msgstr "プロバイダのメソッド \"%1$s\" が利用できません。"
+
+#, php-format
+msgid "No Stripe customer data available for customer ID \"%1$s\""
+msgstr "顧客ID \"%1$s\" に利用可能なStripe顧客データがありません。"
+
+#, php-format
+msgid "No Stripe payment method available for customer ID \"%1$s\""
+msgstr "顧客ID \"%1$s \"に利用可能なStripe支払い方法がありません。"
+
+#, php-format
+msgid "No payment token available for customer ID \"%1$s\""
+msgstr "顧客 ID \"%1$s\" に利用可能な支払トークンがありません。"
+
+#, php-format
+msgid "No reoccurring payment data available for customer ID \"%1$s\""
+msgstr "顧客 ID \"%1$s\" に利用可能な定期支払データがありません。"
+
+#, php-format
+msgid "Order %1$s"
+msgstr "注文 %1$s"
+
+msgid "PayPalPlus approval URL not available"
+msgstr "PayPalPlusの承認URLが利用できません"
+
+msgid "PayPalPlus requires the country ID of the user"
+msgstr "PayPalPlusは、ユーザーの国IDを必要とします。"
+
+#, php-format
+msgid "Token based payment failed with code \"%1$s\" and message \"%2$s\": %3$s"
+msgstr "トークン・ベースの支払いはコード \"%1$s\" とメッセージ \"%2$s\" で失敗しました：%3$s"
+
+#, php-format
+msgid "Token based payment failed: %1$s"
+msgstr "トークンによる支払いに失敗しました: %1$s"
+
+#, php-format
+msgid "Token based payment incomplete: %1$s"
+msgstr "トークン・ベースの支払いが不完全です: %1$s"
+
+#, php-format
+msgid "Unexpected redirect: %1$s"
+msgstr "予期しないリダイレクト: %1$s"
