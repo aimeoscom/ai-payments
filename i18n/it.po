@@ -4,15 +4,17 @@
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 # 
 # Translators:
-# Aimeos, 2022
+# isabella carlin <isabella@vg7.it>, 2025
+# Aimeos, 2025
 # 
+#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: ai-payments\n"
+"Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-10-04 18:31+0200\n"
+"POT-Creation-Date: 2025-02-06 14:03+0100\n"
 "PO-Revision-Date: 2022-02-27 11:04+0000\n"
-"Last-Translator: Aimeos, 2022\n"
+"Last-Translator: Aimeos, 2025\n"
 "Language-Team: Italian (https://app.transifex.com/aimeos/teams/39015/it/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -20,36 +22,51 @@ msgstr ""
 "Language: it\n"
 "Plural-Forms: nplurals=3; plural=n == 1 ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;\n"
 
-#: src/MShop/Service/Provider/Payment/Stripe.php:181
+#, php-format
+msgid "Method \"%1$s\" for provider not available"
+msgstr "Metodo %1$s non disponibile per il fornitore "
+
 #, php-format
 msgid "No Stripe customer data available for customer ID \"%1$s\""
 msgstr "Nessuna sezione dati clienti disponibile per l'ID cliente \"%1$s\""
 
-#: src/MShop/Service/Provider/Payment/Stripe.php:187
 #, php-format
 msgid "No Stripe payment method available for customer ID \"%1$s\""
 msgstr "Nessuna sezione metodo di pagamento disponibile per l'ID cliente \"%1$s\""
 
-#: src/MShop/Service/Provider/Payment/Stripe.php:193
-#: src/MShop/Service/Provider/Payment/OmniPay.php:443
-#: src/MShop/Service/Provider/Payment/Mpay24.php:43
-#: src/MShop/Service/Provider/Payment/Datatrans.php:78
 #, php-format
 msgid "No payment token available for customer ID \"%1$s\""
 msgstr "Nessun token di pagamento disponibile per l'ID cliente \"%1$s\""
 
-#: src/MShop/Service/Provider/Payment/OmniPay.php:437
-#: src/MShop/Service/Provider/Payment/Mpay24.php:37
-#: src/MShop/Service/Provider/Payment/Datatrans.php:72
 #, php-format
 msgid "No reoccurring payment data available for customer ID \"%1$s\""
 msgstr ""
 "Non sono disponibili dati di pagamento ricorrenti per l'ID cliente \"%1$s\""
 
-#: src/MShop/Service/Provider/Payment/OmniPay.php:478
-#: src/MShop/Service/Provider/Payment/Mpay24.php:77
+#, php-format
+msgid "Order %1$s"
+msgstr "Ordine %1$s"
+
+msgid "PayPalPlus approval URL not available"
+msgstr "URL di approvazione PayPalPlus non disponibile"
+
+msgid "PayPalPlus requires the country ID of the user"
+msgstr "PayPalPlus richiede l'ID del paese dell'utente"
+
 #, php-format
 msgid "Token based payment failed with code \"%1$s\" and message \"%2$s\": %3$s"
 msgstr ""
 "Il pagamento basato su token con codice \"%1$s\" e messaggio \"%2$s\" non è "
 "andato a buon fine:%3$s "
+
+#, php-format
+msgid "Token based payment failed: %1$s"
+msgstr "Il pagamento basato su token non è andato a buon fine: %1$s"
+
+#, php-format
+msgid "Token based payment incomplete: %1$s"
+msgstr "Pagamento basato su token incompleto: %1$s"
+
+#, php-format
+msgid "Unexpected redirect: %1$s"
+msgstr "Redirect inaspettato: %1$s"

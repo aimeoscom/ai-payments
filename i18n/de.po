@@ -4,15 +4,16 @@
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 # 
 # Translators:
-# Aimeos, 2022
+# Aimeos, 2025
 # 
+#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: ai-payments\n"
+"Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-10-04 18:31+0200\n"
+"POT-Creation-Date: 2025-02-06 14:03+0100\n"
 "PO-Revision-Date: 2022-02-27 11:04+0000\n"
-"Last-Translator: Aimeos, 2022\n"
+"Last-Translator: Aimeos, 2025\n"
 "Language-Team: German (https://app.transifex.com/aimeos/teams/39015/de/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -20,35 +21,50 @@ msgstr ""
 "Language: de\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: src/MShop/Service/Provider/Payment/Stripe.php:181
+#, php-format
+msgid "Method \"%1$s\" for provider not available"
+msgstr "Methode \"%1$s\" ist nicht verfügbar"
+
 #, php-format
 msgid "No Stripe customer data available for customer ID \"%1$s\""
 msgstr "Keine Stripe Kundendaten für die Kunden-ID \"%1$s\" verfügbar"
 
-#: src/MShop/Service/Provider/Payment/Stripe.php:187
 #, php-format
 msgid "No Stripe payment method available for customer ID \"%1$s\""
 msgstr "Keine Stripe Zahlungsmethode für die Kunden-ID \"%1$s\" verfügbar"
 
-#: src/MShop/Service/Provider/Payment/Stripe.php:193
-#: src/MShop/Service/Provider/Payment/OmniPay.php:443
-#: src/MShop/Service/Provider/Payment/Mpay24.php:43
-#: src/MShop/Service/Provider/Payment/Datatrans.php:78
 #, php-format
 msgid "No payment token available for customer ID \"%1$s\""
 msgstr "Kein Zahlungstoken für den Kunden mit der ID \"%1$s\" verfügbar"
 
-#: src/MShop/Service/Provider/Payment/OmniPay.php:437
-#: src/MShop/Service/Provider/Payment/Mpay24.php:37
-#: src/MShop/Service/Provider/Payment/Datatrans.php:72
 #, php-format
 msgid "No reoccurring payment data available for customer ID \"%1$s\""
 msgstr "Keine Zahlungsreferenz für den Kunden mit der ID \"%1$s\" verfügbar"
 
-#: src/MShop/Service/Provider/Payment/OmniPay.php:478
-#: src/MShop/Service/Provider/Payment/Mpay24.php:77
+#, php-format
+msgid "Order %1$s"
+msgstr "Bestellung %1$s"
+
+msgid "PayPalPlus approval URL not available"
+msgstr "Bestätigungs-URL für PayPalPlus ist nicht verfügbar"
+
+msgid "PayPalPlus requires the country ID of the user"
+msgstr "PayPalPlus benötigt den Ländercode des Kunden"
+
 #, php-format
 msgid "Token based payment failed with code \"%1$s\" and message \"%2$s\": %3$s"
 msgstr ""
 "Token-basierte Zahlung ist mit dem Code \"%1$s\" und Fehlermeldung \"%2$s\" "
 "ist fehlgeschlagen: %3$s"
+
+#, php-format
+msgid "Token based payment failed: %1$s"
+msgstr "Token-basierte Zahlung ist fehlgeschlagen: %1$s"
+
+#, php-format
+msgid "Token based payment incomplete: %1$s"
+msgstr "Token-basierte Zahlung unvollständig: %1$s"
+
+#, php-format
+msgid "Unexpected redirect: %1$s"
+msgstr "Unerwartete Weiterleitung: %1$s"
