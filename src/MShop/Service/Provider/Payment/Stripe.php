@@ -238,7 +238,8 @@ class Stripe
 		if( $order->getStatusPayment() === Status::PAY_UNFINISHED )
 		{
 			$response = $this->getProvider()->confirm( [
-				'paymentIntentReference' => $this->getOrderData( $order, 'Reference' )
+				'paymentIntentReference' => $this->getOrderData( $order, 'Reference' ),
+				'return_url' => $this->getConfigValue( ['payment.url-success'] ),
 			] )->send();
 
 			if( $response->isSuccessful() )
