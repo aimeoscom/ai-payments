@@ -236,7 +236,7 @@ class Stripe
 		{
 			$response = $this->getProvider()->confirm( [
 				'paymentIntentReference' => $this->getOrderData( $order, 'Reference' ),
-				'return_url' => $this->getConfigValue( ['payment.url-success'] ),
+				'return_url' => $this->getConfigValue( ['payment.url-self'] ),
 			] )->send();
 
 			if( $response->isSuccessful() )
