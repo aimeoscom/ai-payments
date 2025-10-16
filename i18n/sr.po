@@ -10,12 +10,14 @@ msgstr ""
 "POT-Creation-Date: 2025-01-18 15:17+0100\n"
 "PO-Revision-Date: 2015-07-20 09:55+0000\n"
 "Last-Translator: Aimeos <aimeos@aimeos.org>\n"
-"Language-Team: Serbian (http://www.transifex.com/aimeos/ai-payments/language/sr/)\n"
+"Language-Team: Serbian (http://www.transifex.com/aimeos/ai-payments/language/"
+"sr/)\n"
 "Language: sr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
 #, php-format
 msgid "Method \"%1$s\" for provider not available"
@@ -48,7 +50,8 @@ msgid "PayPalPlus requires the country ID of the user"
 msgstr ""
 
 #, php-format
-msgid "Token based payment failed with code \"%1$s\" and message \"%2$s\": %3$s"
+msgid ""
+"Token based payment failed with code \"%1$s\" and message \"%2$s\": %3$s"
 msgstr ""
 
 #, php-format
