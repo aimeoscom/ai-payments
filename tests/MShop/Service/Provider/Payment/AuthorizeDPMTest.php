@@ -77,7 +77,6 @@ class AuthorizeDPMTest extends \PHPUnit\Framework\TestCase
 	{
 		$class = new \ReflectionClass( \Aimeos\MShop\Service\Provider\Payment\AuthorizeDPM::class );
 		$method = $class->getMethod( $name );
-		$method->setAccessible( true );
 
 		return $method;
 	}

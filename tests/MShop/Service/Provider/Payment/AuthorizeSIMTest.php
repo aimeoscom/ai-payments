@@ -112,7 +112,6 @@ class AuthorizeSIMTest extends \PHPUnit\Framework\TestCase
 	{
 		$class = new \ReflectionClass( \Aimeos\MShop\Service\Provider\Payment\AuthorizeSIM::class );
 		$method = $class->getMethod( $name );
-		$method->setAccessible( true );
 
 		return $method;
 	}
