@@ -9,6 +9,7 @@
 namespace Aimeos\MShop\Service\Provider\Payment;
 
 
+#[\PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations]
 class OmniPayTest extends \PHPUnit\Framework\TestCase
 {
 	private $object;
@@ -354,14 +355,12 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 	{
 		$order = $this->getOrder();
 
-		$provider = $this->getMockBuilder( 'Omnipay\Dummy\Gateway' )
-			->onlyMethods( ['supportsAcceptNotification'] )
-			->addMethods( ['acceptNotification', 'save'] )
+		$provider = $this->getMockBuilder( OmniPayGatewayWithNotification::class )
+			->onlyMethods( ['supportsAcceptNotification', 'acceptNotification', 'save'] )
 			->getMock();
 
-		$request = $this->getMockBuilder( \Omnipay\Common\Message\AbstractRequest::class )
-			->onlyMethods( ['getData', 'sendData', 'getTransactionReference'] )
-			->addMethods( ['getTransactionStatus'] )
+		$request = $this->getMockBuilder( OmniPayRequestWithStatus::class )
+			->onlyMethods( ['getData', 'sendData', 'getTransactionReference', 'getTransactionStatus'] )
 			->disableOriginalConstructor()
 			->getMock();
 
@@ -406,14 +405,12 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 	{
 		$order = $this->getOrder();
 
-		$provider = $this->getMockBuilder( 'Omnipay\Dummy\Gateway' )
-			->onlyMethods( ['supportsAcceptNotification'] )
-			->addMethods( ['acceptNotification', 'save'] )
+		$provider = $this->getMockBuilder( OmniPayGatewayWithNotification::class )
+			->onlyMethods( ['supportsAcceptNotification', 'acceptNotification', 'save'] )
 			->getMock();
 
-		$request = $this->getMockBuilder( \Omnipay\Common\Message\AbstractRequest::class )
-			->onlyMethods( ['getData', 'sendData', 'getTransactionReference'] )
-			->addMethods( ['getTransactionStatus'] )
+		$request = $this->getMockBuilder( OmniPayRequestWithStatus::class )
+			->onlyMethods( ['getData', 'sendData', 'getTransactionReference', 'getTransactionStatus'] )
 			->disableOriginalConstructor()
 			->getMock();
 
@@ -458,14 +455,12 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 	{
 		$order = $this->getOrder();
 
-		$provider = $this->getMockBuilder( 'Omnipay\Dummy\Gateway' )
-			->onlyMethods( ['supportsAcceptNotification'] )
-			->addMethods( ['acceptNotification', 'save'] )
+		$provider = $this->getMockBuilder( OmniPayGatewayWithNotification::class )
+			->onlyMethods( ['supportsAcceptNotification', 'acceptNotification', 'save'] )
 			->getMock();
 
-		$request = $this->getMockBuilder( \Omnipay\Common\Message\AbstractRequest::class )
-			->onlyMethods( ['getData', 'sendData', 'getTransactionReference'] )
-			->addMethods( ['getTransactionStatus'] )
+		$request = $this->getMockBuilder( OmniPayRequestWithStatus::class )
+			->onlyMethods( ['getData', 'sendData', 'getTransactionReference', 'getTransactionStatus'] )
 			->disableOriginalConstructor()
 			->getMock();
 
@@ -874,5 +869,22 @@ if( class_exists( 'Omnipay\Dummy\Message\Response' )
 		{
 			return 123;
 		}
+	}
+}
+
+if( class_exists( 'Omnipay\Dummy\Gateway' ) )
+{
+	abstract class OmniPayGatewayWithNotification extends \Omnipay\Dummy\Gateway
+	{
+		abstract public function acceptNotification();
+		abstract public function save();
+	}
+}
+
+if( class_exists( 'Omnipay\Common\Message\AbstractRequest' ) )
+{
+	abstract class OmniPayRequestWithStatus extends \Omnipay\Common\Message\AbstractRequest
+	{
+		abstract public function getTransactionStatus();
 	}
 }

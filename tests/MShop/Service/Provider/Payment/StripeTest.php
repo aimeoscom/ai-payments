@@ -95,6 +95,10 @@ class StripeTest extends \PHPUnit\Framework\TestCase
 
 	public function testGetProvider()
 	{
+		if( !class_exists( 'Omnipay\Stripe\PaymentIntentsGateway' ) ) {
+			$this->markTestSkipped( 'Omnipay Stripe library not available' );
+		}
+
 		$result = $this->access( 'getProvider' )->invokeArgs( $this->object, [] );
 		$this->assertInstanceOf( \Omnipay\Common\GatewayInterface::class, $result );
 	}

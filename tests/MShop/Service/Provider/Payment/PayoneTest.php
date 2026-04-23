@@ -3,6 +3,7 @@
 namespace Aimeos\MShop\Service\Provider\Payment;
 
 
+#[\PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations]
 class PayoneTest extends \PHPUnit\Framework\TestCase
 {
 	private $object;
@@ -40,6 +41,10 @@ class PayoneTest extends \PHPUnit\Framework\TestCase
 
 	public function testProcessOffsitePurchaseSuccess()
 	{
+		if( !class_exists( 'Omnipay\Payone\Extend\Item' ) ) {
+			$this->markTestSkipped( 'Omnipay Payone library not available' );
+		}
+
 		$provider = new \Omnipay\Dummy\Gateway();
 
 		$this->object->expects( $this->once() )->method( 'getProvider' )

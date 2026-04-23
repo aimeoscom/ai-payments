@@ -9,6 +9,7 @@
 namespace Aimeos\MShop\Service\Provider\Payment;
 
 
+#[\PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations]
 class NovalnetCreditTest extends \PHPUnit\Framework\TestCase
 {
 	private $object;

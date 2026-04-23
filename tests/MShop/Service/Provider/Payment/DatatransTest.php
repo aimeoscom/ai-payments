@@ -9,6 +9,7 @@
 namespace Aimeos\MShop\Service\Provider\Payment;
 
 
+#[\PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations]
 class DatatransTest extends \PHPUnit\Framework\TestCase
 {
 	private $object;
@@ -92,18 +93,17 @@ class DatatransTest extends \PHPUnit\Framework\TestCase
 
 	public function testQuerySuccess()
 	{
-		$provider = $this->getMockBuilder( 'Omnipay\Dummy\Gateway' )
-			->addMethods( ['getTransaction'] )
+		$provider = $this->getMockBuilder( DatatransGatewayWithTransaction::class )
+			->onlyMethods( ['getTransaction'] )
 			->getMock();
 
 		$request = $this->getMockBuilder( \Omnipay\Common\Message\AbstractRequest::class )
 			->disableOriginalConstructor()
 			->getMock();
 
-		$response = $this->getMockBuilder( 'Omnipay\Dummy\Message\Response' )
+		$response = $this->getMockBuilder( DatatransResponseWithCode::class )
 			->disableOriginalConstructor()
-			->onlyMethods( ['isSuccessful', 'getTransactionReference'] )
-			->addMethods( ['getResponseCode'] )
+			->onlyMethods( ['isSuccessful', 'getTransactionReference', 'getResponseCode'] )
 			->getMock();
 
 		$this->object->expects( $this->once() )->method( 'getProvider' )
@@ -133,9 +133,8 @@ class DatatransTest extends \PHPUnit\Framework\TestCase
 	{
 		$this->serviceItem->setConfig( array( 'type' => 'Dummy', 'authorize' => '1' ) );
 
-		$provider = $this->getMockBuilder( \Omnipay\Dummy\Gateway::class )
-			->onlyMethods( ['supportsCompleteAuthorize', 'completeAuthorize'] )
-			->addMethods( ['getTransaction'] )
+		$provider = $this->getMockBuilder( DatatransGatewayWithTransaction::class )
+			->onlyMethods( ['supportsCompleteAuthorize', 'completeAuthorize', 'getTransaction'] )
 			->disableOriginalConstructor()
 			->getMock();
 
@@ -143,10 +142,9 @@ class DatatransTest extends \PHPUnit\Framework\TestCase
 			->disableOriginalConstructor()
 			->getMock();
 
-		$response = $this->getMockBuilder( 'Omnipay\Dummy\Message\Response' )
+		$response = $this->getMockBuilder( DatatransResponseWithCode::class )
 			->disableOriginalConstructor()
-			->onlyMethods( ['isSuccessful', 'getTransactionReference'] )
-			->addMethods( ['getResponseCode'] )
+			->onlyMethods( ['isSuccessful', 'getTransactionReference', 'getResponseCode'] )
 			->getMock();
 
 		$this->object->expects( $this->once() )->method( 'getProvider' )
@@ -170,8 +168,8 @@ class DatatransTest extends \PHPUnit\Framework\TestCase
 
 	public function testQueryPending()
 	{
-		$provider = $this->getMockBuilder( 'Omnipay\Dummy\Gateway' )
-			->addMethods( ['getTransaction'] )
+		$provider = $this->getMockBuilder( DatatransGatewayWithTransaction::class )
+			->onlyMethods( ['getTransaction'] )
 			->getMock();
 
 		$request = $this->getMockBuilder( \Omnipay\Common\Message\AbstractRequest::class )
@@ -206,8 +204,8 @@ class DatatransTest extends \PHPUnit\Framework\TestCase
 
 	public function testQueryCancelled()
 	{
-		$provider = $this->getMockBuilder( 'Omnipay\Dummy\Gateway' )
-			->addMethods( ['getTransaction'] )
+		$provider = $this->getMockBuilder( DatatransGatewayWithTransaction::class )
+			->onlyMethods( ['getTransaction'] )
 			->getMock();
 
 		$request = $this->getMockBuilder( \Omnipay\Common\Message\AbstractRequest::class )
@@ -244,9 +242,8 @@ class DatatransTest extends \PHPUnit\Framework\TestCase
 	{
 		$orderItem = $this->getOrder();
 
-		$provider = $this->getMockBuilder( 'Omnipay\Dummy\Gateway' )
-			->onlyMethods( ['purchase'] )
-			->addMethods( ['getCard'] )
+		$provider = $this->getMockBuilder( DatatransGatewayWithCard::class )
+			->onlyMethods( ['purchase', 'getCard'] )
 			->getMock();
 
 		$request = $this->getMockBuilder( \Omnipay\Common\Message\AbstractRequest::class )
@@ -315,6 +312,10 @@ class DatatransTest extends \PHPUnit\Framework\TestCase
 
 	public function testGetXmlProvider()
 	{
+		if( !class_exists( 'Omnipay\Datatrans\XmlGateway' ) ) {
+			$this->markTestSkipped( 'Omnipay Datatrans library not available' );
+		}
+
 		$result = $this->access( 'getXmlProvider' )->invokeArgs( $this->object, [] );
 		$this->assertInstanceOf( \Omnipay\Common\GatewayInterface::class, $result );
 	}
@@ -336,5 +337,27 @@ class DatatransTest extends \PHPUnit\Framework\TestCase
 		$method = $class->getMethod( $name );
 
 		return $method;
+	}
+}
+
+
+if( class_exists( 'Omnipay\Dummy\Gateway' ) )
+{
+	abstract class DatatransGatewayWithTransaction extends \Omnipay\Dummy\Gateway
+	{
+		abstract public function getTransaction( $options = [] );
+	}
+
+	abstract class DatatransGatewayWithCard extends \Omnipay\Dummy\Gateway
+	{
+		abstract public function getCard( $options = [] );
+	}
+}
+
+if( class_exists( 'Omnipay\Dummy\Message\Response' ) )
+{
+	abstract class DatatransResponseWithCode extends \Omnipay\Dummy\Message\Response
+	{
+		abstract public function getResponseCode();
 	}
 }
