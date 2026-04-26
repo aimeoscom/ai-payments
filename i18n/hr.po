@@ -1,26 +1,17 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-# 
-# Translators:
-# Aimeos, 2022
-# Miro Sertić <miro.sertic0606@gmail.com>, 2025
-# 
 #, fuzzy
 msgid ""
 msgstr ""
+"Content-Transfer-Encoding: 8bit\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: hr\n"
+"Language-Team: Croatian (https://app.transifex.com/aimeos/teams/39015/hr/)\n"
+"Last-Translator: Miro Sertić <miro.sertic0606@gmail.com>, 2025\n"
+"MIME-Version: 1.0\n"
+"PO-Revision-Date: 2022-02-27 11:04+0000\n"
+"POT-Creation-Date: 2026-04-25 11:25+0200\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-16 11:59+0200\n"
-"PO-Revision-Date: 2022-02-27 11:04+0000\n"
-"Last-Translator: Miro Sertić <miro.sertic0606@gmail.com>, 2025\n"
-"Language-Team: Croatian (https://app.transifex.com/aimeos/teams/39015/hr/)\n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
-"Language: hr\n"
-"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
 
 #, php-format
 msgid "Method \"%1$s\" for provider not available"
@@ -28,11 +19,11 @@ msgstr "Metoda \"%1$s\" za davatelja usluga nije dostupna"
 
 #, php-format
 msgid "No Stripe customer data available for customer ID \"%1$s\""
-msgstr ""
+msgstr "Nema dostupnih Stripe podataka za ID kupca \"%1$s\""
 
 #, php-format
 msgid "No Stripe payment method available for customer ID \"%1$s\""
-msgstr ""
+msgstr "Nijedna Stripe metoda plaćanja nije dostupna za ID kupca \"%1$s\""
 
 #, php-format
 msgid "No payment token available for customer ID \"%1$s\""
@@ -40,23 +31,21 @@ msgstr "Nije dostupan token za plaćanje za korisnički ID \"%1$s\""
 
 #, php-format
 msgid "No reoccurring payment data available for customer ID \"%1$s\""
-msgstr ""
-"Nema podataka o ponovnom pojavljivanju podataka o plaćanju za korisnički ID "
-"\"%1$s\""
+msgstr "Nema podataka o ponovnom pojavljivanju podataka o plaćanju za korisnički ID \"%1$s\""
 
 #, php-format
 msgid "Order %1$s"
 msgstr "Narudžba %1$s"
 
 msgid "PayPalPlus approval URL not available"
-msgstr ""
+msgstr "URL za odobrenje PayPalPlus nije dostupan"
 
 msgid "PayPalPlus requires the country ID of the user"
-msgstr ""
+msgstr "PayPalPlus zahtijeva ID zemlje korisnika."
 
 #, php-format
 msgid "Token based payment failed with code \"%1$s\" and message \"%2$s\": %3$s"
-msgstr ""
+msgstr "Plaćanje temeljeno na tokenu nije uspjelo s kodom \"%1$s\" i porukom \"%2$s\": %3$s"
 
 #, php-format
 msgid "Token based payment failed: %1$s"
@@ -64,7 +53,7 @@ msgstr "Plaćanje na temelju tokena nije uspjelo:%1$s"
 
 #, php-format
 msgid "Token based payment incomplete: %1$s"
-msgstr ""
+msgstr "Uplata temeljena na tokenima nepotpuna: %1$s"
 
 #, php-format
 msgid "Unexpected redirect: %1$s"

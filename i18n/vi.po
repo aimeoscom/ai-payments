@@ -1,25 +1,17 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-# 
-# Translators:
-# Aimeos, 2025
-# 
 #, fuzzy
 msgid ""
 msgstr ""
+"Content-Transfer-Encoding: 8bit\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: vi\n"
+"Language-Team: Vietnamese (https://app.transifex.com/aimeos/teams/39015/vi/)\n"
+"Last-Translator: Aimeos, 2025\n"
+"MIME-Version: 1.0\n"
+"PO-Revision-Date: 2022-02-27 11:04+0000\n"
+"POT-Creation-Date: 2026-04-25 11:25+0200\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-16 11:59+0200\n"
-"PO-Revision-Date: 2022-02-27 11:04+0000\n"
-"Last-Translator: Aimeos, 2025\n"
-"Language-Team: Vietnamese (https://app.transifex.com/aimeos/teams/39015/vi/)\n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
-"Language: vi\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
 
 #, php-format
 msgid "Method \"%1$s\" for provider not available"
@@ -31,8 +23,7 @@ msgstr "Không có dữ liệu khách hàng của Stripe cho ID khách hàng \"%
 
 #, php-format
 msgid "No Stripe payment method available for customer ID \"%1$s\""
-msgstr ""
-"Không có phương thức thanh toán Stripe khả dụng cho ID khách hàng \"%1$s\""
+msgstr "Không có phương thức thanh toán Stripe khả dụng cho ID khách hàng \"%1$s\""
 
 #, php-format
 msgid "No payment token available for customer ID \"%1$s\""

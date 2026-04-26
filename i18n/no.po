@@ -1,66 +1,59 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-#
-# Translators:
 msgid ""
 msgstr ""
+"Content-Transfer-Encoding: 8bit\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: no\n"
+"Language-Team: Norwegian (http://www.transifex.com/aimeos/ai-payments/language/no/)\n"
+"Last-Translator: Aimeos <aimeos@aimeos.org>\n"
+"MIME-Version: 1.0\n"
+"PO-Revision-Date: 2015-07-20 09:55+0000\n"
+"POT-Creation-Date: 2026-04-25 11:25+0200\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Project-Id-Version: ai-payments\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-01-18 15:17+0100\n"
-"PO-Revision-Date: 2015-07-20 09:55+0000\n"
-"Last-Translator: Aimeos <aimeos@aimeos.org>\n"
-"Language-Team: Norwegian (http://www.transifex.com/aimeos/ai-payments/"
-"language/no/)\n"
-"Language: no\n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #, php-format
 msgid "Method \"%1$s\" for provider not available"
-msgstr ""
+msgstr "Metoden «%1$s» er ikke tilgjengelig for leverandøren"
 
 #, php-format
 msgid "No Stripe customer data available for customer ID \"%1$s\""
-msgstr ""
+msgstr "Det finnes ingen Stripe-kundedata for kunde-ID «%1$s»"
 
 #, php-format
 msgid "No Stripe payment method available for customer ID \"%1$s\""
-msgstr ""
+msgstr "Det finnes ingen Stripe-betalingsmåte for kunde-ID «%1$s»"
 
 #, php-format
 msgid "No payment token available for customer ID \"%1$s\""
-msgstr ""
+msgstr "Det finnes ingen betalingstoken for kunde-ID «%1$s»"
 
 #, php-format
 msgid "No reoccurring payment data available for customer ID \"%1$s\""
-msgstr ""
+msgstr "Det finnes ingen opplysninger om gjentatte betalinger for kunde-ID «%1$s»"
 
 #, php-format
 msgid "Order %1$s"
-msgstr ""
+msgstr "Bestill %1$s"
 
 msgid "PayPalPlus approval URL not available"
-msgstr ""
+msgstr "URL-adressen for godkjenning av PayPalPlus er ikke tilgjengelig"
 
 msgid "PayPalPlus requires the country ID of the user"
-msgstr ""
+msgstr "PayPalPlus krever brukerens landskode"
 
 #, php-format
-msgid ""
-"Token based payment failed with code \"%1$s\" and message \"%2$s\": %3$s"
-msgstr ""
+msgid "Token based payment failed with code \"%1$s\" and message \"%2$s\": %3$s"
+msgstr "Tokenbasert betaling mislyktes med koden «%1$s» og meldingen «%2$s»: %3$s"
 
 #, php-format
 msgid "Token based payment failed: %1$s"
-msgstr ""
+msgstr "Tokenbasert betaling mislyktes: %1$s"
 
 #, php-format
 msgid "Token based payment incomplete: %1$s"
-msgstr ""
+msgstr "Tokenbasert betaling fullført: %1$s"
 
 #, php-format
 msgid "Unexpected redirect: %1$s"
-msgstr ""
+msgstr "Uventet viderekobling: %1$s"
