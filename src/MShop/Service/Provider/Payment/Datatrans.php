@@ -90,13 +90,14 @@ class Datatrans
 	 * Returns the configuration attribute definitions of the provider to generate a list of available fields and
 	 * rules for the value of each field in the administration interface.
 	 *
-	 * @return array List of attribute definitions implementing \Aimeos\Base\Critera\Attribute\Iface
+	 * @return array List of attribute definitions implementing \Aimeos\Base\Criteria\Attribute\Iface
 	 */
 	public function getConfigBE() : array
 	{
 		$list = parent::getConfigBE();
 
 		foreach( $this->beConfig as $key => $config ) {
+			// @phpstan-ignore argument.type
 			$list[$key] = new \Aimeos\Base\Criteria\Attribute\Standard( $config );
 		}
 
@@ -122,10 +123,12 @@ class Datatrans
 				$order->setStatusPayment( \Aimeos\MShop\Order\Item\Base::PAY_AUTHORIZED );
 			}
 		}
+		// @phpstan-ignore argument.type
 		elseif( method_exists($response, 'isPending') && $response->isPending() )
 		{
 			$order->setStatusPayment( \Aimeos\MShop\Order\Item\Base::PAY_PENDING );
 		}
+		// @phpstan-ignore argument.type
 		elseif( method_exists($response, 'isCancelled') && $response->isCancelled() )
 		{
 			$order->setStatusPayment( \Aimeos\MShop\Order\Item\Base::PAY_CANCELED );

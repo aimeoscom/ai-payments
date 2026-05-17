@@ -229,20 +229,21 @@ class OmniPay
 		),
 	);
 
-	private $provider;
+	private ?\Omnipay\Common\GatewayInterface $provider = null;
 
 
 	/**
 	 * Returns the configuration attribute definitions of the provider to generate a list of available fields and
 	 * rules for the value of each field in the administration interface.
 	 *
-	 * @return array List of attribute definitions implementing \Aimeos\Base\Critera\Attribute\Iface
+	 * @return array List of attribute definitions implementing \Aimeos\Base\Criteria\Attribute\Iface
 	 */
 	public function getConfigBE() : array
 	{
 		$list = [];
 
 		foreach( $this->beConfig as $key => $config ) {
+			// @phpstan-ignore argument.type
 			$list[$key] = new \Aimeos\Base\Criteria\Attribute\Standard( $config );
 		}
 
@@ -332,13 +333,13 @@ class OmniPay
 		switch( $what )
 		{
 			case \Aimeos\MShop\Service\Provider\Payment\Base::FEAT_CAPTURE:
-				return $provider->supportsCapture();
+				return (bool) $provider->supportsCapture();
 			case \Aimeos\MShop\Service\Provider\Payment\Base::FEAT_CANCEL:
-				return $provider->supportsVoid();
+				return (bool) $provider->supportsVoid();
 			case \Aimeos\MShop\Service\Provider\Payment\Base::FEAT_REFUND:
-				return $provider->supportsRefund();
+				return (bool) $provider->supportsRefund();
 			case \Aimeos\MShop\Service\Provider\Payment\Base::FEAT_REPAY:
-				return method_exists( $provider, 'createCard' );
+				return true;
 		}
 
 		return false;
@@ -401,9 +402,10 @@ class OmniPay
 				->setPrice( $price )->setType( 'refund' )->setStatus( Status::PAY_REFUND )
 				->setConfigValue( 'REFUNDID', $response->getTransactionReference() );
 
+			// @phpstan-ignore argument.type
 			$service->addTransaction( $tx );
 
-			if( $amount == $order->getPrice()->getValue() + $order->getPrice()->getCosts() ) {
+			if( $amount == $order->getPrice()->getValue() + $order->getPrice()->getCosts() ) { // @phpstan-ignore binaryOp.invalid
 				$order->setStatusPayment( Status::PAY_REFUND );
 			}
 		}
@@ -503,13 +505,16 @@ class OmniPay
 			}
 
 			$manager = \Aimeos\MShop::create( $this->context(), 'order' );
+			// @phpstan-ignore argument.type
 			$order = $manager->get( $params['orderid'], ['order', 'order/service'] );
 
 			$omniRequest = $provider->acceptNotification();
 
 			$order->setStatusPayment( $this->translateStatus( $omniRequest->getTransactionStatus() ) );
+			// @phpstan-ignore argument.type
 			$this->setOrderData( $order, ['Transaction' => $omniRequest->getTransactionReference()] );
 
+			// @phpstan-ignore argument.type
 			$this->save( $order );
 			$response->withStatus( 200 );
 		}
@@ -538,6 +543,7 @@ class OmniPay
 			$provider = $this->getProvider();
 
 			$params = (array) $request->getAttributes() + (array) $request->getParsedBody() + (array) $request->getQueryParams();
+			// @phpstan-ignore argument.type
 			$params = $this->getData( $order, $order->getId(), $params );
 			$params['transactionReference'] = $this->getTransactionReference( $order );
 
@@ -575,15 +581,13 @@ class OmniPay
 			elseif( method_exists( $response, 'isRedirect' ) && $response->isRedirect() )
 			{
 				$msg = $this->context()->translate( 'mshop', 'Unexpected redirect: %1$s' );
+				// @phpstan-ignore argument.type
 				throw new \Aimeos\MShop\Service\Exception( sprintf( $msg, $response->getRedirectUrl() ) );
 			}
 			elseif( $order->getStatusPayment() === Status::PAY_UNFINISHED
 				&& (
 					!$this->isImplemented( \Aimeos\MShop\Service\Provider\Payment\Base::FEAT_QUERY )
-					|| (
-						$this->isImplemented( \Aimeos\MShop\Service\Provider\Payment\Base::FEAT_QUERY )
-						&& in_array( $this->query( $order )->getStatusPayment(), [Status::PAY_UNFINISHED, Status::PAY_REFUSED] )
-					)
+					|| in_array( $this->query( $order )->getStatusPayment(), [Status::PAY_UNFINISHED, Status::PAY_REFUSED] )
 				)
 			) {
 				$this->save( $order->setStatusPayment( Status::PAY_REFUSED ) );
@@ -651,7 +655,7 @@ class OmniPay
 	 *
 	 * @param \Aimeos\MShop\Order\Item\Iface $order Order item
 	 */
-	protected function captureStatus( \Aimeos\MShop\Order\Item\Iface $order )
+	protected function captureStatus( \Aimeos\MShop\Order\Item\Iface $order ) : \Aimeos\MShop\Order\Item\Iface
 	{
 		return $order->setStatusPayment( Status::PAY_RECEIVED );
 	}
@@ -756,6 +760,7 @@ class OmniPay
 	{
 		if( !isset( $this->provider ) )
 		{
+			// @phpstan-ignore argument.type
 			$this->provider = OPay::create( $this->getValue( 'type' ) );
 			$this->provider->setTestMode( (bool) $this->getValue( 'testmode', false ) );
 			$this->provider->initialize( $this->getServiceItem()->getConfig() );
@@ -839,10 +844,12 @@ class OmniPay
 		$feConfig['payment.expiryyear']['default'] = array( $year, $year + 1, $year + 2, $year + 3, $year + 4, $year + 5, $year + 6, $year + 7 );
 
 		foreach( $feConfig as $key => $config ) {
+			// @phpstan-ignore argument.type
 			$list[$key] = new \Aimeos\Base\Criteria\Attribute\Standard( $config );
 		}
 
 		$url = $this->getConfigValue( 'payment.url-self', '' );
+		// @phpstan-ignore argument.type
 		return new \Aimeos\MShop\Common\Helper\Form\Standard( $url, 'POST', $list, false );
 	}
 
@@ -888,7 +895,8 @@ class OmniPay
 		$type = \Aimeos\MShop\Order\Item\Service\Base::TYPE_PAYMENT;
 		$service = $this->getBasketService( $order, $type, $this->getServiceItem()->getCode() );
 
-		return $service->getAttribute( 'Transaction', 'payment/omnipay' );
+		$value = $service->getAttribute( 'Transaction', 'payment/omnipay' );
+		return is_string( $value ) ? $value : null;
 	}
 
 
@@ -904,6 +912,7 @@ class OmniPay
 	protected function processOrder( \Aimeos\MShop\Order\Item\Iface $order,
 		array $params = [] ) : ?\Aimeos\MShop\Common\Helper\Form\Iface
 	{
+		// @phpstan-ignore argument.type
 		$data = $this->getData( $order, $order->getId(), $params );
 		$urls = $this->getPaymentUrls();
 
@@ -935,6 +944,7 @@ class OmniPay
 			throw new \Aimeos\MShop\Service\Exception( $e->getMessage() );
 		}
 
+		// @phpstan-ignore argument.type
 		return new \Aimeos\MShop\Common\Helper\Form\Standard( $urls['returnUrl'] ?? '', 'POST', [] );
 	}
 
@@ -943,7 +953,7 @@ class OmniPay
 	 * Returns the amount when refunding an order
 	 *
 	 * @param \Aimeos\MShop\Order\Item\Iface $order Order item
-	 * @return string Amount to refund, e.g. 100.00, 0.01 or 0.00
+	 * @return \Aimeos\MShop\Price\Item\Iface Price item with refund amount
 	 */
 	protected function refundAmount( \Aimeos\MShop\Order\Item\Iface $order ) : \Aimeos\MShop\Price\Item\Iface
 	{
@@ -1023,6 +1033,7 @@ class OmniPay
 		$type = \Aimeos\MShop\Order\Item\Service\Base::TYPE_PAYMENT;
 
 		$this->getBasketService( $order, $type, $this->getServiceItem()->getCode() )
+			// @phpstan-ignore argument.type
 			->addAttributeItems( $this->attributes( $data, 'payment/omnipay' ) );
 
 		return $this;

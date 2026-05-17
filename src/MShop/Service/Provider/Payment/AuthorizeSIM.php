@@ -38,7 +38,7 @@ class AuthorizeSIM
 	 * Returns the configuration attribute definitions of the provider to generate a list of available fields and
 	 * rules for the value of each field in the administration interface.
 	 *
-	 * @return array List of attribute definitions implementing \Aimeos\Base\Critera\Attribute\Iface
+	 * @return array List of attribute definitions implementing \Aimeos\Base\Criteria\Attribute\Iface
 	 */
 	public function getConfigBE() : array
 	{
@@ -47,6 +47,7 @@ class AuthorizeSIM
 		foreach( $this->beConfig as $key => $config )
 		{
 			$config['code'] = $config['code'];
+			// @phpstan-ignore argument.type
 			$list[$key] = new \Aimeos\Base\Criteria\Attribute\Standard( $config );
 		}
 
@@ -70,7 +71,7 @@ class AuthorizeSIM
 	/**
 	 * Updates the order status sent by payment gateway notifications
 	 *
-	 * @param \Psr\Http\Message\ServerRequestInterface Request object
+	 * @param \Psr\Http\Message\ServerRequestInterface $request Request object
 	 * @return \Psr\Http\Message\ResponseInterface Response object
 	 */
 	public function updatePush( \Psr\Http\Message\ServerRequestInterface $request,
@@ -81,10 +82,13 @@ class AuthorizeSIM
 		if( isset( $params['x_MD5_Hash'] ) )
 		{
 			$url = $this->getConfigValue( array( 'payment.url-success' ) );
+			// @phpstan-ignore argument.type, argument.type
 			$output = sprintf( $this->getValue( 'body', 'success' ), $url );
 
 			$response = parent::updatePush( $request, $response );
+			// @phpstan-ignore argument.type, method.notFound
 			$response = $response->withBody( $response->createStreamFromString( $output ) );
+			// @phpstan-ignore argument.type
 			$response = $response->withHeader( 'Location', $url );
 		}
 

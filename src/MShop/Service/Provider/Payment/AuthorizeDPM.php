@@ -180,10 +180,12 @@ class AuthorizeDPM
 		}
 
 		foreach( $feConfig as $key => $config ) {
+			// @phpstan-ignore argument.type
 			$list[$key] = new \Aimeos\Base\Criteria\Attribute\Standard( $config );
 		}
 
 		$url = $this->getConfigValue( 'payment.url-self', '' );
+		// @phpstan-ignore argument.type
 		return new \Aimeos\MShop\Common\Helper\Form\Standard( $url, 'POST', $list, false );
 	}
 

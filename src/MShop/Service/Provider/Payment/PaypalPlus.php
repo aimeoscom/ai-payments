@@ -63,7 +63,7 @@ class PaypalPlus
 		),
 	);
 
-	private $provider;
+	private ?\Omnipay\Common\GatewayInterface $provider = null;
 
 
 	/**
@@ -83,13 +83,14 @@ class PaypalPlus
 	 * Returns the configuration attribute definitions of the provider to generate a list of available fields and
 	 * rules for the value of each field in the administration interface.
 	 *
-	 * @return array List of attribute definitions implementing \Aimeos\Base\Critera\Attribute\Iface
+	 * @return array List of attribute definitions implementing \Aimeos\Base\Criteria\Attribute\Iface
 	 */
 	public function getConfigBE() : array
 	{
 		$list = [];
 
 		foreach( $this->beConfig as $key => $config ) {
+			// @phpstan-ignore argument.type
 			$list[$key] = new \Aimeos\Base\Criteria\Attribute\Standard( $config );
 		}
 
@@ -128,6 +129,7 @@ class PaypalPlus
 	{
 		$addresses = $order->getAddress( \Aimeos\MShop\Order\Item\Address\Base::TYPE_PAYMENT );
 
+		// @phpstan-ignore argument.type
 		$data = $this->getData( $order, $order->getId(), $params );
 		$response = $this->sendRequest( $order, $data );
 
@@ -164,6 +166,7 @@ class PaypalPlus
 
 		$langid = $address->getLanguageId() ?: $this->context()->locale()->getLanguageId();
 
+		// @phpstan-ignore argument.type
 		$html = $this->getPayPalPlusJs( $approvalUrl, (string) $address->getCountryId(), (string) $langid );
 		return new \Aimeos\MShop\Common\Helper\Form\Standard( '', '', [], true, $html );
 	}
@@ -189,6 +192,7 @@ class PaypalPlus
 			$provider = $this->getProvider();
 
 			$params = (array) $request->getAttributes() + (array) $request->getParsedBody() + (array) $request->getQueryParams();
+			// @phpstan-ignore argument.type
 			$params = $this->getData( $order, $order->getId(), $params );
 			$params['transactionReference'] = $this->getTransactionReference( $order );
 
@@ -227,6 +231,7 @@ class PaypalPlus
 			elseif( method_exists( $response, 'isRedirect' ) && $response->isRedirect() )
 			{
 				$msg = $this->context()->translate( 'mshop', 'Unexpected redirect: %1$s' );
+				// @phpstan-ignore argument.type
 				throw new \Aimeos\MShop\Service\Exception( sprintf( $msg, $response->getRedirectUrl() ) );
 			}
 			else

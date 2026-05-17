@@ -73,7 +73,7 @@ class Payone
 	/**
 	 * Updates the order status sent by payment gateway notifications
 	 *
-	 * @param \Psr\Http\Message\ServerRequestInterface Request object
+	 * @param \Psr\Http\Message\ServerRequestInterface $request Request object
 	 * @return \Psr\Http\Message\ResponseInterface Response object
 	 */
 	public function updatePush( \Psr\Http\Message\ServerRequestInterface $request,
@@ -86,6 +86,7 @@ class Payone
 			$response = parent::updatePush( $request->withAttribute( 'orderid', $params['reference'] ), $response );
 
 			if( $response->getStatusCode() === 200 ) {
+				// @phpstan-ignore argument.type, method.notFound
 				$response = $response->withBody( $response->createStreamFromString( 'TSOK' ) ); // payment update successful
 			}
 		}

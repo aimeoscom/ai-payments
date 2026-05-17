@@ -76,5 +76,7 @@ class Mpay24
 				$response->getCode(), $response->getMessage(), print_r( $response->getData(), true ) );
 			throw new \Aimeos\MShop\Service\Exception( $msg, -1 );
 		}
+
+		return $order;
 	}
 }

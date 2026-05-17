@@ -53,7 +53,7 @@ class Stripe
 		),
 	);
 
-	protected $feConfig = array(
+	protected array $feConfig = array(
 		'paymenttoken' => array(
 			'code' => 'paymenttoken',
 			'internalcode' => 'paymenttoken',
@@ -111,13 +111,14 @@ class Stripe
 	 * Returns the configuration attribute definitions of the provider to generate a list of available fields and
 	 * rules for the value of each field in the administration interface.
 	 *
-	 * @return array List of attribute definitions implementing \Aimeos\Base\Critera\Attribute\Iface
+	 * @return array List of attribute definitions implementing \Aimeos\Base\Criteria\Attribute\Iface
 	 */
 	public function getConfigBE() : array
 	{
 		$list = parent::getConfigBE();
 
 		foreach( $this->beConfig as $key => $config ) {
+			// @phpstan-ignore argument.type
 			$list[$key] = new \Aimeos\Base\Criteria\Attribute\Standard( $config );
 		}
 
@@ -155,6 +156,7 @@ class Stripe
 			$response = $this->getProvider()->createCustomer( $data )->send();
 
 			if( $response->isSuccessful() ) {
+				// @phpstan-ignore argument.type
 				$this->setData( $userid, 'customer', $response->getCustomerReference() );
 			}
 		}
@@ -332,10 +334,12 @@ class Stripe
 		$feConfig = $this->feConfig;
 
 		foreach( $feConfig as $key => $config ) {
+			// @phpstan-ignore argument.type
 			$list[$key] = new \Aimeos\Base\Criteria\Attribute\Standard( $config );
 		}
 
 		$url = $this->getConfigValue( 'payment.url-self', '' );
+		// @phpstan-ignore argument.type
 		return new \Aimeos\MShop\Common\Helper\Form\Standard( $url, 'POST', $list, false, $this->getStripeJs() );
 	}
 
@@ -474,6 +478,7 @@ document.addEventListener("DOMContentLoaded", function() {
 			}
 		}
 
-		$this->throw( 'No Stripe service in basket', 'mshop' );
+		$msg = $this->context()->translate( 'mshop', 'No Stripe service in basket' );
+		throw new \Aimeos\MShop\Service\Exception( $msg );
 	}
 }

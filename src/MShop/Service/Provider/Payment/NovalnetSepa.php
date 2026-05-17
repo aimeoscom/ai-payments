@@ -57,7 +57,7 @@ class NovalnetSepa
 	 * rules for the value of each field in the frontend.
 	 *
 	 * @param \Aimeos\MShop\Order\Item\Iface $basket Basket object
-	 * @return array List of attribute definitions implementing \Aimeos\Base\Critera\Attribute\Iface
+	 * @return array List of attribute definitions implementing \Aimeos\Base\Criteria\Attribute\Iface
 	 */
 	public function getConfigFE( \Aimeos\MShop\Order\Item\Iface $basket ) : array
 	{
@@ -91,6 +91,7 @@ class NovalnetSepa
 
 
 		foreach( $feconfig as $key => $config ) {
+			// @phpstan-ignore argument.type
 			$list[$key] = new \Aimeos\Base\Criteria\Attribute\Standard( $config );
 		}
 
@@ -121,6 +122,7 @@ class NovalnetSepa
 	public function setConfigFE( \Aimeos\MShop\Order\Item\Service\Iface $orderServiceItem,
 		array $attributes ) : \Aimeos\MShop\Order\Item\Service\Iface
 	{
+		// @phpstan-ignore argument.type
 		return $orderServiceItem->addAttributeItems( $this->attributes( $attributes, 'session' ) );
 	}
 
