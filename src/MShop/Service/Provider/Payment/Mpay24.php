@@ -55,10 +55,7 @@ class Mpay24
 			$data['card'] = $this->getCardDetails( $order, [] );
 		}
 
-		$provider = \Omnipay\Omnipay::create( 'Mpay24_Backend' );
-		$provider->setTestMode( (bool) $this->getValue( 'testmode', false ) );
-		$provider->initialize( $this->getServiceItem()->getConfig() );
-		$response = $provider->purchase( $data )->send();
+		$response = $this->createGateway( 'Mpay24_Backend' )->purchase( $data )->send();
 
 		if( $response->isSuccessful() || $response->isPending() )
 		{
