@@ -11,9 +11,6 @@
 namespace Aimeos\MShop\Service\Provider\Payment;
 
 
-use Omnipay\Omnipay as OPay;
-
-
 /**
  * Payment provider for Datatrans
  *
@@ -186,9 +183,6 @@ class Datatrans
 	 */
 	protected function getXmlProvider() : \Omnipay\Common\GatewayInterface
 	{
-		$provider = OPay::create('Datatrans\Xml');
-		$provider->initialize( $this->getServiceItem()->getConfig() );
-
-		return $provider;
+		return $this->createGateway( 'Datatrans\Xml' );
 	}
 }

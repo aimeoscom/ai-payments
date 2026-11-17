@@ -90,6 +90,156 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 	}
 
 
+	public function testCreateClient()
+	{
+		$object = new \Aimeos\MShop\Service\Provider\Payment\OmniPay( $this->context, $this->serviceItem );
+		$method = new \ReflectionMethod( $object, 'createClient' );
+		$method->setAccessible( true );
+		$client = $method->invoke( $object );
+
+		$this->expectException( \Omnipay\Common\Http\Exception::class );
+		$this->expectExceptionMessage( 'Only HTTPS URLs of public hosts are allowed' );
+
+		$client->request( 'GET', 'https://127.0.0.1/' );
+	}
+
+
+	public function testCreateGatewayConfig()
+	{
+		$this->serviceItem->setConfig( ['type' => 'Dummy', 'testmode' => '1'] );
+
+		$object = new \Aimeos\MShop\Service\Provider\Payment\OmniPay( $this->context, $this->serviceItem );
+		$method = new \ReflectionMethod( $object, 'createGateway' );
+		$method->setAccessible( true );
+		$gateway = $method->invoke( $object, 'Dummy' );
+
+		$this->assertTrue( (bool) $gateway->getTestMode() );
+	}
+
+
+	public function testGetProviderNoType()
+	{
+		$this->serviceItem->setConfig( [] );
+
+		$object = new \Aimeos\MShop\Service\Provider\Payment\OmniPay( $this->context, $this->serviceItem );
+
+		$this->expectException( \Aimeos\MShop\Service\Exception::class );
+		$method = new \ReflectionMethod( $object, 'getProvider' );
+		$method->setAccessible( true );
+		$method->invoke( $object );
+	}
+
+
+	public function testGetProviderCustomEndpoint()
+	{
+		if( !class_exists( \Omnipay\Payone\ShopServerGateway::class ) ) {
+			$this->markTestSkipped( 'Payone gateway not available' );
+		}
+
+		$this->serviceItem->setConfig( ['type' => 'Payone_ShopServer', 'endpoint' => 'https://8.8.8.8/post-gateway/'] );
+
+		$object = new \Aimeos\MShop\Service\Provider\Payment\OmniPay( $this->context, $this->serviceItem );
+		$method = new \ReflectionMethod( $object, 'getProvider' );
+		$method->setAccessible( true );
+		$provider = $method->invoke( $object );
+
+		$this->assertEquals( 'https://8.8.8.8/post-gateway/', $provider->getEndpoint() );
+	}
+
+
+	public function testGuard()
+	{
+		$this->assertEquals( ['timeout' => 10], $this->callGuard( 'https://8.8.8.8:8443/api', '', ['timeout' => 10] ) );
+	}
+
+
+	public static function guardProxyProvider() : array
+	{
+		return [
+			[['proxy' => 'http://proxy.local:3128']],
+			[['proxy' => ['https' => 'http://proxy.local:3128']]],
+			[['proxy' => ['https' => 'http://proxy.local:3128', 'no' => ['other.example.com']]]],
+		];
+	}
+
+
+	/**
+	 * @dataProvider guardProxyProvider
+	 */
+	#[\PHPUnit\Framework\Attributes\DataProvider( 'guardProxyProvider' )]
+	public function testGuardProxy( array $options )
+	{
+		$this->assertEquals( $options, $this->callGuard( 'https://pay.example.com/api', '', $options ) );
+	}
+
+
+	public static function guardHostProvider() : array
+	{
+		return [
+			['8.8.8.8', 'pay.example.com:443:8.8.8.8'],
+			['2001:4860:4860::8888', 'pay.example.com:443:[2001:4860:4860::8888]'],
+		];
+	}
+
+
+	/**
+	 * @dataProvider guardHostProvider
+	 */
+	#[\PHPUnit\Framework\Attributes\DataProvider( 'guardHostProvider' )]
+	public function testGuardHost( string $ip, string $expected )
+	{
+		$result = $this->callGuard( 'https://pay.example.com/api', $ip );
+		$this->assertEquals( [$expected], $result['curl'][CURLOPT_RESOLVE] );
+	}
+
+
+	public static function guardInvalidProvider() : array
+	{
+		return [
+			['gopher://127.0.0.1:6379/_FLUSHALL'],
+			['http://8.8.8.8/'],
+			['https://10.0.0.1/'],
+			['https://100.64.0.1/'],
+			['https://[::1]/'],
+			['https://[::ffff:127.0.0.1]/'],
+			['https://[64:ff9b::a00:1]/'],
+			['https://[fd00::1]/'],
+			['https://[fe80::1]/'],
+			['https://localhost/', '127.0.0.1'],
+			['https://pay.example.com/', '10.0.0.1'],
+			['https://unknown.invalid/', ''],
+			['http://pay.example.com/', '8.8.8.8', ['proxy' => 'http://proxy.local:3128']],
+			['https://10.0.0.1/', '', ['proxy' => 'http://proxy.local:3128']],
+			['https://pay.example.com/', '10.0.0.1', ['proxy' => ['https' => 'http://proxy.local:3128', 'no' => ['pay.example.com']]]],
+			['https://pay.example.com/', '10.0.0.1', ['proxy' => ['http' => 'http://proxy.local:3128']]],
+		];
+	}
+
+
+	/**
+	 * @dataProvider guardInvalidProvider
+	 */
+	#[\PHPUnit\Framework\Attributes\DataProvider( 'guardInvalidProvider' )]
+	public function testGuardInvalid( string $url, string $ip = '', array $options = [] )
+	{
+		$this->expectException( \Aimeos\MShop\Service\Exception::class );
+		$this->expectExceptionMessage( 'Only HTTPS URLs of public hosts are allowed' );
+
+		$this->callGuard( $url, $ip, $options );
+	}
+
+
+	public function testResolve()
+	{
+		$object = new \Aimeos\MShop\Service\Provider\Payment\OmniPay( $this->context, $this->serviceItem );
+		$method = new \ReflectionMethod( $object, 'resolve' );
+		$method->setAccessible( true );
+
+		$this->assertEquals( '127.0.0.1', $method->invoke( $object, 'localhost' ) );
+		$this->assertEquals( '', $method->invoke( $object, 'unknown.invalid' ) );
+	}
+
+
 	public function testIsImplemented()
 	{
 		$object = new \Aimeos\MShop\Service\Provider\Payment\OmniPay( $this->context, $this->serviceItem );
@@ -953,6 +1103,21 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 	{
 		$manager = \Aimeos\MShop::create( $this->context, 'order/base' );
 		return $manager->load( $this->getOrder()->getBaseId(), $parts );
+	}
+
+
+	protected function callGuard( string $url, string $ip, array $options = [] ) : array
+	{
+		$object = $this->getMockBuilder( \Aimeos\MShop\Service\Provider\Payment\OmniPay::class )
+			->setConstructorArgs( [$this->context, $this->serviceItem] )
+			->setMethods( ['resolve'] )
+			->getMock();
+
+		$object->method( 'resolve' )->willReturn( $ip );
+
+		$method = new \ReflectionMethod( $object, 'guard' );
+		$method->setAccessible( true );
+		return $method->invoke( $object, new \GuzzleHttp\Psr7\Request( 'GET', $url ), $options );
 	}
 }
 
