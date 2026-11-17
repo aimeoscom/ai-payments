@@ -95,10 +95,21 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 		$object = new \Aimeos\MShop\Service\Provider\Payment\OmniPay( $this->context, $this->serviceItem );
 		$client = ( new \ReflectionMethod( $object, 'createClient' ) )->invoke( $object );
 
-		$this->expectException( \Omnipay\Common\Http\Exception::class );
-		$this->expectExceptionMessage( 'Only HTTPS URLs of public hosts are allowed' );
+		try
+		{
+			$client->request( 'GET', 'https://127.0.0.1/' );
+			$this->fail( 'Request to internal host not rejected' );
+		}
+		catch( \Omnipay\Common\Http\Exception $e )
+		{
+			// Guzzle 6 adapter wraps exceptions thrown by middlewares
+			while( !( $e instanceof \Aimeos\MShop\Service\Exception ) && $e->getPrevious() ) {
+				$e = $e->getPrevious();
+			}
 
-		$client->request( 'GET', 'https://127.0.0.1/' );
+			$this->assertInstanceOf( \Aimeos\MShop\Service\Exception::class, $e );
+			$this->assertEquals( 'Only HTTPS URLs of public hosts are allowed', $e->getMessage() );
+		}
 	}
 
 
@@ -983,7 +994,10 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 
 		$object->method( 'resolve' )->willReturn( $ip );
 
-		return ( new \ReflectionMethod( $object, 'guard' ) )->invoke( $object, new \GuzzleHttp\Psr7\Request( 'GET', $url ), $options );
+		// Guzzle PSR-7 1.x can't parse some IPv6 URLs as string
+		$request = new \GuzzleHttp\Psr7\Request( 'GET', \GuzzleHttp\Psr7\Uri::fromParts( parse_url( $url ) ) );
+
+		return ( new \ReflectionMethod( $object, 'guard' ) )->invoke( $object, $request, $options );
 	}
 }
 
