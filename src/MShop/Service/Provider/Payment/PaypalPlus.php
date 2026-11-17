@@ -10,7 +10,6 @@
 
  namespace Aimeos\MShop\Service\Provider\Payment;
 
-use Omnipay\Omnipay as OPay;
 use Aimeos\MShop\Order\Item\Base as Status;
 
 
@@ -106,9 +105,7 @@ class PaypalPlus
 	{
 		if( !isset( $this->provider ) )
 		{
-			$this->provider = OPay::create( 'PayPal_Rest' );
-			$this->provider->setTestMode( (bool) $this->getValue( 'testmode', false ) );
-			$this->provider->initialize( $this->getServiceItem()->getConfig() );
+			$this->provider = $this->createGateway( 'PayPal_Rest' );
 		}
 
 		return $this->provider;
