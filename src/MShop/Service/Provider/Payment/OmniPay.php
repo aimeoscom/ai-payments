@@ -12,6 +12,7 @@ namespace Aimeos\MShop\Service\Provider\Payment;
 
 
 use Omnipay\Omnipay as OPay;
+use Psr\Http\Message\RequestInterface;
 use Aimeos\MShop\Order\Item\Base as Status;
 
 
@@ -748,6 +749,46 @@ class OmniPay
 
 
 	/**
+	 * Creates the HTTP client for the Omnipay gateways
+	 *
+	 * Requests are restricted to public HTTPS servers, so custom endpoints
+	 * (e.g. for test environments) are possible but internal services are rejected.
+	 * If a proxy is configured (HTTPS_PROXY), the proxy resolves the host names and
+	 * must block requests to internal services itself.
+	 *
+	 * @return \Omnipay\Common\Http\ClientInterface HTTP client object
+	 */
+	protected function createClient() : \Omnipay\Common\Http\ClientInterface
+	{
+		$stack = \GuzzleHttp\HandlerStack::create( new \GuzzleHttp\Handler\CurlHandler() );
+		$stack->push( function( callable $handler ) {
+			return fn( RequestInterface $request, array $options ) => $handler( $request, $this->guard( $request, $options ) );
+		} );
+
+		$client = new \GuzzleHttp\Client( ['handler' => $stack] );
+
+		// Guzzle 6 doesn't implement PSR-18
+		if( !method_exists( $client, 'sendRequest' ) ) {
+			$client = new \Http\Adapter\Guzzle6\Client( $client );
+		}
+
+		return new \Omnipay\Common\Http\Client( $client );
+	}
+
+
+	/**
+	 * Creates the Omnipay gateway initialized with the service configuration
+	 *
+	 * @param string $type Omnipay gateway name
+	 * @return \Omnipay\Common\GatewayInterface Gateway provider object
+	 */
+	protected function createGateway( string $type ) : \Omnipay\Common\GatewayInterface
+	{
+		return OPay::create( $type, $this->createClient() )->initialize( $this->getServiceItem()->getConfig() );
+	}
+
+
+	/**
 	 * Returns the Omnipay gateway provider object.
 	 *
 	 * @return \Omnipay\Common\GatewayInterface Gateway provider object
@@ -756,12 +797,129 @@ class OmniPay
 	{
 		if( !isset( $this->provider ) )
 		{
-			$this->provider = OPay::create( $this->getValue( 'type' ) );
-			$this->provider->setTestMode( (bool) $this->getValue( 'testmode', false ) );
-			$this->provider->initialize( $this->getServiceItem()->getConfig() );
+			if( empty( $type = $this->getValue( 'type' ) ) )
+			{
+				$msg = $this->context()->translate( 'mshop', 'No Omnipay gateway type configured' );
+				throw new \Aimeos\MShop\Service\Exception( $msg );
+			}
+
+			$this->provider = $this->createGateway( (string) $type );
 		}
 
 		return $this->provider;
+	}
+
+
+	/**
+	 * Allows only HTTPS requests to public hosts and pins the host to the checked IP address
+	 *
+	 * @param \Psr\Http\Message\RequestInterface $request Request sent by the gateway
+	 * @param array $options Guzzle request options
+	 * @return array Guzzle request options
+	 * @throws \Aimeos\MShop\Service\Exception If the request isn't sent to a public HTTPS server
+	 */
+	protected function guard( RequestInterface $request, array $options ) : array
+	{
+		$uri = $request->getUri();
+		$host = trim( $uri->getHost(), '[]' );
+		$ip = filter_var( $host, FILTER_VALIDATE_IP );
+
+		// the proxy resolves the host name and must block internal services itself
+		if( $uri->getScheme() === 'https' && $ip === false && $this->isProxied( $host, $options ) ) {
+			return $options;
+		}
+
+		$ip = $ip ?: $this->resolve( $host );
+
+		if( $uri->getScheme() !== 'https' || !$this->isPublicIp( $ip ) )
+		{
+			$msg = $this->context()->translate( 'mshop', 'Only HTTPS URLs of public hosts are allowed' );
+			throw new \Aimeos\MShop\Service\Exception( $msg );
+		}
+
+		// prevent DNS rebinding by connecting to the checked address
+		if( $ip !== $host )
+		{
+			$addr = str_contains( $ip, ':' ) ? '[' . $ip . ']' : $ip;
+			$options['curl'][CURLOPT_RESOLVE] = [$host . ':' . ( $uri->getPort() ?? 443 ) . ':' . $addr];
+		}
+
+		return $options;
+	}
+
+
+	/**
+	 * Tests if the request to the host is sent via a HTTPS proxy
+	 *
+	 * @param string $host Host name
+	 * @param array $options Guzzle request options
+	 * @return bool TRUE if a proxy is used for the host, FALSE if not
+	 */
+	protected function isProxied( string $host, array $options ) : bool
+	{
+		$proxy = $options['proxy'] ?? null;
+
+		if( is_array( $proxy ) )
+		{
+			$no = (array) ( $proxy['no'] ?? [] );
+			$noProxy = method_exists( \GuzzleHttp\Utils::class, 'isHostInNoProxy' )
+				? \GuzzleHttp\Utils::isHostInNoProxy( $host, $no )
+				: \GuzzleHttp\is_host_in_noproxy( $host, $no ); // Guzzle 6
+
+			return !empty( $proxy['https'] ) && $host !== '' && !$noProxy;
+		}
+
+		return !empty( $proxy );
+	}
+
+
+	/**
+	 * Tests if the IP address is public
+	 *
+	 * @param string $ip IPv4 or IPv6 address
+	 * @return bool TRUE if the address is public, FALSE if it is private, reserved or invalid
+	 */
+	protected function isPublicIp( string $ip ) : bool
+	{
+		if( !filter_var( $ip, FILTER_VALIDATE_IP ) ) {
+			return false;
+		}
+
+		$bin = (string) inet_pton( $ip );
+
+		// IPv4-mapped (::ffff:0:0/96) addresses aren't reserved before PHP 8.3, IPv4-compatible (::/96) ones are deprecated
+		if( strlen( $bin ) === 16 && strncmp( $bin, str_repeat( "\x00", 10 ), 10 ) === 0 ) {
+			return substr( $bin, 10, 2 ) === "\xff\xff" && $this->isPublicIp( (string) inet_ntop( substr( $bin, 12 ) ) );
+		}
+
+		if( !filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE ) ) {
+			return false;
+		}
+
+		if( strlen( $bin ) === 4 ) {
+			return ( ord( $bin[0] ) !== 100 || ( ord( $bin[1] ) & 0xc0 ) !== 64 ); // 100.64.0.0/10 (CGNAT)
+		}
+
+		// NAT64 prefixes 64:ff9b::/96 and 64:ff9b:1::/48 can map to internal IPv4 addresses
+		return strncmp( $bin, "\x00\x64\xff\x9b", 4 ) !== 0;
+	}
+
+
+	/**
+	 * Returns the IP address of the host the request is sent to
+	 *
+	 * IPv6 addresses are only looked up if the host has no IPv4 address.
+	 *
+	 * @param string $host Host name
+	 * @return string IPv4 or IPv6 address or empty string if the host can't be resolved
+	 */
+	protected function resolve( string $host ) : string
+	{
+		if( ( $ip = gethostbyname( $host ) ) !== $host ) {
+			return $ip;
+		}
+
+		return ( @dns_get_record( $host, DNS_AAAA ) ?: [] )[0]['ipv6'] ?? '';
 	}
 
 
