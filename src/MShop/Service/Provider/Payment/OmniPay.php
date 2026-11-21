@@ -466,13 +466,14 @@ class OmniPay
 		}
 		elseif( !$response->getTransactionReference() )
 		{
-			$msg = 'Token based payment incomplete: ' . print_r( $response->getData(), true );
+			// response data may contain payment details, so don't log it
+			$msg = 'Token based payment incomplete: ' . $response->getMessage();
 			throw new \Aimeos\MShop\Service\Exception( $msg, 1 );
 		}
 		else
 		{
-			$msg = sprintf( 'Token based payment failed with code "%1$s" and message "%2$s": %3$s',
-				$response->getCode(), $response->getMessage(), print_r( $response->getData(), true ) );
+			$msg = sprintf( 'Token based payment failed with code "%1$s" and message "%2$s"',
+				$response->getCode(), $response->getMessage() );
 			throw new \Aimeos\MShop\Service\Exception( $msg, -1 );
 		}
 
@@ -506,17 +507,30 @@ class OmniPay
 			$manager = \Aimeos\MShop::create( $this->context(), 'order' );
 			$order = $manager->get( $params['orderid'], ['order', 'order/service'] );
 
-			$omniRequest = $provider->acceptNotification();
+			// only orders paid using this service can be updated, throws an exception otherwise
+			$this->getBasketService( $order, \Aimeos\MShop\Order\Item\Service\Base::TYPE_PAYMENT, $this->getServiceItem()->getCode() );
 
-			$order->setStatusPayment( $this->translateStatus( $omniRequest->getTransactionStatus() ) );
-			$this->setOrderData( $order, ['Transaction' => $omniRequest->getTransactionReference()] );
+			if( $this->isImplemented( \Aimeos\MShop\Service\Provider\Payment\Base::FEAT_QUERY ) )
+			{
+				// notifications are only a trigger, the payment status is fetched from the gateway
+				$order = $this->query( $order );
+			}
+			else
+			{
+				$notification = $this->notification( $provider );
+
+				$order->setStatusPayment( $this->translateStatus( $notification->getTransactionStatus() ) );
+				$this->setOrderData( $order, ['Transaction' => $notification->getTransactionReference()] );
+			}
 
 			$this->save( $order );
 			$response->withStatus( 200 );
 		}
 		catch( \Exception $e )
 		{
-			$response->withStatus( 500, $e->getMessage() );
+			// don't reveal details like existing order IDs to the caller
+			$this->log( $e->getMessage() );
+			$response->withStatus( 500 );
 		}
 
 		return $response;
@@ -557,13 +571,21 @@ class OmniPay
 				return $order;
 			}
 
-			if( $response->getRequest()->getTransactionId() != $order->getId() ) {
+			// response data must belong to the order if the gateway returns the order ID
+			if( method_exists( $response, 'getTransactionId' ) && !in_array( $txId = $response->getTransactionId(), [null, ''], true )
+				&& (string) $txId !== (string) $order->getId()
+			) {
 				return $order;
 			}
 
 			if( method_exists( $response, 'isSuccessful' ) && $response->isSuccessful() )
 			{
-				$order->setStatusPayment( $status );
+				// response data is passed by the browser, so let the gateway confirm the payment if possible
+				if( $this->isImplemented( \Aimeos\MShop\Service\Provider\Payment\Base::FEAT_QUERY ) ) {
+					$this->query( $order );
+				} else {
+					$order->setStatusPayment( $status );
+				}
 			}
 			elseif( method_exists( $response, 'isPending' ) && $response->isPending() )
 			{
@@ -800,6 +822,21 @@ class OmniPay
 		}
 
 		return $this->provider;
+	}
+
+
+	/**
+	 * Returns the notification sent by the payment gateway
+	 *
+	 * Overwrite this method to verify notifications whose gateway doesn't validate them itself.
+	 *
+	 * @param \Omnipay\Common\GatewayInterface $provider Gateway provider object
+	 * @return \Omnipay\Common\Message\NotificationInterface Notification object
+	 * @throws \Aimeos\MShop\Service\Exception If the notification is invalid
+	 */
+	protected function notification( \Omnipay\Common\GatewayInterface $provider ) : \Omnipay\Common\Message\NotificationInterface
+	{
+		return $provider->acceptNotification();
 	}
 
 
