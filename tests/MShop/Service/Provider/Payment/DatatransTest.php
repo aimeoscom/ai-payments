@@ -91,6 +91,15 @@ class DatatransTest extends \PHPUnit\Framework\TestCase
 	}
 
 
+	public function testIsImplemented()
+	{
+		$object = new \Aimeos\MShop\Service\Provider\Payment\Datatrans( $this->context, $this->serviceItem );
+
+		$this->assertTrue( $object->isImplemented( \Aimeos\MShop\Service\Provider\Payment\Base::FEAT_QUERY ) );
+		$this->assertTrue( $object->isImplemented( \Aimeos\MShop\Service\Provider\Payment\Base::FEAT_REPAY ) );
+	}
+
+
 	public function testQuerySuccess()
 	{
 		$provider = $this->getMockBuilder( DatatransGatewayWithTransaction::class )
@@ -103,8 +112,10 @@ class DatatransTest extends \PHPUnit\Framework\TestCase
 
 		$response = $this->getMockBuilder( DatatransResponseWithCode::class )
 			->disableOriginalConstructor()
-			->onlyMethods( ['isSuccessful', 'getTransactionReference', 'getResponseCode'] )
+			->onlyMethods( ['isSuccessful', 'getTransactionReference', 'getResponseCode', 'getCurrencyCode', 'getAmountMinorUnits'] )
 			->getMock();
+
+		$order = $this->getOrder();
 
 		$this->object->expects( $this->once() )->method( 'getProvider' )
 			->willReturn( $provider );
@@ -121,11 +132,35 @@ class DatatransTest extends \PHPUnit\Framework\TestCase
 		$response->expects( $this->once() )->method( 'getTransactionReference' )
 			->willReturn( '' );
 
+		$response->method( 'getCurrencyCode' )->willReturn( $order->getPrice()->getCurrencyId() );
+		$response->method( 'getAmountMinorUnits' )->willReturn( $this->amount( $order ) );
+		$response->method( 'getResponseCode' )->willReturn( 2 );
+
 		$this->object->expects( $this->once() )->method( 'setOrderData' );
 
-		$order = $this->object->query( $this->getOrder() );
+		$order = $this->object->query( $order );
 
 		$this->assertEquals( \Aimeos\MShop\Order\Item\Base::PAY_RECEIVED, $order->getStatusPayment() );
+	}
+
+
+	public function testQueryAmountMismatch()
+	{
+		$order = $this->getOrder();
+		$this->mismatch( $order, $order->getPrice()->getCurrencyId(), $this->amount( $order ) - 1 );
+
+		$this->expectException( \Aimeos\MShop\Service\Exception::class );
+		$this->object->query( $order );
+	}
+
+
+	public function testQueryCurrencyMismatch()
+	{
+		$order = $this->getOrder();
+		$this->mismatch( $order, 'XXX', $this->amount( $order ) );
+
+		$this->expectException( \Aimeos\MShop\Service\Exception::class );
+		$this->object->query( $order );
 	}
 
 
@@ -144,7 +179,7 @@ class DatatransTest extends \PHPUnit\Framework\TestCase
 
 		$response = $this->getMockBuilder( DatatransResponseWithCode::class )
 			->disableOriginalConstructor()
-			->onlyMethods( ['isSuccessful', 'getTransactionReference', 'getResponseCode'] )
+			->onlyMethods( ['isSuccessful', 'getTransactionReference', 'getResponseCode', 'getCurrencyCode', 'getAmountMinorUnits'] )
 			->getMock();
 
 		$this->object->expects( $this->once() )->method( 'getProvider' )
@@ -321,6 +356,41 @@ class DatatransTest extends \PHPUnit\Framework\TestCase
 	}
 
 
+	protected function amount( \Aimeos\MShop\Order\Item\Iface $order ) : int
+	{
+		$amount = ( new \ReflectionMethod( $this->object, 'getAmount' ) )->invoke( $this->object, $order->getPrice(), true, true, 2 );
+		return (int) str_replace( '.', '', $amount );
+	}
+
+
+	protected function mismatch( \Aimeos\MShop\Order\Item\Iface $order, string $currency, int $amount )
+	{
+		$provider = $this->getMockBuilder( DatatransGatewayWithTransaction::class )
+			->onlyMethods( ['getTransaction'] )
+			->getMock();
+
+		$request = $this->getMockBuilder( \Omnipay\Common\Message\AbstractRequest::class )
+			->disableOriginalConstructor()
+			->getMock();
+
+		$response = $this->getMockBuilder( DatatransResponseWithCode::class )
+			->disableOriginalConstructor()
+			->onlyMethods( ['isSuccessful', 'getTransactionReference', 'getResponseCode', 'getCurrencyCode', 'getAmountMinorUnits'] )
+			->getMock();
+
+		$this->object->method( 'getProvider' )->willReturn( $provider );
+		$this->object->expects( $this->never() )->method( 'setOrderData' );
+
+		$provider->method( 'getTransaction' )->willReturn( $request );
+		$request->method( 'send' )->willReturn( $response );
+
+		$response->method( 'isSuccessful' )->willReturn( true );
+		$response->method( 'getResponseCode' )->willReturn( 2 );
+		$response->method( 'getCurrencyCode' )->willReturn( $currency );
+		$response->method( 'getAmountMinorUnits' )->willReturn( $amount );
+	}
+
+
 	protected function getOrder()
 	{
 		$manager = \Aimeos\MShop::create( $this->context, 'order' );
@@ -359,5 +429,7 @@ if( class_exists( 'Omnipay\Dummy\Message\Response' ) )
 	abstract class DatatransResponseWithCode extends \Omnipay\Dummy\Message\Response
 	{
 		abstract public function getResponseCode();
+		abstract public function getCurrencyCode();
+		abstract public function getAmountMinorUnits();
 	}
 }

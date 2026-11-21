@@ -109,6 +109,85 @@ class AuthorizeSIMTest extends \PHPUnit\Framework\TestCase
 	}
 
 
+	public function testUpdateSyncNoSecret()
+	{
+		$psr7request = $this->getMockBuilder( \Psr\Http\Message\ServerRequestInterface::class )->getMock();
+		$order = \Aimeos\MShop::create( $this->context, 'order' )->create();
+
+		$this->object->expects( $this->never() )->method( 'getProvider' );
+
+		$this->expectException( \Aimeos\MShop\Service\Exception::class );
+		$this->object->updateSync( $psr7request, $order );
+	}
+
+
+	public function testUpdateSyncHashSecretOnly()
+	{
+		$this->serviceItem->setConfig( ['hashSecret' => 'secret'] );
+
+		$psr7request = $this->getMockBuilder( \Psr\Http\Message\ServerRequestInterface::class )->getMock();
+		$order = $this->getOrder();
+
+		$psr7request->method( 'getParsedBody' )->willReturn( ['x_invoice_num' => $order->getId()] );
+		$this->object->expects( $this->never() )->method( 'getProvider' );
+
+		$this->expectException( \Aimeos\MShop\Service\Exception::class );
+		$this->object->updateSync( $psr7request, $order );
+	}
+
+
+	public function testUpdateSyncOtherOrder()
+	{
+		$this->serviceItem->setConfig( ['signatureKey' => 'abcd'] );
+
+		$psr7request = $this->getMockBuilder( \Psr\Http\Message\ServerRequestInterface::class )->getMock();
+		$order = $this->getOrder();
+
+		$psr7request->method( 'getParsedBody' )->willReturn( ['x_invoice_num' => $order->getId() . '1', 'omnipay_transaction_id' => $order->getId()] );
+		$this->object->expects( $this->never() )->method( 'getProvider' );
+
+		$this->expectException( \Aimeos\MShop\Service\Exception::class );
+		$this->object->updateSync( $psr7request, $order );
+	}
+
+
+	public function testUpdateSyncSignatureKey()
+	{
+		$this->serviceItem->setConfig( ['signatureKey' => 'abcd'] );
+
+		$provider = $this->getMockBuilder( \Omnipay\Dummy\Gateway::class )
+			->onlyMethods( ['supportsCompletePurchase'] )
+			->getMock();
+
+		$psr7request = $this->getMockBuilder( \Psr\Http\Message\ServerRequestInterface::class )->getMock();
+		$order = $this->getOrder();
+
+		$psr7request->method( 'getParsedBody' )->willReturn( ['x_invoice_num' => $order->getId()] );
+		$this->object->expects( $this->once() )->method( 'getProvider' )->willReturn( $provider );
+		$provider->expects( $this->once() )->method( 'supportsCompletePurchase' )->willReturn( false );
+
+		$this->assertSame( $order, $this->object->updateSync( $psr7request, $order ) );
+	}
+
+
+	public function testGetDataInvoiceNumber()
+	{
+		$order = $this->getOrder();
+		$result = $this->access( 'getData' )->invokeArgs( $this->object, [$order, $order->getId(), []] );
+
+		$this->assertEquals( $order->getId(), $result['invoiceNumber'] );
+	}
+
+
+	protected function getOrder()
+	{
+		$manager = \Aimeos\MShop::create( $this->context, 'order' );
+		$filter = $manager->filter()->add( 'order.datepayment', '==', '2008-02-15 12:34:56' );
+
+		return $manager->search( $filter, ['order', 'order/address', 'order/service'] )->first( new \RuntimeException( 'No order found' ) );
+	}
+
+
 	protected function access( $name )
 	{
 		$class = new \ReflectionClass( \Aimeos\MShop\Service\Provider\Payment\AuthorizeSIM::class );

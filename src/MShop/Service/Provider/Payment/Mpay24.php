@@ -22,6 +22,59 @@ class Mpay24
 	implements \Aimeos\MShop\Service\Provider\Payment\Iface
 {
 	/**
+	 * Checks what features the payment provider implements.
+	 *
+	 * @param int $what Constant from abstract class
+	 * @return bool True if feature is available in the payment provider, false if not
+	 */
+	public function isImplemented( int $what ) : bool
+	{
+		return $what === \Aimeos\MShop\Service\Provider\Payment\Base::FEAT_QUERY || parent::isImplemented( $what );
+	}
+
+
+	/**
+	 * Queries the payment gateway for the payment status of the given order
+	 *
+	 * The notifications sent by mPAY24 aren't signed, so the status must be fetched from the gateway.
+	 *
+	 * @param \Aimeos\MShop\Order\Item\Iface $order Order item
+	 * @return \Aimeos\MShop\Order\Item\Iface Updated order item
+	 * @throws \Aimeos\MShop\Service\Exception If the payment status can't be retrieved
+	 */
+	public function query( \Aimeos\MShop\Order\Item\Iface $order ) : \Aimeos\MShop\Order\Item\Iface
+	{
+		// @phpstan-ignore method.notFound
+		$response = $this->getProvider()->fetchTransaction( ['transactionId' => $order->getId()] )->send();
+
+		if( $response->getOperationStatus() !== 'OK' )
+		{
+			$msg = sprintf( 'Payment status for order "%1$s" not available: %2$s', $order->getId(), $response->getReturnCode() );
+			throw new \Aimeos\MShop\Service\Exception( $msg );
+		}
+
+		$status = match( $response->getTransactionState() ) {
+			'BILLED' => \Aimeos\MShop\Order\Item\Base::PAY_RECEIVED,
+			'RESERVED' => \Aimeos\MShop\Order\Item\Base::PAY_AUTHORIZED,
+			'REVERSED' => \Aimeos\MShop\Order\Item\Base::PAY_CANCELED,
+			'CREDITED' => \Aimeos\MShop\Order\Item\Base::PAY_REFUND,
+			'ERROR' => \Aimeos\MShop\Order\Item\Base::PAY_REFUSED,
+			default => null,
+		};
+
+		if( $status !== null ) {
+			$order->setStatusPayment( $status );
+		}
+
+		if( !empty( $txId = $response->getTransactionReference() ) ) {
+			$this->setOrderData( $order, ['Transaction' => $txId] );
+		}
+
+		return $order;
+	}
+
+
+	/**
 	 * Executes the payment again for the given order if supported.
 	 * This requires support of the payment gateway and token based payment
 	 *
@@ -64,13 +117,14 @@ class Mpay24
 		}
 		elseif( !$response->getTransactionReference() )
 		{
-			$msg = 'Token based payment incomplete: ' . print_r( $response->getData(), true );
+			// response data may contain payment details, so don't log it
+			$msg = 'Token based payment incomplete: ' . $response->getMessage();
 			throw new \Aimeos\MShop\Service\Exception( $msg, 1 );
 		}
 		else
 		{
-			$msg = sprintf( 'Token based payment failed with code "%1$s" and message "%2$s": %3$s',
-				$response->getCode(), $response->getMessage(), print_r( $response->getData(), true ) );
+			$msg = sprintf( 'Token based payment failed with code "%1$s" and message "%2$s"',
+				$response->getCode(), $response->getMessage() );
 			throw new \Aimeos\MShop\Service\Exception( $msg, -1 );
 		}
 

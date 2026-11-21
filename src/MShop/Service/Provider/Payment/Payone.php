@@ -93,4 +93,28 @@ class Payone
 
 		return $response;
 	}
+
+
+	/**
+	 * Returns the notification sent by the payment gateway
+	 *
+	 * @param \Omnipay\Common\GatewayInterface $provider Gateway provider object
+	 * @return \Omnipay\Common\Message\NotificationInterface Notification object
+	 * @throws \Aimeos\MShop\Service\Exception If the notification doesn't contain the hashed portal key
+	 */
+	protected function notification( \Omnipay\Common\GatewayInterface $provider ) : \Omnipay\Common\Message\NotificationInterface
+	{
+		$notification = parent::notification( $provider );
+
+		// @phpstan-ignore cast.string
+		$key = (string) $this->getValue( 'portalKey', '' );
+		// @phpstan-ignore method.notFound, cast.string
+		$hash = (string) $notification->getKey();
+
+		if( $key === '' || !hash_equals( md5( $key ), $hash ) && !hash_equals( hash( 'sha384', $key ), $hash ) ) {
+			throw new \Aimeos\MShop\Service\Exception( 'Invalid payment notification' );
+		}
+
+		return $notification;
+	}
 }
