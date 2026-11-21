@@ -66,6 +66,18 @@ class Datatrans
 
 
 	/**
+	 * Checks what features the payment provider implements.
+	 *
+	 * @param int $what Constant from abstract class
+	 * @return bool True if feature is available in the payment provider, false if not
+	 */
+	public function isImplemented( int $what ) : bool
+	{
+		return $what === \Aimeos\MShop\Service\Provider\Payment\Base::FEAT_QUERY || parent::isImplemented( $what );
+	}
+
+
+	/**
 	 * Queries for status updates for the given order compare with the responseCode
 	 *
 	 * @param \Aimeos\MShop\Order\Item\Iface $order Order item
@@ -77,6 +89,8 @@ class Datatrans
 
 		if( $response->isSuccessful() )
 		{
+			$this->checkAmount( $order, $response );
+
 			if( in_array( $response->getResponseCode(), [2, 3, 21] ) ) {
 				$order->setStatusPayment( \Aimeos\MShop\Order\Item\Base::PAY_RECEIVED );
 			} elseif( $response->getResponseCode() == 1 ) {
@@ -144,7 +158,8 @@ class Datatrans
 		elseif( !$response->getTransactionReference() )
 		{
 			$msg = $this->context()->translate( 'mshop', 'Token based payment incomplete: %1$s' );
-			throw new \Aimeos\MShop\Service\Exception( sprintf( $msg, print_r( $response->getData(), true ) ), 1 );
+			// response data may contain payment details, so don't log it
+			throw new \Aimeos\MShop\Service\Exception( sprintf( $msg, $response->getMessage() ), 1 );
 		}
 		else
 		{
@@ -154,6 +169,29 @@ class Datatrans
 		}
 
 		return $order;
+	}
+
+
+	/**
+	 * Checks if the paid amount and currency match the order
+	 *
+	 * The amount and currency aren't signed without the HMAC key and can be modified by the customer.
+	 *
+	 * @param \Aimeos\MShop\Order\Item\Iface $order Order item
+	 * @param \Omnipay\Common\Message\ResponseInterface $response Transaction status response
+	 * @throws \Aimeos\MShop\Service\Exception If amount or currency don't match
+	 */
+	protected function checkAmount( \Aimeos\MShop\Order\Item\Iface $order, \Omnipay\Common\Message\ResponseInterface $response ) : void
+	{
+		$price = $order->getPrice();
+		$digits = ( new \Money\Currencies\ISOCurrencies() )->subunitFor( new \Money\Currency( $price->getCurrencyId() ) );
+		$amount = (int) str_replace( '.', '', $this->getAmount( $price, true, true, $digits ) );
+
+		if( $response->getCurrencyCode() !== $price->getCurrencyId() || $response->getAmountMinorUnits() !== $amount )
+		{
+			$msg = sprintf( 'Paid amount or currency for order "%1$s" doesn\'t match', $order->getId() );
+			throw new \Aimeos\MShop\Service\Exception( $msg );
+		}
 	}
 
 

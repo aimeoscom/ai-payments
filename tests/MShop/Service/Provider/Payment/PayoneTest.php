@@ -85,6 +85,54 @@ class PayoneTest extends \PHPUnit\Framework\TestCase
 	}
 
 
+	public function testNotification()
+	{
+		$this->serviceItem->setConfig( ['type' => 'Payone_ShopServer', 'portalKey' => 'secret'] );
+
+		$this->assertInstanceOf( \Omnipay\Common\Message\NotificationInterface::class, $this->notification( md5( 'secret' ) ) );
+		$this->assertInstanceOf( \Omnipay\Common\Message\NotificationInterface::class, $this->notification( hash( 'sha384', 'secret' ) ) );
+	}
+
+
+	public function testNotificationInvalidKey()
+	{
+		$this->serviceItem->setConfig( ['type' => 'Payone_ShopServer', 'portalKey' => 'secret'] );
+
+		$this->expectException( \Aimeos\MShop\Service\Exception::class );
+		$this->notification( md5( 'invalid' ) );
+	}
+
+
+	public function testNotificationNoPortalKey()
+	{
+		$this->serviceItem->setConfig( ['type' => 'Payone_ShopServer'] );
+
+		$this->expectException( \Aimeos\MShop\Service\Exception::class );
+		$this->notification( md5( '' ) );
+	}
+
+
+	protected function notification( string $key ) : \Omnipay\Common\Message\NotificationInterface
+	{
+		$provider = $this->getMockBuilder( \Omnipay\Payone\ShopServerGateway::class )
+			->onlyMethods( ['acceptNotification'] )
+			->getMock();
+
+		$notification = $this->getMockBuilder( \Omnipay\Payone\Message\ShopTransactionStatusServerRequest::class )
+			->disableOriginalConstructor()
+			->onlyMethods( ['getKey'] )
+			->getMock();
+
+		$provider->method( 'acceptNotification' )->willReturn( $notification );
+		$notification->method( 'getKey' )->willReturn( $key );
+
+		$method = new \ReflectionMethod( $this->object, 'notification' );
+		$method->setAccessible( true );
+
+		return $method->invoke( $this->object, $provider );
+	}
+
+
 	protected function getOrder()
 	{
 		$manager = \Aimeos\MShop::create( $this->context, 'order' );
