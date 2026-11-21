@@ -208,11 +208,6 @@ class PaypalPlus
 				return $order;
 			}
 
-			// next command that get TransactionID was $response->getTransactionId() but it doesn't work
-			if( $response->getRequest()->getTransactionId() != $order->getId() ) {
-				return $order;
-			}
-
 			if( method_exists( $response, 'isSuccessful' ) && $response->isSuccessful() )
 			{
 				$order->setStatusPayment( $status );
