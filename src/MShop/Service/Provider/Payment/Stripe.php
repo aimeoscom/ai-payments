@@ -208,7 +208,8 @@ class Stripe
 		elseif( !$response->getTransactionReference() )
 		{
 			$msg = $this->context()->translate( 'mshop', 'Token based payment incomplete: %1$s' );
-			throw new \Aimeos\MShop\Service\Exception( sprintf( $msg, print_r( $response->getData(), true ) ), 1 );
+			// response data may contain payment details, so don't log it
+			throw new \Aimeos\MShop\Service\Exception( sprintf( $msg, $response->getMessage() ), 1 );
 		}
 		else
 		{
