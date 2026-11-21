@@ -85,6 +85,15 @@ class DatatransTest extends \PHPUnit\Framework\TestCase
 	}
 
 
+	public function testIsImplemented()
+	{
+		$object = new \Aimeos\MShop\Service\Provider\Payment\Datatrans( $this->context, $this->serviceItem );
+
+		$this->assertTrue( $object->isImplemented( \Aimeos\MShop\Service\Provider\Payment\Base::FEAT_QUERY ) );
+		$this->assertTrue( $object->isImplemented( \Aimeos\MShop\Service\Provider\Payment\Base::FEAT_REPAY ) );
+	}
+
+
 	public function testQuerySuccess()
 	{
 		$provider = $this->getMockBuilder( 'Omnipay\Dummy\Gateway' )
@@ -96,10 +105,15 @@ class DatatransTest extends \PHPUnit\Framework\TestCase
 			->setMethods( ['send'] )
 			->getMock();
 
-		$response = $this->getMockBuilder( 'Omnipay\Dummy\Message\Response' )
+		$response = $this->getMockBuilder( DatatransResponseWithCode::class )
 			->disableOriginalConstructor()
-			->setMethods( ['isSuccessful', 'getResponseCode', 'getTransactionReference'] )
+			->onlyMethods( ['isSuccessful', 'getTransactionReference', 'getResponseCode', 'getCurrencyCode', 'getAmountMinorUnits'] )
 			->getMock();
+
+		$order = $this->getOrder();
+		$base = $this->getOrderBase();
+
+		$this->object->expects( $this->once() )->method( 'getOrderBase' )->willReturn( $base );
 
 		$this->object->expects( $this->once() )->method( 'getProvider' )
 			->will($this->returnValue($provider));
@@ -116,6 +130,10 @@ class DatatransTest extends \PHPUnit\Framework\TestCase
 		$response->expects( $this->once() )->method( 'getTransactionReference' )
 			->will($this->returnValue(''));
 
+		$response->method( 'getCurrencyCode' )->willReturn( $base->getPrice()->getCurrencyId() );
+		$response->method( 'getAmountMinorUnits' )->willReturn( $this->amount( $base ) );
+		$response->method( 'getResponseCode' )->willReturn( 2 );
+
 		$this->object->expects( $this->once() )->method( 'setOrderData' );
 
 		$cmpFcn = function( $subject ) {
@@ -124,7 +142,29 @@ class DatatransTest extends \PHPUnit\Framework\TestCase
 
 		$this->object->expects( $this->once() )->method( 'saveOrder' )->with( $this->callback( $cmpFcn ) );
 
-		$this->object->query( $this->getOrder() );
+		$this->object->query( $order );
+	}
+
+
+	public function testQueryAmountMismatch()
+	{
+		$order = $this->getOrder();
+		$base = $this->getOrderBase();
+		$this->mismatch( $base, $base->getPrice()->getCurrencyId(), $this->amount( $base ) - 1 );
+
+		$this->expectException( \Aimeos\MShop\Service\Exception::class );
+		$this->object->query( $order );
+	}
+
+
+	public function testQueryCurrencyMismatch()
+	{
+		$order = $this->getOrder();
+		$base = $this->getOrderBase();
+		$this->mismatch( $base, 'XXX', $this->amount( $base ) );
+
+		$this->expectException( \Aimeos\MShop\Service\Exception::class );
+		$this->object->query( $order );
 	}
 
 
@@ -142,9 +182,9 @@ class DatatransTest extends \PHPUnit\Framework\TestCase
 			->setMethods( ['send'] )
 			->getMock();
 
-		$response = $this->getMockBuilder( 'Omnipay\Dummy\Message\Response' )
+		$response = $this->getMockBuilder( DatatransResponseWithCode::class )
 			->disableOriginalConstructor()
-			->setMethods( ['isSuccessful', 'getResponseCode', 'getTransactionReference'] )
+			->onlyMethods( ['isSuccessful', 'getTransactionReference', 'getResponseCode', 'getCurrencyCode', 'getAmountMinorUnits'] )
 			->getMock();
 
 		$this->object->expects( $this->once() )->method( 'getProvider' )
@@ -347,6 +387,42 @@ class DatatransTest extends \PHPUnit\Framework\TestCase
 	}
 
 
+	protected function amount( \Aimeos\MShop\Order\Item\Base\Iface $base ) : int
+	{
+		$amount = $this->access( 'getAmount' )->invoke( $this->object, $base->getPrice(), true, true, 2 );
+		return (int) str_replace( '.', '', $amount );
+	}
+
+
+	protected function mismatch( \Aimeos\MShop\Order\Item\Base\Iface $base, string $currency, int $amount )
+	{
+		$provider = $this->getMockBuilder( DatatransGatewayWithTransaction::class )
+			->onlyMethods( ['getTransaction'] )
+			->getMock();
+
+		$request = $this->getMockBuilder( \Omnipay\Common\Message\AbstractRequest::class )
+			->disableOriginalConstructor()
+			->getMock();
+
+		$response = $this->getMockBuilder( DatatransResponseWithCode::class )
+			->disableOriginalConstructor()
+			->onlyMethods( ['isSuccessful', 'getTransactionReference', 'getResponseCode', 'getCurrencyCode', 'getAmountMinorUnits'] )
+			->getMock();
+
+		$this->object->method( 'getOrderBase' )->willReturn( $base );
+		$this->object->method( 'getProvider' )->willReturn( $provider );
+		$this->object->expects( $this->never() )->method( 'setOrderData' );
+
+		$provider->method( 'getTransaction' )->willReturn( $request );
+		$request->method( 'send' )->willReturn( $response );
+
+		$response->method( 'isSuccessful' )->willReturn( true );
+		$response->method( 'getResponseCode' )->willReturn( 2 );
+		$response->method( 'getCurrencyCode' )->willReturn( $currency );
+		$response->method( 'getAmountMinorUnits' )->willReturn( $amount );
+	}
+
+
 	protected function getOrder()
 	{
 		$manager = \Aimeos\MShop::create( $this->context, 'order' );
@@ -376,5 +452,29 @@ class DatatransTest extends \PHPUnit\Framework\TestCase
 		$method->setAccessible( true );
 
 		return $method;
+	}
+}
+
+
+if( class_exists( 'Omnipay\Dummy\Gateway' ) )
+{
+	abstract class DatatransGatewayWithTransaction extends \Omnipay\Dummy\Gateway
+	{
+		abstract public function getTransaction( $options = [] );
+	}
+
+	abstract class DatatransGatewayWithCard extends \Omnipay\Dummy\Gateway
+	{
+		abstract public function getCard( $options = [] );
+	}
+}
+
+if( class_exists( 'Omnipay\Dummy\Message\Response' ) )
+{
+	abstract class DatatransResponseWithCode extends \Omnipay\Dummy\Message\Response
+	{
+		abstract public function getResponseCode();
+		abstract public function getCurrencyCode();
+		abstract public function getAmountMinorUnits();
 	}
 }
