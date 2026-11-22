@@ -114,4 +114,19 @@ class Payone
 
 		return $notification;
 	}
+
+
+	/**
+	 * Checks if the response of the payment gateway can be trusted
+	 *
+	 * The client API passes the payment result as unsigned parameters in the return URL,
+	 * so the final status is set by the signed transaction status notification only.
+	 *
+	 * @param \Omnipay\Common\Message\ResponseInterface $response Response of the payment gateway
+	 * @return bool TRUE if the response has been verified by the gateway, FALSE if not
+	 */
+	protected function verified( \Omnipay\Common\Message\ResponseInterface $response ) : bool
+	{
+		return !( $response instanceof \Omnipay\Payone\Message\ShopClientCompleteAuthorizeResponse );
+	}
 }

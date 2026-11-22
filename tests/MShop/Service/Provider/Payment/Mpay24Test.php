@@ -31,7 +31,7 @@ class Mpay24Test extends \PHPUnit\Framework\TestCase
 
 		$this->object = $this->getMockBuilder( \Aimeos\MShop\Service\Provider\Payment\Mpay24::class )
 			->setConstructorArgs( array( $this->context, $this->serviceItem ) )
-			->onlyMethods( ['getOrder', 'getProvider', 'saveOrder', 'setOrderData'] )
+			->onlyMethods( ['getOrder', 'getOrderBase', 'getProvider', 'saveOrder', 'setOrderData'] )
 			->getMock();
 	}
 
@@ -90,6 +90,22 @@ class Mpay24Test extends \PHPUnit\Framework\TestCase
 	}
 
 
+	public function testQueryAmountMismatch()
+	{
+		$this->object->expects( $this->never() )->method( 'setOrderData' );
+
+		$this->expectException( \Aimeos\MShop\Service\Exception::class );
+		$this->object->query( $this->query( 'OK', 'BILLED', '123', 1 ) );
+	}
+
+
+	public function testQueryCurrencyMismatch()
+	{
+		$this->expectException( \Aimeos\MShop\Service\Exception::class );
+		$this->object->query( $this->query( 'OK', 'RESERVED', '123', null, 'XXX' ) );
+	}
+
+
 	public function testQueryFailed()
 	{
 		$this->expectException( \Aimeos\MShop\Service\Exception::class );
@@ -111,7 +127,7 @@ class Mpay24Test extends \PHPUnit\Framework\TestCase
 
 		$response = $this->getMockBuilder( Mpay24TransactionResponse::class )
 			->disableOriginalConstructor()
-			->onlyMethods( ['getOperationStatus', 'getTransactionState', 'getTransactionReference', 'getReturnCode'] )
+			->onlyMethods( ['getOperationStatus', 'getTransactionState', 'getTransactionReference', 'getReturnCode', 'getAmountMinorUnits', 'getCurrencyCode'] )
 			->getMock();
 
 		$psr7request = $this->getMockBuilder( \Psr\Http\Message\ServerRequestInterface::class )->getMock();
@@ -148,9 +164,17 @@ class Mpay24Test extends \PHPUnit\Framework\TestCase
 	}
 
 
-	protected function query( string $opStatus, ?string $state, ?string $txId = null )
+	protected function query( string $opStatus, ?string $state, ?string $txId = null, ?int $amount = null, ?string $currency = null )
 	{
 		$order = $this->getOrder()->setStatusPayment( \Aimeos\MShop\Order\Item\Base::PAY_UNFINISHED );
+		$base = \Aimeos\MShop::create( $this->context, 'order/base' )->get( $order->getBaseId() );
+		$price = $base->getPrice();
+
+		$this->object->method( 'getOrderBase' )->willReturn( $base );
+
+		$method = new \ReflectionMethod( $this->object, 'getAmount' );
+		$method->setAccessible( true );
+		$amount = $amount ?? (int) str_replace( '.', '', $method->invoke( $this->object, $price, true, true, 2 ) );
 
 		$provider = $this->getMockBuilder( Mpay24GatewayWithTransaction::class )
 			->onlyMethods( ['acceptNotification', 'fetchTransaction'] )
@@ -162,7 +186,7 @@ class Mpay24Test extends \PHPUnit\Framework\TestCase
 
 		$response = $this->getMockBuilder( Mpay24TransactionResponse::class )
 			->disableOriginalConstructor()
-			->onlyMethods( ['getOperationStatus', 'getTransactionState', 'getTransactionReference', 'getReturnCode'] )
+			->onlyMethods( ['getOperationStatus', 'getTransactionState', 'getTransactionReference', 'getReturnCode', 'getAmountMinorUnits', 'getCurrencyCode'] )
 			->getMock();
 
 		$this->object->method( 'getProvider' )->willReturn( $provider );
@@ -177,6 +201,8 @@ class Mpay24Test extends \PHPUnit\Framework\TestCase
 		$response->method( 'getTransactionState' )->willReturn( $state );
 		$response->method( 'getTransactionReference' )->willReturn( $txId );
 		$response->method( 'getReturnCode' )->willReturn( 'NOT_FOUND' );
+		$response->method( 'getAmountMinorUnits' )->willReturn( $amount );
+		$response->method( 'getCurrencyCode' )->willReturn( $currency ?? $price->getCurrencyId() );
 
 		return $order;
 	}
@@ -209,5 +235,7 @@ if( class_exists( 'Omnipay\Dummy\Message\Response' ) )
 		abstract public function getOperationStatus();
 		abstract public function getTransactionState();
 		abstract public function getReturnCode();
+		abstract public function getAmountMinorUnits();
+		abstract public function getCurrencyCode();
 	}
 }
