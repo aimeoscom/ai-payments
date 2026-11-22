@@ -657,7 +657,7 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 			->getMock();
 
 		$request = $this->getMockBuilder( OmniPayRequestWithStatus::class )
-			->onlyMethods( ['getData', 'sendData', 'getMessage', 'getTransactionReference', 'getTransactionStatus'] )
+			->onlyMethods( ['getData', 'sendData', 'getMessage', 'getTransactionId', 'getTransactionReference', 'getTransactionStatus'] )
 			->disableOriginalConstructor()
 			->getMock();
 
@@ -678,6 +678,9 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 
 		$provider->expects( $this->once() )->method( 'acceptNotification' )
 			->will( $this->returnValue( $request ) );
+
+		$request->expects( $this->once() )->method( 'getTransactionId' )
+			->willReturn( $order->getId() );
 
 		$request->expects( $this->once() )->method( 'getTransactionReference' )
 			->will( $this->returnValue( '123' ) );
@@ -708,7 +711,7 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 			->getMock();
 
 		$request = $this->getMockBuilder( OmniPayRequestWithStatus::class )
-			->onlyMethods( ['getData', 'sendData', 'getMessage', 'getTransactionReference', 'getTransactionStatus'] )
+			->onlyMethods( ['getData', 'sendData', 'getMessage', 'getTransactionId', 'getTransactionReference', 'getTransactionStatus'] )
 			->disableOriginalConstructor()
 			->getMock();
 
@@ -729,6 +732,9 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 
 		$provider->expects( $this->once() )->method( 'acceptNotification' )
 			->will( $this->returnValue( $request ) );
+
+		$request->expects( $this->once() )->method( 'getTransactionId' )
+			->willReturn( $order->getId() );
 
 		$request->expects( $this->once() )->method( 'getTransactionReference' )
 			->will( $this->returnValue( '123' ) );
@@ -759,7 +765,7 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 			->getMock();
 
 		$request = $this->getMockBuilder( OmniPayRequestWithStatus::class )
-			->onlyMethods( ['getData', 'sendData', 'getMessage', 'getTransactionReference', 'getTransactionStatus'] )
+			->onlyMethods( ['getData', 'sendData', 'getMessage', 'getTransactionId', 'getTransactionReference', 'getTransactionStatus'] )
 			->disableOriginalConstructor()
 			->getMock();
 
@@ -781,6 +787,9 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 		$provider->expects( $this->once() )->method( 'acceptNotification' )
 			->will( $this->returnValue( $request ) );
 
+		$request->expects( $this->once() )->method( 'getTransactionId' )
+			->willReturn( $order->getId() );
+
 		$request->expects( $this->once() )->method( 'getTransactionStatus' )
 			->will( $this->returnValue( \Omnipay\Common\Message\NotificationInterface::STATUS_FAILED ) );
 
@@ -797,6 +806,130 @@ class OmniPayTest extends \PHPUnit\Framework\TestCase
 		$result = $this->object->updatePush( $psr7request, $psr7response );
 
 		$this->assertInstanceOf( \Psr\Http\Message\ResponseInterface::class, $result );
+	}
+
+
+	public function testUpdatePushOtherOrder()
+	{
+		$order = $this->getOrder();
+
+		$provider = $this->getMockBuilder( OmniPayGatewayWithNotification::class )
+			->onlyMethods( ['supportsAcceptNotification', 'acceptNotification', 'save'] )
+			->getMock();
+
+		$request = $this->getMockBuilder( OmniPayRequestWithStatus::class )
+			->onlyMethods( ['getData', 'sendData', 'getMessage', 'getTransactionId', 'getTransactionReference', 'getTransactionStatus'] )
+			->disableOriginalConstructor()
+			->getMock();
+
+		$psr7request = $this->getMockBuilder( \Psr\Http\Message\ServerRequestInterface::class )->getMock();
+		$psr7response = $this->getMockBuilder( \Psr\Http\Message\ResponseInterface::class )->getMock();
+
+		$psr7request->expects( $this->once() )->method( 'getQueryParams' )->willReturn( ['orderid' => $order->getId()] );
+		$psr7response->expects( $this->once() )->method( 'withStatus' )
+			->willReturn( $psr7response )
+			->with( $this->equalTo( 500 ) );
+
+
+		$this->object->expects( $this->once() )->method( 'getProvider' )
+			->willReturn( $provider );
+
+		$provider->expects( $this->once() )->method( 'supportsAcceptNotification' )
+			->willReturn( true );
+
+		$provider->expects( $this->once() )->method( 'acceptNotification' )
+			->willReturn( $request );
+
+		$request->expects( $this->once() )->method( 'getTransactionId' )
+			->willReturn( '-1' );
+
+		$request->expects( $this->never() )->method( 'getTransactionStatus' );
+		$this->object->expects( $this->never() )->method( 'save' );
+
+
+		$result = $this->object->updatePush( $psr7request, $psr7response );
+
+		$this->assertInstanceOf( \Psr\Http\Message\ResponseInterface::class, $result );
+	}
+
+
+	public function testUpdateSyncUnverified()
+	{
+		$order = $this->getOrder();
+
+		$object = $this->getMockBuilder( '\\Aimeos\\MShop\\Service\\Provider\\Payment\\OmniPay' )
+			->setConstructorArgs( array( $this->context, $this->serviceItem ) )
+			->onlyMethods( ['data', 'getProvider', 'getTransactionReference', 'getOrderData', 'save', 'setData', 'setOrderData', 'verified'] )
+			->getMock();
+
+		$provider = $this->getMockBuilder( 'Omnipay\Dummy\Gateway' )
+			->onlyMethods( array( 'supportsCompletePurchase', 'completePurchase' ) )
+			->getMock();
+
+		$request = $this->getMockBuilder( \Omnipay\Common\Message\AbstractRequest::class )
+			->disableOriginalConstructor()
+			->getMock();
+
+		$response = $this->getMockBuilder( 'Omnipay\Dummy\Message\Response' )
+			->onlyMethods( array( 'getTransactionId', 'isSuccessful', 'getTransactionReference' ) )
+			->disableOriginalConstructor()
+			->getMock();
+
+		$psr7request = $this->getMockBuilder( \Psr\Http\Message\ServerRequestInterface::class )->getMock();
+
+
+		$object->method( 'getProvider' )->willReturn( $provider );
+		$object->expects( $this->once() )->method( 'verified' )->willReturn( false );
+		$provider->expects( $this->once() )->method( 'supportsCompletePurchase' )->willReturn( true );
+		$provider->expects( $this->once() )->method( 'completePurchase' )->willReturn( $request );
+		$request->expects( $this->once() )->method( 'send' )->willReturn( $response );
+		$response->expects( $this->once() )->method( 'isSuccessful' )->willReturn( true );
+		$response->method( 'getTransactionReference' )->willReturn( '' );
+
+
+		$result = $object->updateSync( $psr7request, $order->setStatusPayment( \Aimeos\MShop\Order\Item\Base::PAY_UNFINISHED ) );
+
+		$this->assertEquals( \Aimeos\MShop\Order\Item\Base::PAY_PENDING, $result->getStatusPayment() );
+	}
+
+
+	public function testUpdateSyncUnverifiedKeepStatus()
+	{
+		$order = $this->getOrder();
+
+		$object = $this->getMockBuilder( '\\Aimeos\\MShop\\Service\\Provider\\Payment\\OmniPay' )
+			->setConstructorArgs( array( $this->context, $this->serviceItem ) )
+			->onlyMethods( ['data', 'getProvider', 'getTransactionReference', 'getOrderData', 'save', 'setData', 'setOrderData', 'verified'] )
+			->getMock();
+
+		$provider = $this->getMockBuilder( 'Omnipay\Dummy\Gateway' )
+			->onlyMethods( array( 'supportsCompletePurchase', 'completePurchase' ) )
+			->getMock();
+
+		$request = $this->getMockBuilder( \Omnipay\Common\Message\AbstractRequest::class )
+			->disableOriginalConstructor()
+			->getMock();
+
+		$response = $this->getMockBuilder( 'Omnipay\Dummy\Message\Response' )
+			->onlyMethods( array( 'getTransactionId', 'isSuccessful', 'getTransactionReference' ) )
+			->disableOriginalConstructor()
+			->getMock();
+
+		$psr7request = $this->getMockBuilder( \Psr\Http\Message\ServerRequestInterface::class )->getMock();
+
+
+		$object->method( 'getProvider' )->willReturn( $provider );
+		$object->expects( $this->once() )->method( 'verified' )->willReturn( false );
+		$provider->expects( $this->once() )->method( 'supportsCompletePurchase' )->willReturn( true );
+		$provider->expects( $this->once() )->method( 'completePurchase' )->willReturn( $request );
+		$request->expects( $this->once() )->method( 'send' )->willReturn( $response );
+		$response->expects( $this->once() )->method( 'isSuccessful' )->willReturn( true );
+		$response->method( 'getTransactionReference' )->willReturn( '' );
+
+
+		$result = $object->updateSync( $psr7request, $order->setStatusPayment( \Aimeos\MShop\Order\Item\Base::PAY_REFUSED ) );
+
+		$this->assertEquals( \Aimeos\MShop\Order\Item\Base::PAY_REFUSED, $result->getStatusPayment() );
 	}
 
 

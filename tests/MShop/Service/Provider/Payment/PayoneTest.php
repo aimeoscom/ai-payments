@@ -112,6 +112,25 @@ class PayoneTest extends \PHPUnit\Framework\TestCase
 	}
 
 
+	public function testVerified()
+	{
+		$method = new \ReflectionMethod( $this->object, 'verified' );
+		$method->setAccessible( true );
+
+		$response = $this->getMockBuilder( \Omnipay\Payone\Message\ShopClientCompleteAuthorizeResponse::class )
+			->disableOriginalConstructor()
+			->getMock();
+
+		$this->assertFalse( $method->invoke( $this->object, $response ) );
+
+		$response = $this->getMockBuilder( \Omnipay\Payone\Message\ShopServerAuthorizeResponse::class )
+			->disableOriginalConstructor()
+			->getMock();
+
+		$this->assertTrue( $method->invoke( $this->object, $response ) );
+	}
+
+
 	protected function notification( string $key ) : \Omnipay\Common\Message\NotificationInterface
 	{
 		$provider = $this->getMockBuilder( \Omnipay\Payone\ShopServerGateway::class )

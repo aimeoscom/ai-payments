@@ -37,6 +37,7 @@ class Mpay24
 	 * Queries the payment gateway for the payment status of the given order
 	 *
 	 * The notifications sent by mPAY24 aren't signed, so the status must be fetched from the gateway.
+	 * The paid amount and currency must match the order because the customer can pay a different amount.
 	 *
 	 * @param \Aimeos\MShop\Order\Item\Iface $order Order item
 	 * @return \Aimeos\MShop\Order\Item\Iface Updated order item
@@ -60,6 +61,10 @@ class Mpay24
 			'ERROR' => \Aimeos\MShop\Order\Item\Base::PAY_REFUSED,
 			default => null,
 		};
+
+		if( in_array( $status, [\Aimeos\MShop\Order\Item\Base::PAY_RECEIVED, \Aimeos\MShop\Order\Item\Base::PAY_AUTHORIZED], true ) ) {
+			$this->checkAmount( $order, $response );
+		}
 
 		if( $status !== null ) {
 			$order->setStatusPayment( $status );
