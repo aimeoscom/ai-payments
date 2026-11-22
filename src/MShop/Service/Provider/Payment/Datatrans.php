@@ -212,30 +212,6 @@ class Datatrans
 
 
 	/**
-	 * Checks if the paid amount and currency match the order
-	 *
-	 * The amount and currency aren't signed without the HMAC key and can be modified by the customer.
-	 *
-	 * @param \Aimeos\MShop\Order\Item\Iface $order Order item
-	 * @param \Omnipay\Common\Message\ResponseInterface $response Transaction status response
-	 * @throws \Aimeos\MShop\Service\Exception If amount or currency don't match
-	 */
-	protected function checkAmount( \Aimeos\MShop\Order\Item\Iface $order, \Omnipay\Common\Message\ResponseInterface $response ) : void
-	{
-		$price = $order->getPrice();
-		$digits = ( new \Money\Currencies\ISOCurrencies() )->subunitFor( new \Money\Currency( $price->getCurrencyId() ) );
-		$amount = (int) str_replace( '.', '', $this->getAmount( $price, true, true, $digits ) );
-
-		// @phpstan-ignore method.notFound, method.notFound
-		if( $response->getCurrencyCode() !== $price->getCurrencyId() || $response->getAmountMinorUnits() !== $amount )
-		{
-			$msg = sprintf( 'Paid amount or currency for order "%1$s" doesn\'t match', $order->getId() );
-			throw new \Aimeos\MShop\Service\Exception( $msg );
-		}
-	}
-
-
-	/**
 	 * Returns the value for the given configuration key
 	 *
 	 * @param string $key Configuration key name
