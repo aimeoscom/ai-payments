@@ -519,6 +519,11 @@ class OmniPay
 			{
 				$notification = $this->notification( $provider );
 
+				// the order ID passed in the URL must be the one of the notified transaction
+				if( !method_exists( $notification, 'getTransactionId' ) || (string) $notification->getTransactionId() !== (string) $order->getId() ) {
+					throw new \Aimeos\MShop\Service\Exception( sprintf( 'Payment notification doesn\'t belong to order "%1$s"', $order->getId() ) );
+				}
+
 				$order->setStatusPayment( $this->translateStatus( $notification->getTransactionStatus() ) );
 				$this->setOrderData( $order, ['Transaction' => $notification->getTransactionReference()] );
 			}
@@ -583,8 +588,11 @@ class OmniPay
 				// response data is passed by the browser, so let the gateway confirm the payment if possible
 				if( $this->isImplemented( \Aimeos\MShop\Service\Provider\Payment\Base::FEAT_QUERY ) ) {
 					$this->query( $order );
-				} else {
+				} elseif( $this->verified( $response ) ) {
 					$order->setStatusPayment( $status );
+				} elseif( $order->getStatusPayment() === Status::PAY_UNFINISHED ) {
+					// the final status is set by the gateway notification
+					$order->setStatusPayment( Status::PAY_PENDING );
 				}
 			}
 			elseif( method_exists( $response, 'isPending' ) && $response->isPending() )
@@ -625,6 +633,27 @@ class OmniPay
 		}
 
 		return $order;
+	}
+
+
+	/**
+	 * Checks if the paid amount and currency match the order
+	 *
+	 * @param \Aimeos\MShop\Order\Item\Iface $order Order item
+	 * @param \Omnipay\Common\Message\ResponseInterface $response Transaction status response with getCurrencyCode() and getAmountMinorUnits()
+	 * @throws \Aimeos\MShop\Service\Exception If amount or currency don't match
+	 */
+	protected function checkAmount( \Aimeos\MShop\Order\Item\Iface $order, \Omnipay\Common\Message\ResponseInterface $response ) : void
+	{
+		$price = $order->getPrice();
+		$digits = ( new \Money\Currencies\ISOCurrencies() )->subunitFor( new \Money\Currency( $price->getCurrencyId() ) );
+		$amount = (int) str_replace( '.', '', $this->getAmount( $price, true, true, $digits ) );
+
+		if( $response->getCurrencyCode() !== $price->getCurrencyId() || $response->getAmountMinorUnits() !== $amount )
+		{
+			$msg = sprintf( 'Paid amount or currency for order "%1$s" doesn\'t match', $order->getId() );
+			throw new \Aimeos\MShop\Service\Exception( $msg );
+		}
 	}
 
 
@@ -837,6 +866,21 @@ class OmniPay
 	protected function notification( \Omnipay\Common\GatewayInterface $provider ) : \Omnipay\Common\Message\NotificationInterface
 	{
 		return $provider->acceptNotification();
+	}
+
+
+	/**
+	 * Checks if the response of the payment gateway can be trusted
+	 *
+	 * Overwrite this method if the gateway passes the payment result unsigned by the customer's browser.
+	 * Successful payments are then only set to pending and the gateway notification sets the final status.
+	 *
+	 * @param \Omnipay\Common\Message\ResponseInterface $response Response of the payment gateway
+	 * @return bool TRUE if the response has been verified by the gateway or the Omnipay driver, FALSE if not
+	 */
+	protected function verified( \Omnipay\Common\Message\ResponseInterface $response ) : bool
+	{
+		return true;
 	}
 
 
