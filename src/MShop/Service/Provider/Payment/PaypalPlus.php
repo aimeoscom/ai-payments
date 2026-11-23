@@ -180,8 +180,18 @@ class PaypalPlus
 	public function updateSync( \Psr\Http\Message\ServerRequestInterface $request,
 		\Aimeos\MShop\Order\Item\Iface $order ) : \Aimeos\MShop\Order\Item\Iface
 	{
-		if( empty( $request->getQueryParams()['PayerID'] ) ) {
-			return $order->setStatusPayment( Status::PAY_CANCELED );
+		// customers can open the confirmation page again, so only unfinished payments can be changed
+		if( !in_array( $order->getStatusPayment(), [Status::PAY_UNFINISHED, Status::PAY_PENDING] ) ) {
+			return $order;
+		}
+
+		if( empty( $request->getQueryParams()['PayerID'] ) )
+		{
+			if( $order->getStatusPayment() === Status::PAY_UNFINISHED ) {
+				$order->setStatusPayment( Status::PAY_CANCELED );
+			}
+
+			return $order;
 		}
 
 		try
@@ -218,7 +228,9 @@ class PaypalPlus
 			}
 			elseif( method_exists( $response, 'isCancelled' ) && $response->isCancelled() )
 			{
-				$order->setStatusPayment( Status::PAY_CANCELED );
+				if( $order->getStatusPayment() === Status::PAY_UNFINISHED ) {
+					$order->setStatusPayment( Status::PAY_CANCELED );
+				}
 			}
 			elseif( method_exists( $response, 'isRedirect' ) && $response->isRedirect() )
 			{
@@ -273,15 +285,15 @@ class PaypalPlus
 	{
 		return '
 			<div id="ppplus"></div>
-			<script src="https://www.paypalobjects.com/webstatic/ppplus/ppplus.min.js" type="text/javascript"></script>
-			<script type="application/javascript">
+			<script src="https://www.paypalobjects.com/webstatic/ppplus/ppplus.min.js" type="text/javascript" nonce="' . $this->context()->nonce() . '"></script>
+			<script type="application/javascript" nonce="' . $this->context()->nonce() . '">
 				var ppp = PAYPAL.apps.PPP({
 					"preselection": "none",
 					"placeholder": "ppplus",
 					"showLoadingIndicator": true,
-					"country": "' . $countryid . '",
-					"language": "' . $languageid . '",
-					"approvalUrl": "'. $approvalUrl . '",
+					"country": ' . json_encode( $countryid, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT ) . ',
+					"language": ' . json_encode( $languageid, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT ) . ',
+					"approvalUrl": ' . json_encode( $approvalUrl, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_UNESCAPED_SLASHES ) . ',
 					"mode": "' . ( $this->getConfigValue( 'testmode' ) ? 'sandbox' : 'live' ) . '",
 					onContinue: function () { ppp.doCheckout() } ,
 				});
