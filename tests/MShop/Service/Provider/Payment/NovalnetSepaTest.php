@@ -49,62 +49,30 @@ class NovalnetSepaTest extends \PHPUnit\Framework\TestCase
 
 	public function testGetConfigFE()
 	{
-		$orderManager = \Aimeos\MShop::create( $this->context, 'order' );
-		$orderBaseManager = $orderManager->getSubManager( 'base' );
-		$search = $orderManager->filter();
-		$expr = array(
-			$search->compare( '==', 'order.channel', 'web' ),
-			$search->compare( '==', 'order.statuspayment', \Aimeos\MShop\Order\Item\Base::PAY_AUTHORIZED )
-		);
-		$search->setConditions( $search->and( $expr ) );
-
-		if( ( $item = $orderManager->search( $search )->first() ) === null )
-		{
-			$msg = 'No Order found with statuspayment "%1$s" and channel "%2$s"';
-			throw new \RuntimeException( sprintf( $msg, \Aimeos\MShop\Order\Item\Base::PAY_AUTHORIZED, 'web' ) );
-		}
-
-		$basket = $orderBaseManager->load( $item->getBaseId() );
-
-		$config = $this->object->getConfigFE( $basket );
-
-		$this->assertArrayHasKey( 'novalnetsepa.iban', $config );
+		$this->assertEquals( [], $this->object->getConfigFE( \Aimeos\MShop::create( $this->context, 'order/base' )->create() ) );
 	}
 
 
 	public function testCheckConfigFE()
 	{
-		$config = array(
-			'novalnetsepa.bic' => 'ABCDEFGHIJK',
-			'novalnetsepa.iban' => 'DE00102030405060708090',
-			'novalnetsepa.holder' => 'test user',
-		);
-
-		$result = $this->object->checkConfigFE( $config );
-
-		$expected = array(
-			'novalnetsepa.bic' => null,
-			'novalnetsepa.iban' => null,
-			'novalnetsepa.holder' => null,
-		);
-
-		$this->assertEquals( $expected, $result );
+		// bank account details must not be added to the basket
+		$this->assertEquals( [], $this->object->checkConfigFE( ['novalnetsepa.iban' => 'DE00102030405060708090'] ) );
 	}
 
 
-	public function testSetConfigFE()
+	public function testProcessForm()
 	{
-		$params = array(
-			'novalnetsepa.bic' => 'ABCDEFGHIJK',
-			'novalnetsepa.iban' => 'DE00102030405060708090',
-			'novalnetsepa.holder' => 'test user',
-		);
+		$this->object->expects( $this->once() )->method( 'getOrderBase' )
+			->will( $this->returnValue( $this->getOrderBase() ) );
 
-		$this->object->setConfigFE( $this->ordServItem, $params );
+		$this->object->expects( $this->never() )->method( 'getProvider' );
 
-		$attrItem = $this->ordServItem->getAttributeItem( 'novalnetsepa.iban', 'session' );
-		$this->assertInstanceOf( '\\Aimeos\\MShop\\Order\\Item\\Base\\Service\\Attribute\\Iface', $attrItem );
-		$this->assertEquals( 'DE00102030405060708090', $attrItem->getValue() );
+		$result = $this->object->process( $this->getOrder() );
+
+		$this->assertInstanceOf( \Aimeos\MShop\Common\Helper\Form\Iface::class, $result );
+		$this->assertEquals( 'POST', $result->getMethod() );
+		$this->assertFalse( $result->getExternal() );
+		$this->assertEquals( 'iban', $result->getValues()['novalnetsepa.iban']->getInternalCode() );
 	}
 
 
@@ -146,7 +114,8 @@ class NovalnetSepaTest extends \PHPUnit\Framework\TestCase
 			->will($this->returnValue(''));
 
 
-		$result = $this->object->process( $this->getOrder() );
+		$params = ['holder' => 'test user', 'iban' => 'DE00102030405060708090', 'bic' => 'ABCDEFGHIJK'];
+		$result = $this->object->process( $this->getOrder(), $params );
 
 		$this->assertInstanceOf( \Aimeos\MShop\Common\Helper\Form\Iface::class, $result );
 	}

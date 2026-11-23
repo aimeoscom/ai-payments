@@ -466,7 +466,7 @@ class OmniPay
 		if( $response->isSuccessful() || $response->isPending() )
 		{
 			$this->setOrderData( $order, ['Transaction' => $response->getTransactionReference()] );
-			$this->saveOrder( $order->setStatusPayment( Status::PAY_RECEIVED ) );
+			$this->saveOrder( $order->setStatusPayment( $response->isSuccessful() ? Status::PAY_RECEIVED : Status::PAY_PENDING ) );
 		}
 		elseif( !$response->getTransactionReference() )
 		{
@@ -524,7 +524,13 @@ class OmniPay
 					throw new \Aimeos\MShop\Service\Exception( sprintf( 'Payment notification doesn\'t belong to order "%1$s"', $order->getId() ) );
 				}
 
-				$order->setStatusPayment( $this->translateStatus( $notification->getTransactionStatus() ) );
+				$status = $this->translateStatus( $notification->getTransactionStatus() );
+
+				// unknown states and late or replayed pending notifications don't change the payment status
+				if( $status !== null && ( $status !== Status::PAY_PENDING || $order->getStatusPayment() < Status::PAY_AUTHORIZED ) ) {
+					$order->setStatusPayment( $status );
+				}
+
 				$this->setOrderData( $order, ['Transaction' => $notification->getTransactionReference()] );
 			}
 
@@ -599,11 +605,16 @@ class OmniPay
 			}
 			elseif( method_exists( $response, 'isPending' ) && $response->isPending() )
 			{
-				$order->setStatusPayment( Status::PAY_PENDING );
+				// response data is passed by the browser and must not change finished payments
+				if( $order->getStatusPayment() === Status::PAY_UNFINISHED ) {
+					$order->setStatusPayment( Status::PAY_PENDING );
+				}
 			}
 			elseif( method_exists( $response, 'isCancelled' ) && $response->isCancelled() )
 			{
-				$order->setStatusPayment( Status::PAY_CANCELED );
+				if( $order->getStatusPayment() === Status::PAY_UNFINISHED ) {
+					$order->setStatusPayment( Status::PAY_CANCELED );
+				}
 			}
 			elseif( method_exists( $response, 'isRedirect' ) && $response->isRedirect() )
 			{

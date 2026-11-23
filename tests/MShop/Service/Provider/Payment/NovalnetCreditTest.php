@@ -49,64 +49,31 @@ class NovalnetCreditTest extends \PHPUnit\Framework\TestCase
 
 	public function testGetConfigFE()
 	{
-		$orderManager = \Aimeos\MShop::create( $this->context, 'order' );
-		$orderBaseManager = $orderManager->getSubManager( 'base' );
-		$search = $orderManager->filter();
-		$expr = array(
-			$search->compare( '==', 'order.channel', 'web' ),
-			$search->compare( '==', 'order.statuspayment', \Aimeos\MShop\Order\Item\Base::PAY_AUTHORIZED )
-		);
-		$search->setConditions( $search->and( $expr ) );
-
-		if( ( $item = $orderManager->search( $search )->first() ) === null )
-		{
-			$msg = 'No Order found with statuspayment "%1$s" and channel "%2$s"';
-			throw new \RuntimeException( sprintf( $msg, \Aimeos\MShop\Order\Item\Base::PAY_AUTHORIZED, 'web' ) );
-		}
-
-		$basket = $orderBaseManager->load( $item->getBaseId() );
-
-		$config = $this->object->getConfigFE( $basket );
-
-		$this->assertEquals( 'Our Unittest', $config['novalnetcredit.holder']->getDefault() );
-		$this->assertArrayHasKey( 'novalnetcredit.number', $config );
-		$this->assertArrayHasKey( 'novalnetcredit.year', $config );
-		$this->assertArrayHasKey( 'novalnetcredit.month', $config );
-		$this->assertArrayHasKey( 'novalnetcredit.cvv', $config );
+		$this->assertEquals( [], $this->object->getConfigFE( \Aimeos\MShop::create( $this->context, 'order/base' )->create() ) );
 	}
 
 
 	public function testCheckConfigFE()
 	{
-		$config = array(
-			'novalnetcredit.holder' => 'test user',
-			'novalnetcredit.number' => '4111111111111111',
-			'novalnetcredit.year' => date( 'Y' ),
-			'novalnetcredit.month' => '1',
-			'novalnetcredit.cvv' => '123',
-		);
-
-		$result = $this->object->checkConfigFE( $config );
-
-		$expected = array(
-			'novalnetcredit.holder' => null,
-			'novalnetcredit.number' => null,
-			'novalnetcredit.year' => null,
-			'novalnetcredit.month' => null,
-			'novalnetcredit.cvv' => null,
-		);
-
-		$this->assertEquals( $expected, $result );
+		// card details must not be added to the basket
+		$this->assertEquals( [], $this->object->checkConfigFE( ['novalnetcredit.number' => '4111111111111111'] ) );
 	}
 
 
-	public function testSetConfigFE()
+	public function testProcessForm()
 	{
-		$this->object->setConfigFE( $this->ordServItem, array( 'novalnetcredit.number' => '4111111111111111' ) );
+		$this->object->expects( $this->once() )->method( 'getOrderBase' )
+			->will( $this->returnValue( $this->getOrderBase() ) );
 
-		$attrItem = $this->ordServItem->getAttributeItem( 'novalnetcredit.number', 'session' );
-		$this->assertInstanceOf( '\\Aimeos\\MShop\\Order\\Item\\Base\\Service\\Attribute\\Iface', $attrItem );
-		$this->assertEquals( '4111111111111111', $attrItem->getValue() );
+		$this->object->expects( $this->never() )->method( 'getProvider' );
+
+		$result = $this->object->process( $this->getOrder() );
+
+		$this->assertInstanceOf( \Aimeos\MShop\Common\Helper\Form\Iface::class, $result );
+		$this->assertEquals( 'POST', $result->getMethod() );
+		$this->assertFalse( $result->getExternal() );
+		$this->assertEquals( 'ccnumber', $result->getValues()['novalnetcredit.number']->getInternalCode() );
+		$this->assertEquals( 'cccvv', $result->getValues()['novalnetcredit.cvv']->getInternalCode() );
 	}
 
 
@@ -147,7 +114,8 @@ class NovalnetCreditTest extends \PHPUnit\Framework\TestCase
 			->will($this->returnValue(''));
 
 
-		$result = $this->object->process( $this->getOrder() );
+		$params = ['ccholder' => 'test user', 'ccnumber' => '4111111111111111', 'ccyear' => date( 'Y' ), 'ccmonth' => '1', 'cccvv' => '123'];
+		$result = $this->object->process( $this->getOrder(), $params );
 
 		$this->assertInstanceOf( \Aimeos\MShop\Common\Helper\Form\Iface::class, $result );
 	}
@@ -158,8 +126,12 @@ class NovalnetCreditTest extends \PHPUnit\Framework\TestCase
 		$this->object->expects( $this->once() )->method( 'getValue' )
 			->will( $this->returnValue( true ) );
 
-		$result = $this->access( 'getCardDetails' )->invokeArgs( $this->object, [$this->getOrderBase(), []] );
+		$params = ['ccnumber' => '4111111111111111', 'novalnetcredit.cvv' => '123'];
+		$result = $this->access( 'getCardDetails' )->invokeArgs( $this->object, [$this->getOrderBase(), $params] );
+
 		$this->assertInstanceOf( \Omnipay\Common\CreditCard::class, $result );
+		$this->assertEquals( '4111111111111111', $result->getNumber() );
+		$this->assertEquals( '123', $result->getCvv() );
 	}
 
 

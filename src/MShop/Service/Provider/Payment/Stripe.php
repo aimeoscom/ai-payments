@@ -206,7 +206,7 @@ class Stripe
 		if( $response->isSuccessful() || $response->isPending() )
 		{
 			$this->setOrderData( $order, ['Transaction' => $response->getTransactionReference()] );
-			$order = $this->saveOrder( $order->setStatusPayment( Status::PAY_RECEIVED ) );
+			$order = $this->saveOrder( $order->setStatusPayment( $response->isSuccessful() ? Status::PAY_RECEIVED : Status::PAY_PENDING ) );
 		}
 		elseif( !$response->getTransactionReference() )
 		{
@@ -425,7 +425,7 @@ StripeProvider = {
 };
 
 document.addEventListener("DOMContentLoaded", function() {
-	StripeProvider.init("' . $this->getConfigValue( 'publishableKey', '' ) . '",
+	StripeProvider.init(' . json_encode( (string) $this->getConfigValue( 'publishableKey', '' ), JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT ) . ',
 		[
 			{"element": "cardNumber", "selector": "div[id=\"process-payment.cardno\"]"},
 			{"element": "cardExpiry", "selector": "div[id=\"process-payment.expiry\"]"},
