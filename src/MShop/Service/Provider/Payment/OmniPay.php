@@ -406,7 +406,18 @@ class OmniPay
 			// @phpstan-ignore argument.type
 			$service->addTransaction( $tx );
 
-			if( $amount == $order->getPrice()->getValue() + $order->getPrice()->getCosts() ) { // @phpstan-ignore binaryOp.invalid
+			$refunded = 0;
+			$precision = (int) $this->context()->config()->get( 'mshop/price/precision', 2 );
+
+			// partial refunds which sum up to the order total refund the whole order
+			foreach( $service->getTransactions() as $item )
+			{
+				if( $item->getType() === 'refund' && $item->getStatus() === Status::PAY_REFUND ) {
+					$refunded += $item->getPrice()->getValue() + $item->getPrice()->getCosts(); // @phpstan-ignore binaryOp.invalid
+				}
+			}
+
+			if( round( $refunded, $precision ) >= round( $order->getPrice()->getValue() + $order->getPrice()->getCosts(), $precision ) ) { // @phpstan-ignore binaryOp.invalid
 				$order->setStatusPayment( Status::PAY_REFUND );
 			}
 		}
@@ -464,7 +475,7 @@ class OmniPay
 		if( $response->isSuccessful() || $response->isPending() )
 		{
 			$this->setOrderData( $order, ['Transaction' => $response->getTransactionReference()] );
-			$order->setStatusPayment( Status::PAY_RECEIVED );
+			$order->setStatusPayment( $response->isSuccessful() ? Status::PAY_RECEIVED : Status::PAY_PENDING );
 		}
 		elseif( !$response->getTransactionReference() )
 		{
@@ -527,7 +538,13 @@ class OmniPay
 					throw new \Aimeos\MShop\Service\Exception( sprintf( 'Payment notification doesn\'t belong to order "%1$s"', $order->getId() ) );
 				}
 
-				$order->setStatusPayment( $this->translateStatus( $notification->getTransactionStatus() ) );
+				$status = $this->translateStatus( $notification->getTransactionStatus() );
+
+				// unknown states and late or replayed pending notifications don't change the payment status
+				if( $status !== null && ( $status !== Status::PAY_PENDING || $order->getStatusPayment() < Status::PAY_AUTHORIZED ) ) {
+					$order->setStatusPayment( $status );
+				}
+
 				// @phpstan-ignore argument.type
 				$this->setOrderData( $order, ['Transaction' => $notification->getTransactionReference()] );
 			}
@@ -603,11 +620,16 @@ class OmniPay
 			}
 			elseif( method_exists( $response, 'isPending' ) && $response->isPending() )
 			{
-				$order->setStatusPayment( Status::PAY_PENDING );
+				// response data is passed by the browser and must not change finished payments
+				if( $order->getStatusPayment() === Status::PAY_UNFINISHED ) {
+					$order->setStatusPayment( Status::PAY_PENDING );
+				}
 			}
 			elseif( method_exists( $response, 'isCancelled' ) && $response->isCancelled() )
 			{
-				$order->setStatusPayment( Status::PAY_CANCELED );
+				if( $order->getStatusPayment() === Status::PAY_UNFINISHED ) {
+					$order->setStatusPayment( Status::PAY_CANCELED );
+				}
 			}
 			elseif( method_exists( $response, 'isRedirect' ) && $response->isRedirect() )
 			{
