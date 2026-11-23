@@ -86,84 +86,6 @@ class NovalnetCredit
 
 
 	/**
-	 * Returns the configuration attribute definitions of the provider to generate a list of available fields and
-	 * rules for the value of each field in the frontend.
-	 *
-	 * @param \Aimeos\MShop\Order\Item\Iface $basket Basket object
-	 * @return array List of attribute definitions implementing \Aimeos\Base\Critera\Attribute\Iface
-	 */
-	public function getConfigFE( \Aimeos\MShop\Order\Item\Iface $basket ) : array
-	{
-		$list = [];
-		$feconfig = $this->feConfig;
-
-		try
-		{
-			$service = $basket->getService( \Aimeos\MShop\Order\Item\Service\Base::TYPE_PAYMENT, 0 );
-
-			foreach( $service->getAttributeItems() as $item )
-			{
-				if( isset( $feconfig[$item->getCode()] ) )
-				{
-					if( is_array( $feconfig[$item->getCode()]['default'] ) ) {
-						$feconfig[$item->getCode()]['default'] = array_merge( array( $item->getValue() ), $feconfig[$item->getCode()]['default'] );
-					} else {
-						$feconfig[$item->getCode()]['default'] = $item->getValue();
-					}
-				}
-			}
-		}
-		catch( \Aimeos\MShop\Order\Exception $e ) {; } // If payment isn't available yet
-
-
-		$addresses = $basket->getAddress( \Aimeos\MShop\Order\Item\Address\Base::TYPE_PAYMENT );
-
-		if( ( $address = current( $addresses ) ) !== false )
-		{
-			if( $feconfig['novalnetcredit.holder']['default'] == ''
-				&& ( $fn = $address->getFirstname() ) !== '' && ( $ln = $address->getLastname() ) !== ''
-			) {
-				$feconfig['novalnetcredit.holder']['default'] = $fn . ' ' . $ln;
-			}
-		}
-
-
-		foreach( $feconfig as $key => $config ) {
-			$list[$key] = new \Aimeos\Base\Criteria\Attribute\Standard( $config );
-		}
-
-		return $list;
-	}
-
-
-	/**
-	 * Checks the frontend configuration attributes for validity.
-	 *
-	 * @param array $attributes Attributes entered by the customer during the checkout process
-	 * @return array An array with the attribute keys as key and an error message as values for all attributes that are
-	 * 	known by the provider but aren't valid resp. null for attributes whose values are OK
-	 */
-	public function checkConfigFE( array $attributes ) : array
-	{
-		return $this->checkConfig( $this->feConfig, $attributes );
-	}
-
-
-	/**
-	 * Sets the payment attributes in the given service.
-	 *
-	 * @param \Aimeos\MShop\Order\Item\Service\Iface $orderServiceItem Order service item that will be added to the basket
-	 * @param array $attributes Attribute key/value pairs entered by the customer during the checkout process
-	 * @return \Aimeos\MShop\Order\Item\Service\Iface Order service item with attributes added
-	 */
-	public function setConfigFE( \Aimeos\MShop\Order\Item\Service\Iface $orderServiceItem,
-		array $attributes ) : \Aimeos\MShop\Order\Item\Service\Iface
-	{
-		return $orderServiceItem->addAttributeItems( $this->attributes( $attributes, 'session' ) );
-	}
-
-
-	/**
 	 * Tries to get an authorization or captures the money immediately for the given order if capturing the money
 	 * separately isn't supported or not configured by the shop owner.
 	 *
@@ -174,6 +96,11 @@ class NovalnetCredit
 	 */
 	public function process( \Aimeos\MShop\Order\Item\Iface $order, array $params = [] ) : ?\Aimeos\MShop\Common\Helper\Form\Iface
 	{
+		// card details are only passed in the request and never stored in the basket
+		if( $this->fieldValue( $params, 'novalnetcredit.number' ) === '' || $this->fieldValue( $params, 'novalnetcredit.cvv' ) === '' ) {
+			return $this->getPaymentForm( $order, $params );
+		}
+
 		return $this->processOrder( $order, $params );
 	}
 
@@ -206,12 +133,58 @@ class NovalnetCredit
 			$params['email'] = $addr->getEmail();
 		}
 
-		$params['holder'] = ( isset( $params['novalnetcredit.holder'] ) ? $params['novalnetcredit.holder'] : '' );
-		$params['number'] = ( isset( $params['novalnetcredit.number'] ) ? $params['novalnetcredit.number'] : '' );
-		$params['expiryYear'] = ( isset( $params['novalnetcredit.year'] ) ? $params['novalnetcredit.year'] : '' );
-		$params['expiryMonth'] = ( isset( $params['novalnetcredit.month'] ) ? $params['novalnetcredit.month'] : '' );
-		$params['cvv'] = ( isset( $params['novalnetcredit.cvv'] ) ? $params['novalnetcredit.cvv'] : '' );
+		$params['holder'] = $this->fieldValue( $params, 'novalnetcredit.holder' );
+		$params['number'] = $this->fieldValue( $params, 'novalnetcredit.number' );
+		$params['expiryYear'] = $this->fieldValue( $params, 'novalnetcredit.year' );
+		$params['expiryMonth'] = $this->fieldValue( $params, 'novalnetcredit.month' );
+		$params['cvv'] = $this->fieldValue( $params, 'novalnetcredit.cvv' );
 
 		return new \Omnipay\Common\CreditCard( $params );
+	}
+
+
+	/**
+	 * Returns the payment form for entering the credit card details at the shop site.
+	 *
+	 * @param \Aimeos\MShop\Order\Item\Iface $order Order object
+	 * @param array $params Request parameter if available
+	 * @return \Aimeos\MShop\Common\Helper\Form\Iface Form helper object
+	 */
+	protected function getPaymentForm( \Aimeos\MShop\Order\Item\Iface $order, array $params ) : \Aimeos\MShop\Common\Helper\Form\Iface
+	{
+		$list = [];
+		$feconfig = $this->feConfig;
+		$feconfig['novalnetcredit.holder']['default'] = $this->fieldValue( $params, 'novalnetcredit.holder' );
+
+		$addresses = $order->getAddress( \Aimeos\MShop\Order\Item\Address\Base::TYPE_PAYMENT );
+
+		if( ( $address = current( $addresses ) ) !== false )
+		{
+			if( $feconfig['novalnetcredit.holder']['default'] == ''
+				&& ( $fn = $address->getFirstname() ) !== '' && ( $ln = $address->getLastname() ) !== ''
+			) {
+				$feconfig['novalnetcredit.holder']['default'] = $fn . ' ' . $ln;
+			}
+		}
+
+		foreach( $feconfig as $key => $config ) {
+			$list[$key] = new \Aimeos\Base\Criteria\Attribute\Standard( $config );
+		}
+
+		$url = $this->getConfigValue( 'payment.url-self', '' );
+		return new \Aimeos\MShop\Common\Helper\Form\Standard( $url, 'POST', $list, false );
+	}
+
+
+	/**
+	 * Returns the value of the payment form field passed in the request
+	 *
+	 * @param array $params Request parameter
+	 * @param string $key Code of the payment form field
+	 * @return string Value of the field or empty string if not available
+	 */
+	protected function fieldValue( array $params, string $key ) : string
+	{
+		return (string) ( $params[$this->feConfig[$key]['internalcode']] ?? $params[$key] ?? '' );
 	}
 }
